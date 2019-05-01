@@ -3,11 +3,9 @@ package pl.zajacp.investmentmanager.actionmanagement;
 import lombok.Data;
 import pl.zajacp.investmentmanager.investments.FinanceProduct;
 import pl.zajacp.investmentmanager.investments.Investment;
+import pl.zajacp.investmentmanager.user.User;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
@@ -15,6 +13,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
+@Entity
+@Table(name="actions")
 public class Action {
 
     @Id
@@ -36,6 +36,10 @@ public class Action {
     private Boolean isDone;
     @Column(length = 1000)
     private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private FinanceProduct product;
 
     public Action() {
         this.isDone = false;

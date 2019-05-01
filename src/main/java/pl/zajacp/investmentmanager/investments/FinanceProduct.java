@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GeneratorType;
 import org.hibernate.validator.constraints.Length;
+import pl.zajacp.investmentmanager.actionmanagement.Action;
+import pl.zajacp.investmentmanager.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -36,4 +39,11 @@ public class FinanceProduct {
     @Column(length=1000)
     private String notes;
 
+    @OneToMany(mappedBy = "product")
+    private List<Action> actions;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private User user;
 }
+
