@@ -18,13 +18,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+
     @Column(length=40)
     @Size(min=5, max=20)
     private String name;
     private String password;
-    @Email
     private String email;
+
+    private List<String> roles;
 
     @OneToMany(mappedBy = "user")
     private List<FinanceProduct> products = new ArrayList<>();

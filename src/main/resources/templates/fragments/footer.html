@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+</head>
+<body>
+<div th:fragment="footer">
+        <footer>
+            <span sec:authorize="isAuthenticated()">
+                <p>Logged user: <span sec:authentication="name"/> |
+
+                    <a th:href="@{/logout}">Sign Out</a></p>
+<!--                <form th:action="@{/logout}" method="post">-->
+<!--                    <input type="submit" value="Sign Out"/>-->
+<!--                </form>-->
+            </span>
+        </footer>
+</div>
+</body>
+</html>

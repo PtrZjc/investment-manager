@@ -1,6 +1,8 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import pl.zajacp.investmentmanager.investments.FinanceProduct;
 import pl.zajacp.investmentmanager.investments.Investment;
 import pl.zajacp.investmentmanager.user.User;
@@ -14,6 +16,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="type", discriminatorType = DiscriminatorType.STRING)
 @Table(name="actions")
 public class Action {
 
@@ -32,17 +36,12 @@ public class Action {
     private BigDecimal balanceChange;
     @NotNull
     private BigDecimal afterActionValue;
-    @NotNull
-    private Boolean isDone;
+
     @Column(length = 1000)
     private String notes;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private FinanceProduct product;
-
-    public Action() {
-        this.isDone = false;
-    }
 
 }
