@@ -7,7 +7,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import pl.zajacp.investmentmanager.user.User;
-import pl.zajacp.investmentmanager.validation.EmailExistsException;
+import pl.zajacp.investmentmanager.validation.exceptions.EmailExistsException;
+import pl.zajacp.investmentmanager.validation.exceptions.LoginExistsException;
 
 import javax.validation.Valid;
 
@@ -23,39 +24,31 @@ public class RegistrationController {
 
     @GetMapping("/registration")
     public String showRegistrationForm(WebRequest request, Model model) {
-        AccountDto userDto = new AccountDto();
+        UserDto userDto = new UserDto();
         model.addAttribute("user", userDto);
         return "registration";
     }
 
     @PostMapping("/registration")
     public String registerUserAccount
-            (@ModelAttribute("user") @Valid AccountDto accountDto,
+            (@ModelAttribute("user") @Valid UserDto userDto,
              BindingResult result, Model model) {
 
-        User registered = new User();
         if (!result.hasErrors()) {
-            registered = createUserAccount(accountDto, result);
+            try {
+                userService.registerNewUserAccount(userDto);
+            } catch (LoginExistsException e) {
+                result.rejectValue("login", "error.message.loginExists");
+            } catch (EmailExistsException e) {
+                result.rejectValue("email", "error.message.emailExists");
+            }
         }
 
-        if (registered == null) {
-            result.rejectValue("email", "error.message.emailExists");
-        }
-        model.addAttribute("user", accountDto);
+        model.addAttribute("user", userDto);
 
         if (result.hasErrors()) {
             return "registration";
         }
         return "successRegister";
-    }
-
-    private User createUserAccount(AccountDto accountDto, BindingResult result) {
-        User registered = null;
-        try {
-            registered = userService.registerNewUserAccount(accountDto);
-        } catch (EmailExistsException e) {
-            return null;
-        }
-        return registered;
     }
 }

@@ -20,12 +20,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length=40)
     private String name;
+    private String login;
     private String password;
     private String email;
-
-    private String role;
 
     @OneToMany(mappedBy = "user")
     private List<FinanceProduct> products = new ArrayList<>();

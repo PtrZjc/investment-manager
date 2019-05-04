@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.zajacp.investmentmanager.user.User;
 import pl.zajacp.investmentmanager.user.UserRepository;
-import pl.zajacp.investmentmanager.validation.EmailExistsException;
-
-import java.util.Arrays;
+import pl.zajacp.investmentmanager.validation.exceptions.EmailExistsException;
+import pl.zajacp.investmentmanager.validation.exceptions.LoginExistsException;
 
 @Service
 public class UserService implements IUserService {
@@ -24,26 +23,34 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(AccountDto accountDto)
-            throws EmailExistsException {
+    public User registerNewUserAccount(UserDto userDto)
+            throws LoginExistsException, EmailExistsException {
 
-        if (emailExist(accountDto.getEmail())) {
-            throw new EmailExistsException(
-                    "There is an account with that email adress: "
-                            + accountDto.getEmail());
+        if (loginExists(userDto.getLogin())){
+            throw new LoginExistsException("Login already used");
+        }else if(emailExist(userDto.getEmail())){
+            throw new EmailExistsException("Email already used");
         }
 
         User user = new User();
-        user.setName(accountDto.getName());
-        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
-        user.setEmail(accountDto.getEmail());
-        user.setRole("ROLE_USER");
+        user.setName(userDto.getName());
+        user.setLogin(userDto.getLogin());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setEmail(userDto.getEmail());
         return userRepository.save(user);
 
     }
 
     private boolean emailExist(String email) {
         User user = userRepository.findByEmail(email);
+        if (user != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean loginExists(String login) {
+        User user = userRepository.findByLogin(login);
         if (user != null) {
             return true;
         }

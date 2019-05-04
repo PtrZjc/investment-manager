@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.validation;
+package pl.zajacp.investmentmanager.validation.exceptions;
 
 public class EmailExistsException extends Throwable {
 

@@ -17,6 +17,12 @@
             <label th:text="#{label.user.name}">name</label>
             <input th:field="*{name}"/>
             <p th:each="error: ${#fields.errors('name')}"
+               th:text="${error}">error</p>
+        </div>
+        <div>
+            <label th:text="#{label.user.login}">login</label>
+            <input th:field="*{login}"/>
+            <p th:each="error: ${#fields.errors('login')}"
                th:text="${error}">Validation error</p>
         </div>
         <div>
@@ -33,7 +39,7 @@
         </div>
         <div>
             <label th:text="#{label.form.confirmPass}">confirm</label>
-            <input type="password" th:field="*{matchingPassword}"/>
+            <input type="password" th:field="*{matchingPassword}" class="danger"/>
             <p th:each="error : ${#fields.globalErrors()}"
                th:text="${error}">Validation error</p>
 

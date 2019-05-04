@@ -27,27 +27,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public UserDetails loadUserByUsername(String email)
+    @Override
+    public UserDetails loadUserByUsername(String login)
       throws UsernameNotFoundException {
   
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByLogin(login);
         if (user == null) {
             throw new UsernameNotFoundException(
-              "No user found having mail: "+ email);
+              "Login does not exists");
         }
 
-        boolean enabled = true;
-        boolean accountNonExpired = true;
-        boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
+//        //TBD when extending login capability
+//        boolean enabled = true;
+//        boolean accountNonExpired = true;
+//        boolean credentialsNonExpired = true;
+//        boolean accountNonLocked = true;
 
         List<String> role = new ArrayList<>();
         role.add("ROLE_USER");
-        return  new org.springframework.security.core.userdetails.User
-          (user.getEmail(), 
-          user.getPassword(), enabled, accountNonExpired,
-          credentialsNonExpired, accountNonLocked,
-          getAuthorities(role));
+        org.springframework.security.core.userdetails.User springUser = new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), getAuthorities(role));
+        return springUser;
     }
      
     private static List<GrantedAuthority> getAuthorities (List<String> roles) {

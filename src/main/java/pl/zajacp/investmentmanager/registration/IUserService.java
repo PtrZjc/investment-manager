@@ -1,9 +1,10 @@
 package pl.zajacp.investmentmanager.registration;
 
 import pl.zajacp.investmentmanager.user.User;
-import pl.zajacp.investmentmanager.validation.EmailExistsException;
+import pl.zajacp.investmentmanager.validation.exceptions.EmailExistsException;
+import pl.zajacp.investmentmanager.validation.exceptions.LoginExistsException;
 
 public interface IUserService {
-    User registerNewUserAccount(AccountDto accountDto)
-      throws EmailExistsException;
+    User registerNewUserAccount(UserDto userDto)
+      throws LoginExistsException, EmailExistsException;
 }
