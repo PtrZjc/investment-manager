@@ -5,6 +5,8 @@
 <body>
 <div th:fragment="footer">
         <footer>
+            <a th:href="@{/login}" th:text="'login screen'">login</a>
+            <a th:href="@{/registration}" th:text="'register'">login</a>
             <span sec:authorize="isAuthenticated()">
                 <p>Logged user: <span sec:authentication="name"/> |
 

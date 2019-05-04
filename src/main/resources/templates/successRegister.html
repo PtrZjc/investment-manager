@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+    <div th:replace="fragments/header::header-scripts "/>
+</head>
+
+<body>
+
+<div th:replace="fragments/header:: navbar"/>
+
+<div class="container">
+
+    <h2 th:text="'Success !!!'"/>
+
+    <div th:replace="fragments/footer:: footer"/>
+</div>
+</body>
+</html>
