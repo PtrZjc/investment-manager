@@ -5,16 +5,15 @@
 <body>
 <div th:fragment="footer">
         <footer>
-            <a th:href="@{/login}" th:text="'login screen'">login</a>
-            <a th:href="@{/registration}" th:text="'register'">login</a>
-            <span sec:authorize="isAuthenticated()">
-                <p>Logged user: <span sec:authentication="name"/> |
+            <div sec:authorize="isAnonymous()">
+                <a th:href="@{/login}" th:text="'login'">login</a> |
+                <a th:href="@{/registration}" th:text="'register'">register</a>
+            </div>
 
+            <div sec:authorize="isAuthenticated()">
+                <p>Logged user: <span sec:authentication="name"/> |
                     <a th:href="@{/logout}">Sign Out</a></p>
-<!--                <form th:action="@{/logout}" method="post">-->
-<!--                    <input type="submit" value="Sign Out"/>-->
-<!--                </form>-->
-            </span>
+            </div>
         </footer>
 </div>
 </body>
