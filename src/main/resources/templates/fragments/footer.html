@@ -4,17 +4,23 @@
 </head>
 <body>
 <div th:fragment="footer">
-        <footer>
-            <div sec:authorize="isAnonymous()">
+    <footer>
+
+        <div style="margin-top:1rem"/>
+
+        <div sec:authorize="isAnonymous()">
+            <p class="text-center">
                 <a th:href="@{/login}" th:text="'login'">login</a> |
                 <a th:href="@{/registration}" th:text="'register'">register</a>
-            </div>
+            </p>
+        </div>
 
-            <div sec:authorize="isAuthenticated()">
-                <p>Logged user: <span sec:authentication="name"/> |
-                    <a th:href="@{/logout}">Sign Out</a></p>
-            </div>
-        </footer>
+        <div sec:authorize="isAuthenticated()">
+            <p class="text-center">Logged user: <span sec:authentication="name"/> |
+                <a th:href="@{/logout}">Sign Out</a></p>
+        </div>
+
+    </footer>
 </div>
 </body>
 </html>

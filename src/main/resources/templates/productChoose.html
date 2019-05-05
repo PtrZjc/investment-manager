@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+    <div th:replace="fragments/header::header-scripts "/>
+    <script>
+        $(document).ready(function() {
+            $("#product-investment").on('click', function() {
+                window.location.href = "add/investment"
+            })
+            $("#product-savings-account").on('click', function() {
+                window.location.href = "add/savings-account"
+            })
+        })
+    </script>
+</head>
+
+<body>
+
+<div th:replace="fragments/header:: navbar"/>
+
+<div class="container">
+
+    <h4 th:text="#{product.choose.chooseMessage}" class="text-center">Choose the product</h4>
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <div class="card bg-info" id="product-investment" style="cursor:pointer">
+                <div class="card-body text-center">
+                    <p class="card-text" th:text="#{product.choose.investment}">Investment</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info" id="product-savings-account" style="cursor:pointer">
+                <div class="card-body text-center">
+                    <p class="card-text" th:text="#{product.choose.savingsAccount}">Savings account</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+
+    <div th:replace="fragments/footer:: footer"/>
+</div>
+</body>
+</html>

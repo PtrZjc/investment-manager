@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
-import pl.zajacp.investmentmanager.user.User;
 import pl.zajacp.investmentmanager.validation.exceptions.EmailExistsException;
 import pl.zajacp.investmentmanager.validation.exceptions.LoginExistsException;
 
@@ -49,6 +48,6 @@ public class RegistrationController {
         if (result.hasErrors()) {
             return "registration";
         }
-        return "successRegister";
+        return "success";
     }
 }
