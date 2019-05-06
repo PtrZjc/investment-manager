@@ -7,23 +7,23 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Controller
 @RequestMapping("/product")
 public class ProductController {
 
     private final ProductRepository productRepository;
-    private final InvestmentRepository investmentRepository;
 
     @Autowired
-    public ProductController(ProductRepository productRepository, InvestmentRepository investmentRepository) {
+    public ProductController(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.investmentRepository = investmentRepository;
     }
 
     @GetMapping("/")
     public String homePage() {
-        return "redirect:add";
+        return "redirect:/product/add";
     }
 
     @GetMapping("/add")
@@ -37,23 +37,35 @@ public class ProductController {
         return "productFormInvestment";
     }
 
+
     @PostMapping("/add/investment")
-    public String postInvestment(@ModelAttribute @Valid Investment investment, BindingResult result, Model model) {
+    public String postInvestment(@ModelAttribute("product") @Valid Investment product, BindingResult result) {
         if (result.hasErrors()) {
-            model.addAttribute("product",investment);
             return "productFormInvestment";
         }
 
-        investmentRepository.save(investment);
+        product.setInterest(product.getInterest().divide(new BigDecimal(100)));
+        productRepository.save(product);
 
         return "success";
     }
-
 
     @GetMapping("/add/savings-account")
     public String addSavingsAccount(SavingsAccount product, Model model) {
         model.addAttribute("product", new SavingsAccount());
         return "productFormSavingsAccount";
+    }
+
+    @PostMapping("/add/savings-account")
+    public String postSavingsAccount(@ModelAttribute("product") @Valid SavingsAccount product, BindingResult result) {
+        if (result.hasErrors()) {
+            return "productFormSavingsAccount";
+        }
+
+        product.setInterest(product.getInterest().divide(new BigDecimal(100)));
+        productRepository.save(product);
+
+        return "success";
     }
 
 //    @PostMapping("/")

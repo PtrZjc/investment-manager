@@ -1,6 +1,7 @@
 package pl.zajacp.investmentmanager.investments;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -15,9 +16,10 @@ public class SavingsAccount extends FinanceProduct {
     @Min(1)
     private BigDecimal valueLimit;
     @Future
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate validityDate;
     @Column(precision = 5, scale=4)
-    @DecimalMin("0.0001")
-    @DecimalMax("1")
+    @DecimalMin("0.01")
+    @DecimalMax("100")
     private BigDecimal interestAboveLimit;
 }

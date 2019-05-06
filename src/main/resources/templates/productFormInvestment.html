@@ -4,20 +4,12 @@
     <title th:text="#{product.add.title.investment}">Title</title>
     <div th:replace="fragments/header::header-scripts "/>
 </head>
-<script>
-    $(document).ready(function () {
-        $(".percentage").on('submit', function () {
-            var interestRate = $("#interest")
-            interestRate.val(interestRate.val() / 100)
-        })
-    })
-</script>
 <body>
 
 <div th:replace="fragments/header:: navbar"/>
 
 <div class="container">
-
+test
     <div class="row" style="margin-top: 1rem">
 
         <div class="col-sm-3"></div>
@@ -26,6 +18,7 @@
                 <input type="hidden" th:field="*{id}">
 
                 <table class="table table-striped border border-1 text-center">
+                    <div th:fragment="basicProductInputs">
                     <tr>
                         <td th:text="#{product.add.bank}">bank</td>
                         <td>
@@ -63,6 +56,7 @@
                             <p th:each="error: ${#fields.errors('notes')}" th:text="${error}"/>
                         </td>
                     </tr>
+                    </div>
                     <tr>
                         <td colspan="2"><input type="submit" th:value="#{label.form.submit}" class="btn btn-primary">
                         </td>
@@ -70,6 +64,7 @@
                 </table>
             </form>
         </div>
+
         <div class="col-sm-3"></div>
     </div>
 

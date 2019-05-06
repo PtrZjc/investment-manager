@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GeneratorType;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.user.User;
 
@@ -30,10 +31,11 @@ public class FinanceProduct {
     @Min(1)
     private BigDecimal value;
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate openDate;
     @NotNull
-    @DecimalMin("0.0001")
-    @DecimalMax("1")
+    @DecimalMin("0.01")
+    @DecimalMax("100")
     @Column(precision = 5, scale=4)
     private BigDecimal interest;
     @Column(length=1000)
