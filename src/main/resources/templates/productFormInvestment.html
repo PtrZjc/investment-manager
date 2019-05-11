@@ -3,13 +3,24 @@
 <head>
     <title th:text="#{product.add.title.investment}">Title</title>
     <div th:replace="fragments/header::header-scripts "/>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var percent = document.querySelector('.percentage')
+            if (percent.value !== null) {
+                percent.value = percent.value * 100
+            }
+            document.getElementById('form').addEventListener('submit', function (e) {
+                percent.value = percent.value / 100
+            });
+        })
+    </script>
 </head>
 <body>
 
 <div th:replace="fragments/header:: navbar"/>
 
 <div class="container">
-test
+
     <div class="row" style="margin-top: 1rem">
 
         <div class="col-sm-3"></div>
@@ -18,49 +29,75 @@ test
                 <input type="hidden" th:field="*{id}">
 
                 <table class="table table-striped border border-1 text-center">
-                    <div th:fragment="basicProductInputs">
-                    <tr>
-                        <td th:text="#{product.add.bank}">bank</td>
-                        <td>
-                            <input type="text" th:field="*{bank}"/>
-                            <p th:each="error: ${#fields.errors('bank')}" th:text="${error}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:text="#{product.add.value}">value</td>
-                        <td>
-                            <input type="number" min="1" max="10000000" step="0.01" th:field="*{value}"/>
-                            <p th:each="error: ${#fields.errors('value')}" th:text="${error}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:text="#{product.add.openDate}">openDate</td>
-                        <td>
-                            <input type="date" th:field="*{openDate}"/>
-                            <p th:each="error: ${#fields.errors('openDate')}" th:text="${error}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:text="#{product.add.interest}">interest</td>
-                        <td>
-                            <input type="number" min="0" max="100" step="0.1" th:field="*{interest}"
-                                   class="percentage"/>
-                            <p th:each="error: ${#fields.errors('interest')}" th:text="${error}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:text="#{product.add.notes}">notes</td>
-                        <td>
-                            <textarea th:field="*{notes}" rows="3"form="form" maxlength="1000"/>
-<!--                            <input th:field="*{notes}"/>-->
-                            <p th:each="error: ${#fields.errors('notes')}" th:text="${error}"/>
-                        </td>
-                    </tr>
+                    <div th:fragment="bankInputRow">
+                        <tr>
+                            <td th:text="#{product.add.bank}">bank</td>
+                            <td>
+                                <input type="text" th:field="*{bank}"/>
+                                <p th:each="error: ${#fields.errors('bank')}" th:text="${error}"></p>
+                            </td>
+                        </tr>
                     </div>
+                    <div th:fragment="valueInputRow">
+                        <tr>
+                            <td th:text="#{product.add.value}">value</td>
+                            <td>
+                                <input type="number" min="1" max="10000000" step="0.01" th:field="*{value}"/>
+                                <p th:each="error: ${#fields.errors('value')}" th:text="${error}"></p>
+                            </td>
+                        </tr>
+                    </div>
+                    <div th:fragment="interestInputRow">
+                        <tr>
+                            <td th:text="#{product.add.interest}">interest</td>
+                            <td>
+                                <input type="number" min="0" max="100" step="0.1" th:field="*{interest}"
+                                       class="percentage"/>
+                                <p th:each="error: ${#fields.errors('interest')}" th:text="${error}"></p>
+                            </td>
+                        </tr>
+                    </div>
+
+                    <div th:fragment="openDateInputRow">
+                        <tr>
+                            <td th:text="#{product.add.openDate}">openDate</td>
+                            <td>
+                                <input type="date" th:field="*{openDate}"/>
+                                <p th:each="error: ${#fields.errors('openDate')}" th:text="${error}"></p>
+                            </td>
+                        </tr>
+                    </div>
+
                     <tr>
-                        <td colspan="2"><input type="submit" th:value="#{label.form.submit}" class="btn btn-primary">
+                        <td th:text="#{product.add.monthsValid}">monthsValid</td>
+                        <td>
+                            <select th:field="*{monthsValid}">
+                                <option th:text="#{product.add.months1}" value="1">1</option>
+                                <option th:text="#{product.add.months3}" value="3">3</option>
+                                <option th:text="#{product.add.months6}" value="6">6</option>
+                                <option th:text="#{product.add.months12}" value="12">12</option>
+                            </select>
                         </td>
                     </tr>
+
+                    <div th:fragment="notesInputRow">
+                        <tr>
+                            <td th:text="#{product.add.notes}">notes</td>
+                            <td>
+                                <textarea th:field="*{notes}" rows="3" form="form" maxlength="1000"></textarea>
+                                <!--                            <input th:field="*{notes}"/>-->
+                                <p th:each="error: ${#fields.errors('notes')}" th:text="${error}"></p>
+                            </td>
+                        </tr>
+                    </div>
+                    <div th:fragment="submitButton">
+                        <tr>
+                            <td colspan="2"><input type="submit" th:value="#{label.form.submit}"
+                                                   class="btn btn-primary">
+                                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Validation error</p>
+                            </td>
+                        </tr>
+                    </div>
                 </table>
             </form>
         </div>

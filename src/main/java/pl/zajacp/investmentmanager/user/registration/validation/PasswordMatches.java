@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.validation;
+package pl.zajacp.investmentmanager.user.registration.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

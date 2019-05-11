@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.investments;
+package pl.zajacp.investmentmanager.products;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

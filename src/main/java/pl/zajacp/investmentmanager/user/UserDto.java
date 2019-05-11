@@ -1,9 +1,8 @@
-package pl.zajacp.investmentmanager.registration;
+package pl.zajacp.investmentmanager.user;
 
 import lombok.Data;
-import pl.zajacp.investmentmanager.validation.PasswordMatches;
+import pl.zajacp.investmentmanager.user.registration.validation.PasswordMatches;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

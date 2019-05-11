@@ -1,6 +1,6 @@
-package pl.zajacp.investmentmanager.validation;
+package pl.zajacp.investmentmanager.user.registration.validation;
 
-import pl.zajacp.investmentmanager.registration.UserDto;
+import pl.zajacp.investmentmanager.user.UserDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

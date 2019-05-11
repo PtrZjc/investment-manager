@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.registration;
+package pl.zajacp.investmentmanager.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,12 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.expression.Lists;
-import pl.zajacp.investmentmanager.user.User;
-import pl.zajacp.investmentmanager.user.UserRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service

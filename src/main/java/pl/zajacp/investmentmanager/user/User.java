@@ -1,19 +1,16 @@
 package pl.zajacp.investmentmanager.user;
 
 import lombok.Data;
-import pl.zajacp.investmentmanager.investments.FinanceProduct;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
 @Data
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -25,7 +22,10 @@ public class User {
     private String password;
     private String email;
 
-    @OneToMany(mappedBy = "user")
-    private List<FinanceProduct> products = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<FinanceProduct> products = new HashSet<>();
 
+    public void addFinanceProduct(FinanceProduct product) {
+        products.add(product);
+    }
 }

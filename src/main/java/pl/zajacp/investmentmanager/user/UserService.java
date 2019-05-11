@@ -1,19 +1,20 @@
-package pl.zajacp.investmentmanager.registration;
+package pl.zajacp.investmentmanager.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.zajacp.investmentmanager.user.User;
-import pl.zajacp.investmentmanager.user.UserRepository;
-import pl.zajacp.investmentmanager.validation.exceptions.EmailExistsException;
-import pl.zajacp.investmentmanager.validation.exceptions.LoginExistsException;
+import pl.zajacp.investmentmanager.user.registration.validation.EmailExistsException;
+import pl.zajacp.investmentmanager.user.registration.validation.LoginExistsException;
 
 @Service
+@Transactional
 public class UserService implements IUserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
@@ -21,7 +22,6 @@ public class UserService implements IUserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     @Override
     public User registerNewUserAccount(UserDto userDto)
             throws LoginExistsException, EmailExistsException {
@@ -55,5 +55,10 @@ public class UserService implements IUserService {
             return true;
         }
         return false;
+    }
+
+    public User getLoggedUser() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByLogin(principal.getUsername());
     }
 }

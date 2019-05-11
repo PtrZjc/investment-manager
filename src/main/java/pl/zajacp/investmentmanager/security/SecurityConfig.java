@@ -10,9 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pl.zajacp.investmentmanager.registration.UserDetailsServiceImpl;
-
-import javax.sql.DataSource;
+import pl.zajacp.investmentmanager.user.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity

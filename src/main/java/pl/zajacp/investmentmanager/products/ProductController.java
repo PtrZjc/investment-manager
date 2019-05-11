@@ -1,24 +1,27 @@
-package pl.zajacp.investmentmanager.investments;
+package pl.zajacp.investmentmanager.products;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import pl.zajacp.investmentmanager.products.investment.Investment;
+import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Controller
 @RequestMapping("/product")
 public class ProductController {
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @Autowired
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @GetMapping("/")
@@ -37,15 +40,13 @@ public class ProductController {
         return "productFormInvestment";
     }
 
-
     @PostMapping("/add/investment")
     public String postInvestment(@ModelAttribute("product") @Valid Investment product, BindingResult result) {
         if (result.hasErrors()) {
             return "productFormInvestment";
         }
 
-        product.setInterest(product.getInterest().divide(new BigDecimal(100)));
-        productRepository.save(product);
+        productService.save(product);
 
         return "success";
     }
@@ -62,24 +63,8 @@ public class ProductController {
             return "productFormSavingsAccount";
         }
 
-        product.setInterest(product.getInterest().divide(new BigDecimal(100)));
-        productRepository.save(product);
+        productService.save(product);
 
         return "success";
     }
-
-//    @PostMapping("/")
-//    public String postProduct(@ModelAttribute @Valid Product product, BindingResult result) {
-//        if (result.hasErrors()) {
-//            return "formProduct";
-//        }
-//
-//        if (product.getId() == null) {
-//            productDao.save(product);
-//        } else {
-//            productDao.update(product);
-//        }
-//        return "redirect:all";
-//    }
-
 }

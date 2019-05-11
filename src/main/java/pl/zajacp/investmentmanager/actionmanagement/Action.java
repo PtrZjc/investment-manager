@@ -1,11 +1,7 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import pl.zajacp.investmentmanager.investments.FinanceProduct;
-import pl.zajacp.investmentmanager.investments.Investment;
-import pl.zajacp.investmentmanager.user.User;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
@@ -17,7 +13,6 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="type", discriminatorType = DiscriminatorType.STRING)
 @Table(name="actions")
 public class Action {
 
@@ -28,20 +23,46 @@ public class Action {
     private ActionType actionType;
     @NotNull
     private LocalDate actionDate;
+
     @DecimalMin("0.0001")
     @DecimalMax("1")
     @Column(precision = 5, scale = 4)
     private BigDecimal capitalizationRate;
-    @NotNull
     private BigDecimal balanceChange;
-    @NotNull
     private BigDecimal afterActionValue;
 
     @Column(length = 1000)
     private String notes;
+
+    private Boolean isDone;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private FinanceProduct product;
 
 }
+
+/*
+ ***  deposit/widthdraw
+
+ actionDate
+ balanceChange
+
+
+ ***  capitalization
+
+ actionDate
+ capitalizationRate
+ afterActionValue
+ isDone
+
+ ***  product open
+
+ actionDate
+ value
+
+ ***  product close
+
+ actionDate
+ value
+ */
