@@ -7,7 +7,11 @@ import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -52,5 +56,29 @@ public class ActionService {
                 .multiply(new BigDecimal((double) daysValid / Year.of(product.getOpenDate().getYear()).length())) //factor of year
                 .multiply(new BigDecimal(0.81)) //Belka tax
                 .setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public List<LocalDate> getCapitalizationDates(SavingsAccount product) {
+        /*
+         * Create list of dates consisting of last days of months. Last date is one after validity date
+         * or after 12 months if the validityDate is absent.
+         */
+
+        List<LocalDate> capitalizationDates = new ArrayList<>();
+        LocalDate currentDate = product.getCreated();
+        LocalDate validityDate = product.getValidityDate();
+        if (validityDate == null) {
+            validityDate = currentDate.plusMonths(12);
+        }
+        int index = 1;
+
+        do {
+            YearMonth month = YearMonth.from(currentDate);
+            LocalDate capitalizationDay = month.atEndOfMonth();
+            capitalizationDates.add(capitalizationDay);
+            currentDate = capitalizationDay.plusDays(index++);
+        } while (currentDate.isBefore(validityDate));
+
+        return capitalizationDates;
     }
 }
