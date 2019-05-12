@@ -31,7 +31,7 @@ public class ProductService extends AbstractCrudService<FinanceProduct> {
 
         if (product instanceof Investment){
             actionService.initializeInvestmentActions((Investment) product);
-        }else{
+        }else if(product instanceof SavingsAccount){
             actionService.initializeSavingsAccountActions((SavingsAccount) product);
         }
     }

@@ -3,6 +3,7 @@
 <head>
     <title th:text="#{product.add.title.investment}">Title</title>
     <div th:replace="fragments/header::header-scripts "/>
+    <div th:replace="fragments/js:: js-precentage-divider"/>
 </head>
 <body>
 
@@ -22,6 +23,7 @@
                     <div th:replace="productFormInvestment:: bankInputRow"/>
                     <div th:replace="productFormInvestment:: valueInputRow"/>
                     <div th:replace="productFormInvestment:: interestInputRow"/>
+                    <div th:replace="productFormInvestment:: openDateInputRow"/>
 
                     <tr>
                         <td th:text="#{product.add.validityDate}">validityDate</td>
@@ -34,27 +36,24 @@
                     <tr>
                         <td th:text="#{product.add.valueLimit}">valueLimit</td>
                         <td>
-                            <input type="number" min="1"step="0.01" th:field="*{valueLimit}"
+                            <input type="number" min="1" step="0.01" th:field="*{valueLimit}"
                                    class="percentage"/>
                             <p th:each="error: ${#fields.errors('valueLimit')}" th:text="${error}"></p>
                         </td>
                     </tr>
+                    <tr>
+                        <td th:text="#{product.add.interestAboveLimit}">interestAboveLimit</td>
 
-                    <td th:text="#{product.add.interestAboveLimit}">interestAboveLimit</td>
-                    <td>
-                        <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
-                               class="percentage"/>
-                        <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
-                    </td>
-
+                        <td>
+                            <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
+                                   class="percentage"/>
+                            <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
+                        </td>
+                    </tr>
                     <div th:replace="productFormInvestment:: notesInputRow"/>
 
                     <div th:replace="productFormInvestment:: submitButton"/>
 
-                    <tr>
-                        <td colspan="2"><input type="submit" th:value="#{label.form.submit}" class="btn btn-primary">
-                        </td>
-                    </tr>
                 </table>
             </form>
         </div>

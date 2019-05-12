@@ -1,0 +1,13 @@
+<div th:fragment="js-precentage-divider">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var percent = document.querySelector('.percentage');
+            if (percent.value !== null) {
+                percent.value = percent.value * 100
+            }
+            document.getElementById('form').addEventListener('submit', function (e) {
+                percent.value = percent.value / 100
+            });
+        })
+    </script>
+</div>

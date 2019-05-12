@@ -27,7 +27,7 @@ public class ActionServiceTest {
     @BeforeClass
     public static void prepareProducts() {
         LocalDate openDate = LocalDate.parse("2018-03-01", DateTimeFormatter.ISO_LOCAL_DATE);
-        LocalDate validityDate = LocalDate.parse("2018-09-15", DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate validityDate = LocalDate.parse("2018-09-10", DateTimeFormatter.ISO_LOCAL_DATE);
         savingsAccount = mock(SavingsAccount.class);
         investment = mock(Investment.class);
 
@@ -41,24 +41,57 @@ public class ActionServiceTest {
         when(savingsAccount.getValidityDate()).thenReturn(validityDate);
     }
 
-
     @Test
     public void shouldInvestmentValueWithReturn() {
-        assertThat(actionService.investmentValueWithReturn(investment),
-                is(new BigDecimal(1000 + (1000 * 0.035) * 0.81).setScale(2, RoundingMode.HALF_UP)));
+        //given
+        BigDecimal expectedReturn = new BigDecimal(1000 + (1000 * 0.035) * 0.81).setScale(2, RoundingMode.HALF_UP);
+        //when
+        BigDecimal returnValue = actionService.getInvestmentValueWithReturn(investment);
+        //then
+        assertThat(returnValue, is(expectedReturn));
     }
 
     @Test
     public void shouldGetCapitalizationDates() {
-        List<LocalDate> dates = actionService.getCapitalizationDates(savingsAccount);
+        //given
         LocalDate lastCapitalisationDate = LocalDate.parse("2018-09-30", DateTimeFormatter.ISO_LOCAL_DATE);
+        //when
+        List<LocalDate> dates = actionService.getCapitalizationDates(savingsAccount);
+        //then
         assertThat(dates, hasItem(lastCapitalisationDate));
         assertThat(dates.size(), is(6));
     }
 
     @Test
-    public void magicalPlayground() {
+    public void shouldMonthlyCapitalizedValue() {
+        //given
+        BigDecimal expectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81))
+                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal value = savingsAccount.getValue();
+        LocalDate date = savingsAccount.getValidityDate();
+        //when
+        BigDecimal monthlyCapitalizedValue = actionService.getMonthlyCapitalizedValue(value, savingsAccount, date);
+        //then
+        assertThat(monthlyCapitalizedValue, is(expectedValue));
     }
+
+    @Test
+    public void shouldPartialMonthlyCapitalizedValue() {
+        //given
+        BigDecimal firstHalfExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81 * 10.0 / 30))
+                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal secondHalfExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81 * (1 - 10.0 / 30)))
+                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal value = savingsAccount.getValue();
+        LocalDate date = savingsAccount.getValidityDate();
+        //when
+        BigDecimal firstHalf = actionService.getPartialMonthlyCapitalizedValue(value, savingsAccount, date, true);
+        BigDecimal secondHalf = actionService.getPartialMonthlyCapitalizedValue(value, savingsAccount, date, false);
+        //then
+        assertThat(firstHalf, is(firstHalfExpectedValue));
+        assertThat(secondHalf, is(secondHalfExpectedValue));
+    }
+
 
 
 }

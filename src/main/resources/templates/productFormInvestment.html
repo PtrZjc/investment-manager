@@ -3,17 +3,8 @@
 <head>
     <title th:text="#{product.add.title.investment}">Title</title>
     <div th:replace="fragments/header::header-scripts "/>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var percent = document.querySelector('.percentage')
-            if (percent.value !== null) {
-                percent.value = percent.value * 100
-            }
-            document.getElementById('form').addEventListener('submit', function (e) {
-                percent.value = percent.value / 100
-            });
-        })
-    </script>
+    <div th:replace="fragments/js:: js-precentage-divider"/>
+
 </head>
 <body>
 
