@@ -18,43 +18,33 @@
             <form action="/product/add/savings-account" th:object="${product}" method="POST" enctype="utf8" id="form">
                 <input type="hidden" th:field="*{id}">
 
-                <table class="table table-striped border border-1 text-center">
+                <div th:replace="productFormInvestment:: bankInputRow"/>
+                <div th:replace="productFormInvestment:: valueInputRow"/>
+                <div th:replace="productFormInvestment:: interestInputRow"/>
+                <div th:replace="productFormInvestment:: openDateInputRow"/>
 
-                    <div th:replace="productFormInvestment:: bankInputRow"/>
-                    <div th:replace="productFormInvestment:: valueInputRow"/>
-                    <div th:replace="productFormInvestment:: interestInputRow"/>
-                    <div th:replace="productFormInvestment:: openDateInputRow"/>
+                <div class="form-group">
+                    <label class="bmd-label-floating" th:text="#{product.add.validityDate}">validityDate</label>
+                    <input type="date" th:field="*{validityDate}" class="form-control"/>
+                    <p th:each="error: ${#fields.errors('validityDate')}" th:text="${error}"></p>
+                </div>
 
-                    <tr>
-                        <td th:text="#{product.add.validityDate}">validityDate</td>
-                        <td>
-                            <input type="date" th:field="*{validityDate}"/>
-                            <p th:each="error: ${#fields.errors('validityDate')}" th:text="${error}"></p>
-                        </td>
-                    </tr>
+                <div class="form-group">
+                    <label class="bmd-label-floating" th:text="#{product.add.valueLimit}">valueLimit</label>
+                    <input type="number" min="1" step="0.01" th:field="*{valueLimit}" class="percentage form-control"/>
+                    <p th:each="error: ${#fields.errors('valueLimit')}" th:text="${error}"></p>
+                </div>
 
-                    <tr>
-                        <td th:text="#{product.add.valueLimit}">valueLimit</td>
-                        <td>
-                            <input type="number" min="1" step="0.01" th:field="*{valueLimit}"
-                                   class="percentage"/>
-                            <p th:each="error: ${#fields.errors('valueLimit')}" th:text="${error}"></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:text="#{product.add.interestAboveLimit}">interestAboveLimit</td>
+                <div class="form-group">
+                    <label class="bmd-label-floating"
+                           th:text="#{product.add.interestAboveLimit}">interestAboveLimit</label>
+                    <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
+                           class="percentage form-control"/>
+                    <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
+                </div>
 
-                        <td>
-                            <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
-                                   class="percentage"/>
-                            <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
-                        </td>
-                    </tr>
-                    <div th:replace="productFormInvestment:: notesInputRow"/>
-
-                    <div th:replace="productFormInvestment:: submitButton"/>
-
-                </table>
+                <div th:replace="productFormInvestment:: notesInputRow"/>
+                <div th:replace="productFormInvestment:: submitBtn"/>
             </form>
         </div>
 

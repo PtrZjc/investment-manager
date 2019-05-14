@@ -34,7 +34,7 @@ public class ProductController {
 
     @GetMapping("/add")
     public String chooseProduct() {
-        return "productChoose";
+        return "productFormChoose";
     }
 
     @GetMapping("/add/investment")
