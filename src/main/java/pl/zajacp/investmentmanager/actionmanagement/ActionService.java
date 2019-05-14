@@ -2,7 +2,6 @@ package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 
@@ -19,6 +18,9 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Service
 @Transactional
 public class ActionService {
+
+    //TODO Interest above limit
+    //TODO Custom payments in and out
 
     private final ActionRepository actionRepository;
     private static BigDecimal BELKA_TAX = new BigDecimal(0.81);
@@ -47,10 +49,10 @@ public class ActionService {
 
     public void initializeSavingsAccountActions(SavingsAccount product) {
         /*
-        * Initializes capitalization actions for the saving accounts. Generated are up to 12 capitalization actions,
-        * one at last day of month, starting at product creation month up to validity date or 12 (in case validity
-        * date is absent).
-        * */
+         * Initializes capitalization actions for the saving accounts. Generated are up to 12 capitalization actions,
+         * one at last day of month, starting at product creation month up to validity date or 12 (in case validity
+         * date is absent).
+         * */
 
         BigDecimal lastValue = product.getValue();
         List<LocalDate> capitalizationDates = getCapitalizationDates(product);
@@ -58,9 +60,9 @@ public class ActionService {
         LocalDate endDate = product.getValidityDate();
 
         /*
-        * The value of each subsequent generated capitalization is dependent on the previous one value.
-        * First and last months need to be calculated proportionally.
-        * */
+         * The value of each subsequent generated capitalization is dependent on the previous one value.
+         * First and last months need to be calculated proportionally.
+         * */
         for (int i = 0; i < capitalizationDates.size(); i++) {
             Action capitalization = new Action();
             capitalization.setProduct(product);
@@ -69,21 +71,21 @@ public class ActionService {
             capitalization.setIsDone(false);
 
             if (i == 0) {
-                if (openDate.getMonth() == product.getCreated().getMonth()){
-                    capitalization.setAfterActionValue(getPartialMonthlyCapitalizedValue(lastValue, product, openDate,true));
-                }else{
-                    capitalization.setAfterActionValue(getMonthlyCapitalizedValue(lastValue,product,capitalizationDates.get(i)));
+                if (openDate.getMonth() == product.getCreated().getMonth()) {
+                    capitalization.setAfterActionValue(getPartialCapitalizedValue(lastValue, product, openDate, true));
+                } else {
+                    capitalization.setAfterActionValue(getCapitalizedValue(lastValue, product, capitalizationDates.get(i)));
                 }
             } else if (i == capitalizationDates.size() - 1) {
-                capitalization.setAfterActionValue(getMonthlyCapitalizedValue(lastValue,product,capitalizationDates.get(i)));
+                capitalization.setAfterActionValue(getCapitalizedValue(lastValue, product, capitalizationDates.get(i)));
             } else {
-                if(endDate != null){
-                    capitalization.setAfterActionValue(getPartialMonthlyCapitalizedValue(lastValue, product, endDate,false));
-                }else{
-                    capitalization.setAfterActionValue(getMonthlyCapitalizedValue(lastValue,product,capitalizationDates.get(i)));
+                if (endDate != null) {
+                    capitalization.setAfterActionValue(getPartialCapitalizedValue(lastValue, product, endDate, false));
+                } else {
+                    capitalization.setAfterActionValue(getCapitalizedValue(lastValue, product, capitalizationDates.get(i)));
                 }
             }
-            lastValue=capitalization.getAfterActionValue();
+            lastValue = capitalization.getAfterActionValue();
             actionRepository.save(capitalization);
         }
     }
@@ -91,13 +93,14 @@ public class ActionService {
     // actionDate
 // afterActionValue
 // isDone
+
     public BigDecimal getInvestmentValueWithReturn(Investment product) {
         long daysValid = DAYS.between(product.getOpenDate(),
                 product.getOpenDate().plusMonths(product.getMonthsValid()));
+
         return product.getValue().add(product.getValue().multiply(product.getInterest())
-                .multiply(new BigDecimal((double) daysValid / Year.of(product.getOpenDate().getYear()).length())) //factor of year
-                .multiply(BELKA_TAX)
-                .setScale(2, RoundingMode.HALF_UP));
+                .multiply(new BigDecimal(1.0 * daysValid / Year.of(product.getOpenDate().getYear()).length()))
+                .multiply(BELKA_TAX).setScale(2, RoundingMode.HALF_UP));
     }
 
     public List<LocalDate> getCapitalizationDates(SavingsAccount product) {
@@ -124,21 +127,17 @@ public class ActionService {
         return capitalizationDates;
     }
 
-    public BigDecimal getMonthlyCapitalizedValue(BigDecimal value, FinanceProduct product, LocalDate date) {
-        int daysInMonth = YearMonth.from(date).lengthOfMonth();
-        int daysInYear = YearMonth.from(date).lengthOfYear();
-
-        return value.add(value.multiply(product.getInterest())
-                .multiply(new BigDecimal(1.0 * daysInMonth / daysInYear))
-                .multiply(BELKA_TAX)).setScale(2, RoundingMode.HALF_UP);
+    public BigDecimal getCapitalizedValue(BigDecimal value, SavingsAccount product, LocalDate date) {
+        return value.add(getCapitalizedProfit(value, product, date).multiply(BELKA_TAX))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
-    public BigDecimal getPartialMonthlyCapitalizedValue(BigDecimal value, FinanceProduct product,
-                                                        LocalDate date, boolean firstMonthHalf) {
+    public BigDecimal getPartialCapitalizedValue(BigDecimal value, SavingsAccount product,
+                                                 LocalDate date, boolean firstMonthHalf) {
         /*
-        * Date used in first and last have to be open/close date, as days number is used for calculation.
-        * All other months in between are using capitalization date.
-        * */
+         * Date used in first and last have to be open/close date, as days number is used for calculation.
+         * All other months in between are using capitalization date.
+         */
 
         int daysInMonth = YearMonth.from(date).lengthOfMonth();
         int daysInYear = YearMonth.from(date).lengthOfYear();
@@ -150,9 +149,36 @@ public class ActionService {
             monthFraction = new BigDecimal(1.0 - (1.0 * date.getDayOfMonth() / daysInMonth));
         }
 
-        return value.add(value.multiply(product.getInterest())
-                .multiply(new BigDecimal(1.0 * daysInMonth / daysInYear))
-                .multiply(monthFraction)
+        return value.add(getCapitalizedProfit(value, product, date).multiply(monthFraction)
                 .multiply(BELKA_TAX)).setScale(2, RoundingMode.HALF_UP);
+
+    }
+
+    public BigDecimal getCapitalizedProfit(BigDecimal value, SavingsAccount product, LocalDate date) {
+
+        BigDecimal yearFraction = new BigDecimal
+                (1.0 * YearMonth.from(date).lengthOfMonth() / YearMonth.from(date).lengthOfYear());
+
+        //equation: value*(1+(interest*yearFraction))
+        BigDecimal valueWithoutLimit = value.multiply(BigDecimal.ONE.add(product.getInterest().multiply(yearFraction)));
+
+        //equation: 1-(withoutLimitValue-valueLimit)/(withoutLimitValue-value)
+        BigDecimal fullProfitFraction = BigDecimal.ONE.subtract((valueWithoutLimit.subtract(product.getValueLimit())
+                .divide(valueWithoutLimit.subtract(value), BigDecimal.ROUND_HALF_UP)));
+        if (fullProfitFraction.compareTo(BigDecimal.ONE) > 0) {
+            fullProfitFraction = BigDecimal.ONE;
+        }
+        //value with profit generated by main interest rate
+        //equation: value*(1+interest/yearFraction)*fullProfitFraction
+        BigDecimal fullProfitValue = value.multiply(BigDecimal.ONE.add(product.getInterest().multiply(yearFraction)))
+                .multiply(fullProfitFraction);
+
+        //value with profit generated by interest rate above limit
+        //equation (1-fullProfitFraction)*value*(1+interestAbove/yearFraction)
+        BigDecimal limitedProfitValue = BigDecimal.ONE.subtract(fullProfitFraction)
+                .multiply(value).multiply(BigDecimal.ONE.add(product.getInterestAboveLimit()));
+
+        return fullProfitValue.add(limitedProfitValue).subtract(value);
+
     }
 }

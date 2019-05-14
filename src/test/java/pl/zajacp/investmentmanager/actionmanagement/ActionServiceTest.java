@@ -13,8 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,8 +36,11 @@ public class ActionServiceTest {
             when(prod.getInterest()).thenReturn(new BigDecimal(0.035));
             when(prod.getValue()).thenReturn(new BigDecimal(1000));
         }
+
         when(investment.getMonthsValid()).thenReturn(12L);
         when(savingsAccount.getValidityDate()).thenReturn(validityDate);
+        when(savingsAccount.getInterestAboveLimit()).thenReturn(new BigDecimal(0.005));
+        when(savingsAccount.getValueLimit()).thenReturn(new BigDecimal(10000));
     }
 
     @Test
@@ -63,20 +65,57 @@ public class ActionServiceTest {
     }
 
     @Test
-    public void shouldMonthlyCapitalizedValue() {
+    public void shouldCapitalizedValue() {
         //given
         BigDecimal expectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81))
                 .setScale(2, RoundingMode.HALF_UP);
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal monthlyCapitalizedValue = actionService.getMonthlyCapitalizedValue(value, savingsAccount, date);
+        BigDecimal CapitalizedValue = actionService.getCapitalizedValue(value, savingsAccount, date);
         //then
-        assertThat(monthlyCapitalizedValue, is(expectedValue));
+        assertThat(CapitalizedValue, is(expectedValue));
     }
 
     @Test
-    public void shouldPartialMonthlyCapitalizedValue() {
+    public void shouldCapitalizedValueAtLimit() {
+        //given
+        when(savingsAccount.getValue()).thenReturn(new BigDecimal(9980));
+
+        BigDecimal value = savingsAccount.getValue();
+        LocalDate date = savingsAccount.getValidityDate();
+
+        BigDecimal excelCalculation = new BigDecimal(10008.69);
+        BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
+        //when
+
+        BigDecimal valueCapitalizedAtLimit = actionService.getCapitalizedValue(value, savingsAccount, date);
+        //then
+        assertThat(valueCapitalizedAtLimit,is(closeTo(excelCalculation,excelFloatError)));
+    }
+
+    @Test
+    public void shouldCapitalizedValueAtLimitLarge() {
+        //given
+        when(savingsAccount.getValue()).thenReturn(new BigDecimal(499000));
+        when(savingsAccount.getValueLimit()).thenReturn(new BigDecimal(500000));
+        when(savingsAccount.getInterest()).thenReturn(new BigDecimal(0.05));
+        when(savingsAccount.getInterestAboveLimit()).thenReturn(new BigDecimal(0.002));
+
+        BigDecimal value = savingsAccount.getValue();
+        LocalDate date = savingsAccount.getValidityDate();
+
+        BigDecimal excelCalculation = new BigDecimal(500235.43);
+        BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
+        //when
+        BigDecimal valueCapitalizedAtLimit = actionService.getCapitalizedValue(value, savingsAccount, date);
+        //then
+        assertThat(valueCapitalizedAtLimit,is(closeTo(excelCalculation,excelFloatError)));
+    }
+
+
+    @Test
+    public void shouldPartialCapitalizedValue() {
         //given
         BigDecimal firstHalfExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81 * 10.0 / 30))
                 .setScale(2, RoundingMode.HALF_UP);
@@ -85,13 +124,11 @@ public class ActionServiceTest {
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal firstHalf = actionService.getPartialMonthlyCapitalizedValue(value, savingsAccount, date, true);
-        BigDecimal secondHalf = actionService.getPartialMonthlyCapitalizedValue(value, savingsAccount, date, false);
+        BigDecimal firstHalf = actionService.getPartialCapitalizedValue(value, savingsAccount, date, true);
+        BigDecimal secondHalf = actionService.getPartialCapitalizedValue(value, savingsAccount, date, false);
         //then
         assertThat(firstHalf, is(firstHalfExpectedValue));
         assertThat(secondHalf, is(secondHalfExpectedValue));
     }
-
-
 
 }
