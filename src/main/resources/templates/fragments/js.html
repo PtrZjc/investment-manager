@@ -1,13 +1,37 @@
-<div th:fragment="js-precentage-divider">
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="percent-correction">
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var percent = document.querySelector('.percentage');
-            if (percent.value !== null) {
-                percent.value = percent.value * 100
-            }
-            document.getElementById('form').addEventListener('submit', function (e) {
-                percent.value = percent.value / 100
+
+            var percent = document.querySelectorAll('.percentage');
+
+            percent.forEach(function (e) {
+                if (e.value !== null) {
+                    e.value = Math.round(e.value * 1000) / 10
+                }
             });
+
+            document.getElementById('form').addEventListener('submit', function (f) {
+                percent.forEach(function (e) {
+                    e.value = e.value / 100
+                })
+            });
+        });
+    </script>
+</div>
+<div th:fragment="percent-show-with-symbol">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var percent = document.querySelectorAll('.percentage');
+
+            percent.forEach(function (e) {
+                var valueNumber = Number(e.innerText.replace(/\s/g, ""));
+                e.innerText = (Math.round(valueNumber * 1000) / 10) + "%"
+            })
         })
     </script>
 </div>
+</html>
+

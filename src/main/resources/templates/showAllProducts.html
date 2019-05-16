@@ -1,0 +1,107 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+    <div th:replace="fragments/header::header-scripts "/>
+    <div th:replace="fragments/js:: percent-show-with-symbol"/>
+</head>
+
+<body>
+
+<div th:replace="fragments/header:: navbar"/>
+
+<div class="container">
+    <h4 class="text-center">Short term investments</h4>
+    <table class="table table-hover">
+        <tr>
+            <th>created</th>
+            <th>id</th>
+            <th>bank</th>
+            <th>value</th>
+            <th>open_date</th>
+            <th>interest</th>
+            <th>months_valid</th>
+            <th>is_active</th>
+            <th>notes</th>
+            <th>actions</th>
+
+        </tr>
+        <tr th:each="investment: ${investments}">
+            <td th:text="${investment.created}"></td>
+            <td th:text="${investment.id}"></td>
+            <td th:text="${investment.bank}"></td>
+            <td th:text="${investment.value}"></td>
+            <td th:text="${investment.openDate}"></td>
+            <td th:text="${investment.interest}" class="percentage"></td>
+            <td th:text="${investment.monthsValid}"></td>
+            <td th:text="${investment.isActive}"></td>
+            <td th:text="${investment.notes}"></td>
+            <td>
+                <form action="/product/edit" method="post">
+                    <input type="hidden" name="id" th:value="${investment.id}">
+                    <input class="btn btn-primary" type="submit" value="Edit">
+                </form>
+                <form action="/product/delete" method="post">
+                    <input type="hidden" name="id" th:value="${investment.id}">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+                <form action="/product/add/actions" method="post">
+                    <input type="hidden" name="id" th:value="${investment.id}">
+                    <input class="btn btn-info" type="submit" value="Edit">
+                </form>
+            </td>
+        </tr>
+
+    </table>
+    <h4 class="text-center">Savings accounts</h4>
+    <table class="table table-hover">
+        <tr>
+            <th>created</th>
+            <th>id</th>
+            <th>bank</th>
+            <th>value</th>
+            <th>open_date</th>
+            <th>validity_date</th>
+            <th>interest</th>
+            <th>value_limit</th>
+            <th>interest_above_limit</th>
+            <th>is_active</th>
+            <th>notes</th>
+            <th>actions</th>
+        </tr>
+
+
+        <tr th:each="investment: ${investments}">
+        <tr th:each="account: ${savingsAccounts}">
+            <td th:text="${account.created}"></td>
+            <td th:text="${account.id}"></td>
+            <td th:text="${account.bank}"></td>
+            <td th:text="${account.value}"></td>
+            <td th:text="${account.openDate}"></td>
+            <td th:text="${account.validityDate}"></td>
+            <td th:text="${account.interest}" class="percentage"></td>
+            <td th:text="${account.valueLimit}"></td>
+            <td th:text="${account.interestAboveLimit}" class="percentage"></td>
+            <td th:text="${account.isActive}"></td>
+            <td th:text="${account.notes}"></td>
+            <td>
+                <form action="/product/edit" method="post">
+                    <input type="hidden" name="id" th:value="${account.id}">
+                    <input class="btn btn-primary" type="submit" value="Edit">
+                </form>
+                <form action="/product/delete" method="post">
+                    <input type="hidden" name="id" th:value="${account.id}">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+                <form action="/product/add/actions" method="post">
+                    <input type="hidden" name="id" th:value="${account.id}">
+                    <input class="btn btn-info" type="submit" value="Edit">
+                </form>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div th:replace="fragments/footer:: footer"/>
+</body>
+</html>

@@ -36,7 +36,6 @@ public class ActionServiceTest {
             when(prod.getInterest()).thenReturn(new BigDecimal(0.035));
             when(prod.getValue()).thenReturn(new BigDecimal(1000));
         }
-
         when(investment.getMonthsValid()).thenReturn(12L);
         when(savingsAccount.getValidityDate()).thenReturn(validityDate);
         when(savingsAccount.getInterestAboveLimit()).thenReturn(new BigDecimal(0.005));
@@ -74,6 +73,7 @@ public class ActionServiceTest {
         //when
         BigDecimal CapitalizedValue = actionService.getCapitalizedValue(value, savingsAccount, date);
         //then
+
         assertThat(CapitalizedValue, is(expectedValue));
     }
 
@@ -113,7 +113,6 @@ public class ActionServiceTest {
         assertThat(valueCapitalizedAtLimit,is(closeTo(excelCalculation,excelFloatError)));
     }
 
-
     @Test
     public void shouldPartialCapitalizedValue() {
         //given
@@ -130,5 +129,6 @@ public class ActionServiceTest {
         assertThat(firstHalf, is(firstHalfExpectedValue));
         assertThat(secondHalf, is(secondHalfExpectedValue));
     }
+
 
 }

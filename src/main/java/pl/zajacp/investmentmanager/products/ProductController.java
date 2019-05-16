@@ -4,15 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
+import pl.zajacp.investmentmanager.user.UserService;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/product")
@@ -20,11 +20,13 @@ public class ProductController {
 
     private final ProductService productService;
     private final ActionService actionService;
+    private final UserService userService;
 
     @Autowired
-    public ProductController(ProductService productService, ActionService actionService) {
+    public ProductController(ProductService productService, ActionService actionService, UserService userService) {
         this.productService = productService;
         this.actionService = actionService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -66,9 +68,36 @@ public class ProductController {
         if (result.hasErrors()) {
             return "productFormSavingsAccount";
         }
-
         productService.save(product);
-
         return "success";
     }
+
+    @GetMapping("/all")
+    public String showAllProducts(Model model) {
+        Map<Class, List<? extends FinanceProduct>> products = productService.findAllOfLoggedUser();
+        model.addAttribute("investments", products.get(Investment.class));
+        model.addAttribute("savingsAccounts", products.get(SavingsAccount.class));
+        return "showAllProducts";
+    }
+
+    @PostMapping("/edit")
+    public String editProduct(@RequestParam(name = "id") Long id, Model model) {
+
+        FinanceProduct product = productService.findById(id);
+        model.addAttribute("product", product);
+
+        if (product instanceof Investment) {
+            return "productFormInvestment";
+        } else if (product instanceof SavingsAccount) {
+            return "productFormSavingsAccount";
+        }
+        return "/";
+    }
+
+    @PostMapping("/delete")
+    public String deleteProduct(@RequestParam(name = "id") Long id) {
+        productService.deleteById(id);
+        return "redirect:all";
+    }
+
 }
