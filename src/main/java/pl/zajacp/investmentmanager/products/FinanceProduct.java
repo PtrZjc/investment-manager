@@ -45,7 +45,7 @@ public class FinanceProduct {
     private Boolean isActive;
     private LocalDate created;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Action> actions;
 
     @ManyToOne

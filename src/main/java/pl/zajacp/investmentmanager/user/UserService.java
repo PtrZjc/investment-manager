@@ -43,18 +43,12 @@ public class UserService implements IUserService {
 
     private boolean emailExist(String email) {
         User user = userRepository.findByEmail(email);
-        if (user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     private boolean loginExists(String login) {
         User user = userRepository.findByLogin(login);
-        if (user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     public User getLoggedUser() {

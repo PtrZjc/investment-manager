@@ -4,8 +4,7 @@ import lombok.Data;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 
 @Entity
@@ -23,7 +22,7 @@ public class User {
     private String email;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<FinanceProduct> products = new HashSet<>();
+    private List<FinanceProduct> products;
 
     public void addFinanceProduct(FinanceProduct product) {
         products.add(product);
