@@ -1,0 +1,113 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title th:text="#{product.add.title.product}">Title</title>
+    <div th:replace="fragments/header::header-scripts"/>
+    <div th:replace="fragments/js:: percent-correction"/>
+
+</head>
+<body>
+
+<div th:replace="fragments/header:: navbar"/>
+
+<div class="container">
+
+
+    <div class="row" style="margin-top: 1rem">+
+
+        <form action="/product/all" method="post">
+            <input class="btn btn-primary" type="submit" value="Go back">
+        </form>
+
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <table class="table table-hover">
+                <tr>
+                    <th th:text="#{product.add.created}">created</th>
+                    <td th:text="${product.created}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.id}">id</th>
+                    <td th:text="${product.id}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.bank}">bank</th>
+                    <td th:text="${product.bank}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.value}">value</th>
+                    <td th:text="${product.value}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.openDate}">open_date</th>
+                    <td th:text="${product.openDate}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.interest}">interest</th>
+                    <td th:text="${product.interest}" class="percentage"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.monthsValid}">months_valid</th>
+                    <td th:text="${product.monthsValid}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.isActive}">is_active</th>
+                    <td th:text="${product.isActive}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{product.add.notes}">notes</th>
+                    <td th:text="${product.notes}"></td>
+                </tr>
+
+
+            </table>
+
+        </div>
+        <div class="col-sm-3"></div>
+
+        <h6 class="text-center">Associated operations:</h6>
+
+        <table class="table table-hover">
+            <tr>
+                <th>id</th>
+                <th>actionType</th>
+                <th>actionDate</th>
+                <th>balanceChange</th>
+                <th>afterActionValue</th>
+                <th>notes</th>
+                <th>isDone</th>
+                <th>actions</th>
+            </tr>
+            <tr th:each="action: ${product.actions}">
+                <td th:text="${action.id}"></td>
+                <td th:text="${action.actionType}"></td>
+                <td th:text="${action.actionDate}"></td>
+                <td th:text="${action.balanceChange}"></td>
+                <td th:text="${action.afterActionValue}"></td>
+                <td th:text="${action.notes}"></td>
+                <td th:text="${action.isDone}"></td>
+                <td>
+                    <form action="/product/action/delete" method="post">
+                        <input type="hidden" name="id" th:value="${action.id}">
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                    </form>
+                </td>
+            </tr>
+
+        </table>
+
+
+        <form action="/product/operation/add" method="post">
+            <input type="hidden" name="id" th:value="${product.id}">
+            <input type="submit" class="btn btn-info" value="Add new operation">
+        </form>
+
+    </div>
+
+    <div th:replace="fragments/footer:: footer"/>
+</div>
+</body>
+</html>
+
+
+

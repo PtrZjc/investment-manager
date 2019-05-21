@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,7 +47,7 @@ public class FinanceProduct {
     private LocalDate created;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Action> actions;
+    private List<Action> actions = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")

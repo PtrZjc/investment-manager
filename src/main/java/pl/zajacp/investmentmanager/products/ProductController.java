@@ -94,6 +94,23 @@ public class ProductController {
         return "/";
     }
 
+    @PostMapping("/details")
+    public String detailedProduct(@RequestParam(name = "id") Long id, Model model) {
+
+        FinanceProduct product = productService.findById(id);
+//        productService.sortActionsByDate(product);
+//        Hibernate.initialize(product.getActions());
+        productService.sortActionsByDate(product, false);
+        model.addAttribute("product", product);
+
+        if (product instanceof Investment) {
+            return "productDetailsInvestment";
+        } else if (product instanceof SavingsAccount) {
+            return "productDetailsSavingsAccount";
+        }
+        return "/";
+    }
+
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam(name = "id") Long id) {
         productService.deleteById(id);
