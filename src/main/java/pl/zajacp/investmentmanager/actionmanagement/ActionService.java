@@ -264,4 +264,8 @@ public class ActionService {
         }
     }
 
+    public void save(Action action) {
+        actionRepository.save(action);
+    }
+
 }

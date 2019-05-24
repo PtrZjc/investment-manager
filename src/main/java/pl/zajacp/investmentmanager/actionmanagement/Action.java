@@ -18,13 +18,13 @@ public class Action {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private ActionType actionType;
 
     @NotNull
     private LocalDate actionDate;
 
+    @NotNull
     private BigDecimal balanceChange;
     private BigDecimal afterActionValue;
 
@@ -36,6 +36,7 @@ public class Action {
     @JoinColumn(name = "product_id")
     private FinanceProduct product;
 
+    //validatory: actionDate
 }
 
 

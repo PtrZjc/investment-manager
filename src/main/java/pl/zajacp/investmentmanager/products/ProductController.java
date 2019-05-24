@@ -10,6 +10,7 @@ import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -95,11 +96,12 @@ public class ProductController {
     }
 
     @PostMapping("/details")
-    public String detailedProduct(@RequestParam(name = "id") Long id, Model model) {
+    public String detailedProduct(@RequestParam(name = "id") Long id, Model model, HttpSession session) {
+
+        session.setAttribute("productId",id);
 
         FinanceProduct product = productService.findById(id);
-//        productService.sortActionsByDate(product);
-//        Hibernate.initialize(product.getActions());
+
         productService.sortActionsByDate(product, false);
         model.addAttribute("product", product);
 

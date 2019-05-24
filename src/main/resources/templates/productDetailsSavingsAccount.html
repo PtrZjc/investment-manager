@@ -15,8 +15,13 @@
 
     <div class="row" style="margin-top: 1rem">+
 
-        <form action="/product/all" method="post">
+        <form action="/product/all" method="get">
             <input class="btn btn-primary" type="submit" value="Go back">
+        </form>
+
+        <form action="/product/operation/add" method="get">
+            <input type="hidden" name="productId" th:value="${product.id}">
+            <input type="submit" class="btn btn-info" value="Add new operation">
         </form>
 
         <div class="col-sm-3"></div>
@@ -77,14 +82,14 @@
 
         <table class="table table-hover">
             <tr>
-                <th>id</th>
-                <th>actionType</th>
-                <th>actionDate</th>
-                <th>balanceChange</th>
-                <th>afterActionValue</th>
-                <th>notes</th>
-                <th>isDone</th>
-                <th>actions</th>
+                <th th:text="#{action.add.id}">id</th>
+                <th th:text="#{action.add.actionType}">actionType</th>
+                <th th:text="#{action.add.actionDate}">actionDate</th>
+                <th th:text="#{action.add.balanceChange}">balanceChange</th>
+                <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
+                <th th:text="#{action.add.notes}">notes</th>
+                <th th:text="#{action.add.isDone}">isDone</th>
+                <th th:text="#{action.add.actions}">actions</th>
             </tr>
             <tr th:each="action: ${product.actions}">
                 <td th:text="${action.id}"></td>
