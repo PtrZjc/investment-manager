@@ -2,7 +2,7 @@
 
 <head>
     <title>Login</title>
-    <div th:replace="fragments/header::header-scripts "/>
+    <div th:replace="fragments/headerFooter::header-scripts "/>
     <script>
         $(document).ready(function() {
             $(".navbar").find('a').addClass('disabled')
@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<div th:replace="fragments/header:: navbar"/>
+<div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
 
@@ -56,7 +56,7 @@
         </div>
 
     </div>
-    <div th:replace="fragments/footer:: footer"/>
+    <div th:replace="fragments/headerFooter:: footer"/>
 
 </div>
 

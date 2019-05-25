@@ -2,27 +2,106 @@
 
 <head>
     <title th:text="#{product.add.title.product}">Title</title>
-    <div th:replace="fragments/header::header-scripts"/>
+    <div th:replace="fragments/headerFooter::header-scripts"/>
+    <div th:replace="fragments/headerFooter::chart-js-lib"/>
     <div th:replace="fragments/js:: percent-correction"/>
+<script>
 
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var ctx = document.getElementById('valueChart');
+
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Blue', 'Yellow', 'Purple', 'Orange','Red','Banana',],
+                datasets: [{
+                    label: '# of kupas',
+                    data: [1, 2, 3, 4, 5, 6,3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                },{
+                    label: '# of blahs',
+                    data: [6, 5, 4, 3, 2, 1,5],
+                    backgroundColor: [
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    });
+
+</script>
 </head>
+<!--<div th:replace="fragments/headerFooter:: debugStyle"/>-->
 <body>
 
-<div th:replace="fragments/header:: navbar"/>
+<div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-    <div class="row" style="margin-top: 1rem">+
 
-        <form action="/product/all" method="get">
-            <input class="btn btn-primary" type="submit" value="Go back">
-        </form>
+    <div class="row" style="margin-top: 1rem">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-2">
+            <form action="/product/all" class="form-inline" method="get">
+                <input class="btn btn-primary" type="submit" value="Go back">
+            </form>
+        </div>
+        <div class="col-sm-2">
+            <form action="/product/operation/add" class="form-inline" method="get">
+                <input type="submit" class="btn btn-info" value="Add new operation">
+            </form>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
 
-        <form action="/product/operation/add" method="get">
-            <input type="submit" class="btn btn-info" value="Add new operation">
-        </form>
-
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6">
+    <div class="row">
+        <div class="col-sm-8">
+            <canvas id="valueChart"></canvas>
+        </div>
+        <div class="col-sm-4">
             <table class="table table-hover">
                 <tr>
                     <th th:text="#{product.add.created}">created</th>
@@ -71,51 +150,42 @@
 
 
             </table>
-
         </div>
-        <div class="col-sm-3"></div>
-
-        <h6 class="text-center">Associated operations:</h6>
-
-        <table class="table table-hover">
-            <tr>
-                <th th:text="#{action.add.id}">id</th>
-                <th th:text="#{action.add.actionType}">actionType</th>
-                <th th:text="#{action.add.actionDate}">actionDate</th>
-                <th th:text="#{action.add.balanceChange}">balanceChange</th>
-                <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
-                <th th:text="#{action.add.notes}">notes</th>
-                <th th:text="#{action.add.isDone}">isDone</th>
-                <th th:text="#{action.add.actions}">actions</th>
-            </tr>
-            <tr th:each="action: ${product.actions}">
-                <td th:text="${action.id}"></td>
-                <td th:text="${action.actionType}"></td>
-                <td th:text="${action.actionDate}"></td>
-                <td th:text="${action.balanceChange}"></td>
-                <td th:text="${action.afterActionValue}"></td>
-                <td th:text="${action.notes}"></td>
-                <td th:text="${action.isDone}"></td>
-                <td>
-                    <form action="/product/action/delete" method="post">
-                        <input type="hidden" name="id" th:value="${action.id}">
-                        <input type="submit" class="btn btn-danger" value="Delete">
-                    </form>
-                </td>
-            </tr>
-
-        </table>
-
-
-        <form action="/product/operation/add" method="post">
-            <input type="hidden" name="id" th:value="${product.id}">
-            <input type="submit" class="btn btn-info" value="Add new operation">
-        </form>
-
     </div>
 
-    <div th:replace="fragments/footer:: footer"/>
+    <h6 class="text-center">Associated operations:</h6>
+
+    <table class="table table-hover">
+        <tr>
+            <th th:text="#{action.add.id}">id</th>
+            <th th:text="#{action.add.actionType}">actionType</th>
+            <th th:text="#{action.add.actionDate}">actionDate</th>
+            <th th:text="#{action.add.balanceChange}">balanceChange</th>
+            <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
+            <th th:text="#{action.add.notes}">notes</th>
+            <th th:text="#{action.add.isDone}">isDone</th>
+            <th th:text="#{action.add.actions}">actions</th>
+        </tr>
+        <tr th:each="action: ${product.actions}">
+            <td th:text="${action.id}"></td>
+            <td th:text="${action.actionType}"></td>
+            <td th:text="${action.actionDate}"></td>
+            <td th:text="${action.balanceChange}"></td>
+            <td th:text="${action.afterActionValue}"></td>
+            <td th:text="${action.notes}"></td>
+            <td th:text="${action.isDone}"></td>
+            <td>
+                <form action="/product/action/delete" method="post">
+                    <input type="hidden" name="id" th:value="${action.id}">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+            </td>
+        </tr>
+
+    </table>
+    <div th:replace="fragments/headerFooter:: footer"/>
 </div>
+
 </body>
 </html>
 

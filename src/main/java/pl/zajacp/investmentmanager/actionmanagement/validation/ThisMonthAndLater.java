@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.user.registration.validation;
+package pl.zajacp.investmentmanager.actionmanagement.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -7,15 +7,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({TYPE,ANNOTATION_TYPE})
+@Target({FIELD, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = PasswordMatchesValidator.class)
+@Constraint(validatedBy = ThisMonthValidator.class)
 @Documented
-public @interface PasswordMatches { 
-    String message() default "{PasswordMatches.message}";
-    Class<?>[] groups() default {}; 
+public @interface ThisMonthAndLater {
+    String message() default "{ThisMonthAndLater.message}";
+
+    Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

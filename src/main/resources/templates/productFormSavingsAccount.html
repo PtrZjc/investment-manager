@@ -2,12 +2,12 @@
 
 <head>
     <title th:text="#{product.add.title.investment}">Title</title>
-    <div th:replace="fragments/header::header-scripts "/>
+    <div th:replace="fragments/headerFooter::header-scripts "/>
     <div th:replace="fragments/js:: percent-correction"/>
 </head>
 <body>
 
-<div th:replace="fragments/header:: navbar"/>
+<div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
 
@@ -51,7 +51,7 @@
         <div class="col-sm-3"></div>
     </div>
 
-    <div th:replace="fragments/footer:: footer"/>
+    <div th:replace="fragments/headerFooter:: footer"/>
 </div>
 </body>
 </html>

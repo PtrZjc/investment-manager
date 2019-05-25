@@ -2,13 +2,14 @@
 
 <head>
     <title>Home</title>
-    <div th:replace="fragments/header::header-scripts "/>
-    <div th:replace="fragments/js:: percent-show-with-symbol"/>
+    <div th:replace="fragments/headerFooter::header-scripts "/>
+    <div th:replace="fragments/js:: percent-correction"/>
+    <div th:replace="fragments/js:: modalScript"/>
 </head>
 
 <body>
 
-<div th:replace="fragments/header:: navbar"/>
+<div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
     <h4 class="text-center">Short term investments</h4>
@@ -104,6 +105,29 @@
         </table>
     </div>
 </div>
-<div th:replace="fragments/footer:: footer"/>
+<div th:replace="fragments/headerFooter:: footer"/>
+
+<div th:if="${expiredData == 'productId'}" th:remove="tag">
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" th:if="${expiredData == 'productId'}" th:text="#{action.add.productIdNullmodal.head}">No
+                        product id header</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p th:if="${expiredData == 'productId'}" th:text="#{action.add.productIdNullmodal.text}">No product id
+                        text</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

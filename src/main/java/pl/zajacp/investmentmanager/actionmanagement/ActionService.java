@@ -10,9 +10,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -27,6 +25,16 @@ public class ActionService {
 
     public ActionService(ActionRepository actionRepository) {
         this.actionRepository = actionRepository;
+    }
+
+    public Action createSameMonthLater(Action baseAction) {
+        Action action = new Action();
+        action.setBalanceChange(baseAction.getBalanceChange());
+        action.setProduct(baseAction.getProduct());
+        action.setActionDate(baseAction.getActionDate().plusMonths(1));
+        action.setActionType(baseAction.getActionType());
+        action.setNotes(baseAction.getNotes());
+        return action;
     }
 
     public void initializeInvestmentActions(Investment product) {
@@ -264,21 +272,34 @@ public class ActionService {
         actionRepository.save(action);
     }
 
-    public Action addBalanceChange(ActionDto actionDto, SavingsAccount product) {
+    public void genBalanceChangeActions(ActionDto actionDto, SavingsAccount product) {
         Action action = new Action();
         action.setActionType(ActionType.BALANCE_CHANGE);
         action.setActionDate(actionDto.getActionDate());
         action.setProduct(product);
 
-        if (actionDto.getIsNegative() == false) {
+        if (!actionDto.getIsNegative()) {
             action.setBalanceChange(actionDto.getAmount());
         } else {
             action.setBalanceChange(actionDto.getAmount().negate());
         }
 
-        save(action);
-        product.getActions().add(action);
-        return action;
+        List<Action> actions = new ArrayList<>(Collections.singletonList(action));
+
+        if (!actionDto.getIsSingle()) {
+            LocalDate latestDate = product.getActions().stream()
+                    .max(Comparator.comparing(Action::getActionDate))
+                    .map(Action::getActionDate)
+                    .orElseThrow(NullPointerException::new);
+
+            while (action.getActionDate().isBefore(latestDate.minusMonths(1))) {
+                action = createSameMonthLater(action);
+                actions.add(action);
+            }
+        }
+
+        actionRepository.saveAll(actions);
+        product.getActions().addAll(actions);
     }
 
     public void delete(Action action) {
@@ -303,4 +324,3 @@ public class ActionService {
         return actionDto.getAmount().compareTo(capValue) < 0;
     }
 }
-//TODO konstruktor-fabryka akcji

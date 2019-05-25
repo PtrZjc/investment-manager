@@ -1,16 +1,39 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <div th:fragment="header-scripts">
+    <div th:fragment="header-scripts" th:remove="tag">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
     </div>
+
+    <div th:fragment="chart-js-lib" th:remove="tag">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    </div>
 </head>
+<div th:fragment="debugStyle" th:remove="tag">
+    <style>
+        div {
+            border: 1px solid cadetblue;
+        }
+
+        tr {
+            border: 1px dashed brown;
+        }
+
+        .container {
+            border: 1px dot-dot-dash pink;
+        }
+
+    </style>
+</div>
+
+
 <body>
 
-<div th:fragment="navbar">
+<div th:fragment="navbar" th:remove="tag">
     <nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center mb-3">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -30,6 +53,26 @@
             </li>
         </ul>
     </nav>
+</div>
+
+<div th:fragment="footer" th:remove="tag">
+    <footer>
+
+        <div style="margin-top:1rem"/>
+
+        <div sec:authorize="isAnonymous()">
+            <p class="text-center">
+                <a th:href="@{/login}" th:text="'login'">login</a> |
+                <a th:href="@{/registration}" th:text="'register'">register</a>
+            </p>
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            <p class="text-center">Logged user: <span sec:authentication="name"/> |
+                <a th:href="@{/logout}">Sign Out</a></p>
+        </div>
+
+    </footer>
 </div>
 </body>
 </html>

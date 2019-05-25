@@ -74,10 +74,16 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public String showAllProducts(Model model) {
+    public String showAllProducts(Model model, HttpSession session) {
         Map<Class, List<? extends FinanceProduct>> products = productService.findAllOfLoggedUser();
         model.addAttribute("investments", products.get(Investment.class));
         model.addAttribute("savingsAccounts", products.get(SavingsAccount.class));
+
+        if(("productId").equals(session.getAttribute("expiredData"))){
+            session.removeAttribute("expiredData");
+            model.addAttribute("expiredData","productId");
+        }
+
         return "showAllProducts";
     }
 

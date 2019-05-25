@@ -1,14 +1,16 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="percent-correction">
+<div th:fragment="percent-correction" th:remove="tag">
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
             var percent = document.querySelectorAll('.percentage');
 
             percent.forEach(function (e) {
-                if (e.value !== null) {
+                if (!isNaN(e) && e.value !== null) {
                     e.value = Math.round(e.value * 1000) / 10
+                } else if (!isNaN(parseFloat(e.innerText))) {
+                    e.innerText = (Math.round(parseFloat(e.innerText) * 1000) / 10) + "%";
                 }
             });
 
@@ -20,18 +22,15 @@
         });
     </script>
 </div>
-<div th:fragment="percent-show-with-symbol">
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
 
-            var percent = document.querySelectorAll('.percentage');
-
-            percent.forEach(function (e) {
-                var valueNumber = Number(e.innerText.replace(/\s/g, ""));
-                e.innerText = (Math.round(valueNumber * 1000) / 10) + "%"
-            })
-        })
-    </script>
+<div th:fragment="modalScript" th:remove="tag">
+    <div th:if="${expiredData == 'productId'}" th:remove="tag">
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function () {
+                $('#myModal').modal('show');
+            });
+        </script>
+    </div>
 </div>
 </html>
 

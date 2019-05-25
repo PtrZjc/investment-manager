@@ -2,7 +2,7 @@
 
 <head>
     <title>Home</title>
-    <div th:replace="fragments/header::header-scripts "/>
+    <div th:replace="fragments/headerFooter::header-scripts "/>
     <script>
         $(document).ready(function() {
             $("#product-investment").on('click', function() {
@@ -17,7 +17,7 @@
 
 <body>
 
-<div th:replace="fragments/header:: navbar"/>
+<div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
 
@@ -42,7 +42,7 @@
         <div class="col-md-3"></div>
     </div>
 
-    <div th:replace="fragments/footer:: footer"/>
+    <div th:replace="fragments/headerFooter:: footer"/>
 </div>
 </body>
 </html>
