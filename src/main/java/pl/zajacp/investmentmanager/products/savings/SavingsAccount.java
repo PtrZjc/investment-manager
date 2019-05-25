@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class SavingsAccount extends FinanceProduct {
 
     @Min(1)
+    @NotNull
     private BigDecimal valueLimit;
 
     @Future
@@ -24,7 +25,7 @@ public class SavingsAccount extends FinanceProduct {
     private LocalDate validityDate;
 
     @Column(precision = 5, scale=4)
-    @DecimalMin("0.01")
+    @DecimalMin("0.00")
     @DecimalMax("100")
     private BigDecimal interestAboveLimit;
 

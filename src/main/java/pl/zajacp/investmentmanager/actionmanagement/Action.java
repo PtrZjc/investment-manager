@@ -24,7 +24,6 @@ public class Action {
     @NotNull
     private LocalDate actionDate;
 
-    @NotNull
     private BigDecimal balanceChange;
     private BigDecimal afterActionValue;
 
@@ -37,6 +36,12 @@ public class Action {
     private FinanceProduct product;
 
     //validatory: actionDate
+
+    @PrePersist
+    public void prePersist() {
+        isDone = false;
+    }
+
 }
 
 

@@ -11,15 +11,17 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+//TODO Change planned value of action
+//TODO Widthdraw can be only set in current month
 
 @Service
 @Transactional
 public class ActionService {
-
-    //TODO Custom payments in and out
 
     private final ActionRepository actionRepository;
 
@@ -92,7 +94,6 @@ public class ActionService {
             actionRepository.save(capitalizationAction);
         }
     }
-
 
     public BigDecimal getInvestmentValueWithReturn(Investment product) {
         long daysValid = DAYS.between(product.getOpenDate(),
@@ -186,8 +187,7 @@ public class ActionService {
     }
 
 
-    public void recalculateCapitalizations(SavingsAccount product, boolean fromTodayCalculation)
-            throws WidthdrawExceedsValue {
+    public void recalculateCapitalizations(SavingsAccount product, boolean fromTodayCalculation) {
         /*
          * Recalculates all capitalization actions taking into account all withdraws and payments. Recalculates either
          * all actions for given product (with past ones), or all future actions starting from current month.
@@ -226,12 +226,11 @@ public class ActionService {
                 lowerBoundIndex = i + 1;
             }
         }
-        //update the database if no exception was thrown
+
         actionRepository.saveAll(actions);
     }
 
-    public void fixMonthlyCapitalization(SavingsAccount product, int lowerMonthBound, int upperMonthBound, BigDecimal initialValue)
-            throws WidthdrawExceedsValue {
+    public void fixMonthlyCapitalization(SavingsAccount product, int lowerMonthBound, int upperMonthBound, BigDecimal initialValue) {
         List<Action> actions = product.getActions();
         Action capitalization = actions.get(upperMonthBound);
         BigDecimal withdraws = BigDecimal.ZERO;
@@ -259,13 +258,49 @@ public class ActionService {
 
         capitalization.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
 
-        if (initialValue.compareTo(withdraws) < 0) {
-            throw new WidthdrawExceedsValue("Sum of widthraws in one month exceeds the value");
-        }
     }
 
     public void save(Action action) {
         actionRepository.save(action);
     }
 
+    public Action addBalanceChange(ActionDto actionDto, SavingsAccount product) {
+        Action action = new Action();
+        action.setActionType(ActionType.BALANCE_CHANGE);
+        action.setActionDate(actionDto.getActionDate());
+        action.setProduct(product);
+
+        if (actionDto.getIsNegative() == false) {
+            action.setBalanceChange(actionDto.getAmount());
+        } else {
+            action.setBalanceChange(actionDto.getAmount().negate());
+        }
+
+        save(action);
+        product.getActions().add(action);
+        return action;
+    }
+
+    public void delete(Action action) {
+        actionRepository.delete(action);
+    }
+
+    public boolean areSufficientFunds(ActionDto actionDto, SavingsAccount product) {
+        if (!actionDto.getIsNegative()) {
+            return true;
+        }
+
+        Predicate<Action> previousMonthCap =
+                x -> x.getActionType() == ActionType.CAPITALIZATION &&
+                        x.getActionDate().getMonth().minus(1) == actionDto.getActionDate().getMonth();
+
+        BigDecimal capValue = product.getActions().stream()
+                .filter(previousMonthCap)
+                .min(Comparator.comparing(Action::getActionDate))
+                .map(Action::getAfterActionValue)
+                .orElseThrow(NullPointerException::new);
+
+        return actionDto.getAmount().compareTo(capValue) < 0;
+    }
 }
+//TODO konstruktor-fabryka akcji

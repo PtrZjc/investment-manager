@@ -11,8 +11,6 @@
 <div th:replace="fragments/header:: navbar"/>
 
 <div class="container">
-
-
     <div class="row" style="margin-top: 1rem">+
 
         <form action="/product/all" method="get">
@@ -20,7 +18,6 @@
         </form>
 
         <form action="/product/operation/add" method="get">
-            <input type="hidden" name="productId" th:value="${product.id}">
             <input type="submit" class="btn btn-info" value="Add new operation">
         </form>
 
