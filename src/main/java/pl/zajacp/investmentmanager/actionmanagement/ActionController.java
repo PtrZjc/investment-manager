@@ -22,12 +22,14 @@ public class ActionController {
     private final ProductService productService;
     private final ActionService actionService;
     private final UserService userService;
+    private final FinanceCalcService financeCalcService;
 
     @Autowired
-    public ActionController(ProductService productService, ActionService actionService, UserService userService) {
+    public ActionController(ProductService productService, ActionService actionService, UserService userService, FinanceCalcService financeCalcService) {
         this.productService = productService;
         this.actionService = actionService;
         this.userService = userService;
+        this.financeCalcService = financeCalcService;
     }
 
     @GetMapping("/add")

@@ -4,76 +4,104 @@
     <title th:text="#{product.add.title.product}">Title</title>
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
-    <div th:replace="fragments/js:: percent-correction"/>
-<script>
+    <div th:replace="fragments/js:: percentCorrectionText"/>
+    <div th:replace="fragments/chart-js:: ex1"/>
 
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-    document.addEventListener("DOMContentLoaded", function () {
+                var cfg = {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'test 1',
+                            yAxisID: 'A',
+                            data: [{
+                                x: 1472194961,
+                                y: 37
+                            }, {
+                                x: 1472281361,
+                                y: 55
+                            }, {
+                                x: 1472367761,
+                                y: 883
+                            }]
+                        }, {
+                            label: 'test 2',
+                            yAxisID: 'B',
+                            data: [{
+                                x: 1472410961,
+                                y: 2
+                            }, {
+                                x: 1472324561,
+                                y: 13
+                            }, {
+                                x: 1472238161,
+                                y: 783
+                            }]
+                        }]
+                    },
+                    options: {
+                        tooltips: {
+                            mode: 'single',
+                            enabled: true,
+                            callbacks: {
+                                title(datasets) {
+                                    var time = new Date(datasets[0].xLabel * 1000);
+                                    return (time.getMonth() + 1) + '/' + time.getDate() + ' ' + time.getHours();
+                                }
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                position: 'bottom',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Date",
+                                }
 
-        var ctx = document.getElementById('valueChart');
-
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Blue', 'Yellow', 'Purple', 'Orange','Red','Banana',],
-                datasets: [{
-                    label: '# of kupas',
-                    data: [1, 2, 3, 4, 5, 6,3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                },{
-                    label: '# of blahs',
-                    data: [6, 5, 4, 3, 2, 1,5],
-                    backgroundColor: [
-                        'rgba(255, 159, 64, 0.2)',
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
+                            }],
+                            yAxes: [{
+                                id: 'A',
+                                type: 'linear',
+                                position: 'left',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Hajs",
+                                }
+                            }, {
+                                id: 'B',
+                                type: 'linear',
+                                position: 'right',
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: {
+                                    max: 500,
+                                    min: 0
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Zysk",
+                                }
+                            }]
                         }
-                    }]
+                    }
                 }
-            }
-        });
-    });
 
-</script>
+                var ctx = document.getElementById('valueChart').getContext('2d');
+
+                ctx.canvas.width = 1000;
+                ctx.canvas.height = 1000;
+
+                var chart = new Chart(ctx, cfg);
+
+            }
+        )
+
+    </script>
 </head>
 <!--<div th:replace="fragments/headerFooter:: debugStyle"/>-->
 <body>
@@ -83,7 +111,9 @@
 <div class="container">
 
     <div class="row" style="margin-top: 1rem">
-        <div class="col-sm-4"></div>
+        <div class="col-sm-3"></div>
+        <button class="btn btn-info" id="update">Update</button>
+        <div class="col-sm-1"></div>
         <div class="col-sm-2">
             <form action="/product/all" class="form-inline" method="get">
                 <input class="btn btn-primary" type="submit" value="Go back">

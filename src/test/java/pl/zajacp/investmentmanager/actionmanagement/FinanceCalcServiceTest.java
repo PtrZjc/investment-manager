@@ -17,9 +17,9 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ActionServiceTest {
+public class FinanceCalcServiceTest {
 
-    private static ActionService actionService = new ActionService(mock(ActionRepository.class));
+    private static FinanceCalcService financeCalcService= new FinanceCalcService(mock(ActionRepository.class));
     private static SavingsAccount savingsAccount;
     private static Investment investment;
     private static List<Action> actions;
@@ -71,7 +71,7 @@ public class ActionServiceTest {
         prepareProducts();
         BigDecimal expectedReturn = new BigDecimal(1000 + (1000 * 0.035) * 0.81).setScale(2, RoundingMode.HALF_UP);
         //when
-        BigDecimal returnValue = actionService.getInvestmentValueWithReturn(investment);
+        BigDecimal returnValue = financeCalcService.getInvestmentValueWithReturn(investment);
         //then
         assertThat(returnValue, is(expectedReturn));
     }
@@ -82,7 +82,7 @@ public class ActionServiceTest {
         prepareProducts();
         LocalDate lastCapitalisationDate = LocalDate.parse("2018-09-30", DateTimeFormatter.ISO_LOCAL_DATE);
         //when
-        List<LocalDate> dates = actionService.getCapitalizationDates(savingsAccount);
+        List<LocalDate> dates = financeCalcService.getCapitalizationDates(savingsAccount);
         //then
         assertThat(dates, hasItem(lastCapitalisationDate));
         assertThat(dates.size(), is(6));
@@ -97,7 +97,7 @@ public class ActionServiceTest {
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal CapitalizedValue = value.add(actionService.getCapitalization(value, savingsAccount, date)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal CapitalizedValue = value.add(financeCalcService.getCapitalization(value, savingsAccount, date)).setScale(2, RoundingMode.HALF_UP);
         //then
 
         assertThat(CapitalizedValue, is(expectedValue));
@@ -116,7 +116,7 @@ public class ActionServiceTest {
         BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
         //when
 
-        BigDecimal valueCapitalizedAtLimit = value.add(actionService.getCapitalization(value, savingsAccount, date));
+        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getCapitalization(value, savingsAccount, date));
         //then
         assertThat(valueCapitalizedAtLimit, is(closeTo(excelCalculation, excelFloatError)));
     }
@@ -136,7 +136,7 @@ public class ActionServiceTest {
         BigDecimal excelCalculation = new BigDecimal(500235.43);
         BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
         //when
-        BigDecimal valueCapitalizedAtLimit = value.add(actionService.getCapitalization(value, savingsAccount, date));
+        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getCapitalization(value, savingsAccount, date));
         //then
         assertThat(valueCapitalizedAtLimit, is(closeTo(excelCalculation, excelFloatError)));
     }
@@ -152,9 +152,9 @@ public class ActionServiceTest {
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal firstHalf = value.add(actionService.getPartialCapitalizedValue
+        BigDecimal firstHalf = value.add(financeCalcService.getPartialCapitalizedValue
                 (value, savingsAccount, date, true)).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal secondHalf = value.add(actionService.getPartialCapitalizedValue
+        BigDecimal secondHalf = value.add(financeCalcService.getPartialCapitalizedValue
                 (value, savingsAccount, date, false)).setScale(2, RoundingMode.HALF_UP);
         //then
         assertThat(firstHalf, is(firstHalfExpectedValue));
