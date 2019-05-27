@@ -11,7 +11,6 @@ import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,40 +53,17 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public Map<Class, List<? extends FinanceProduct>> findAllOfLoggedUser() {
-
-        List<FinanceProduct> allProducts = productRepository.findAllByUserOrderByCreatedDesc(userService.getLoggedUser());
-        Map<Class, List<? extends FinanceProduct>> separatedProducts = new HashMap<>();
-
-        List<Investment> investments = allProducts.stream()
-                .filter(x -> x instanceof Investment)
-                .map(x -> (Investment) x)
-                .collect(Collectors.toList());
-        List<SavingsAccount> savingsAccounts = allProducts.stream()
-                .filter(x -> x instanceof SavingsAccount)
-                .map(x -> (SavingsAccount) x)
-                .collect(Collectors.toList());
-
-        separatedProducts.put(Investment.class, investments);
-        separatedProducts.put(SavingsAccount.class, savingsAccounts);
-
-        return separatedProducts;
+    public Map<Class, List<FinanceProduct>> findAllOfLoggedUser() {
+        return productRepository.findAllByUserOrderByCreatedDesc(userService.getLoggedUser()).stream()
+                .collect(Collectors.groupingBy(FinanceProduct::getClass));
     }
 
     public void sortActionsByDate(FinanceProduct product, boolean reverse) {
-        Comparator<Action> comp = (a1, a2) -> {
-            int compare = a1.getActionDate().compareTo(a2.getActionDate());
-            if (compare == 0) {
-                compare = a1.getActionType().toString().compareTo(a2.getActionType().toString());
-            }
-            return compare;
-        };
         List<Action> actions = product.getActions();
-        if (reverse) {
-            actions.sort(comp);
-        } else {
-            actions.sort(comp.reversed());
-        }
+         actions.sort(Comparator
+                 .comparing(Action::getActionDate)
+                 .thenComparing(a->a.getActionType().toString()));
+
         product.setActions(actions);
     }
 }

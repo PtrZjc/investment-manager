@@ -10,7 +10,9 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -19,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class FinanceCalcServiceTest {
 
-    private static FinanceCalcService financeCalcService= new FinanceCalcService(mock(ActionRepository.class));
+    private static FinanceCalcService financeCalcService = new FinanceCalcService(mock(ActionRepository.class));
     private static SavingsAccount savingsAccount;
     private static Investment investment;
     private static List<Action> actions;
@@ -123,6 +125,7 @@ public class FinanceCalcServiceTest {
 
     @Test
     public void shouldCapitalizedValueAtLimitLarge() {
+
         //given
         prepareProducts();
         when(savingsAccount.getValue()).thenReturn(new BigDecimal(499000));
@@ -161,5 +164,49 @@ public class FinanceCalcServiceTest {
         assertThat(secondHalf, is(secondHalfExpectedValue));
     }
 
+    @Test
+    public void shouldGetGain() {
+        //given
+        actions = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            actions.add(mock(Action.class));
+        }
 
+        for (int i = 0; i < 4; i++) {
+            when(actions.get(i*2+1).getBalanceChange()).thenReturn(new BigDecimal(500));
+            when(actions.get(i*2+1).getActionType()).thenReturn(ActionType.BALANCE_CHANGE);
+        }
+
+        List<LocalDate> capitDates = new ArrayList<>();
+        for (String textDate : new String[]{"2019-05-01","2019-05-31", "2019-06-30", "2019-07-31", "2019-08-31"}) {
+            capitDates.add(LocalDate.parse(textDate, DateTimeFormatter.ISO_LOCAL_DATE));
+        }
+
+        List<BigDecimal> capitValues =  new ArrayList<>();
+        for (Double capDoubleVal : new Double[]{10000.00,10534.62,11069.85,11608.15,12148.30}) {
+            capitValues.add(new BigDecimal(capDoubleVal));
+        }
+
+        Map<Integer, Object[]> initValues = new HashMap<>();
+        for (int i = 0; i < 5; i++) {
+            initValues.put(i*2,new Object[]{capitValues.get(i),capitDates.get(i),ActionType.CAPITALIZATION});
+        }
+
+        initValues.forEach((i, v) -> when(actions.get(i).getAfterActionValue()).thenReturn((BigDecimal) v[0]));
+        initValues.forEach((i, v) -> when(actions.get(i).getActionDate()).thenReturn((LocalDate) v[1]));
+        initValues.forEach((i, v) -> when(actions.get(i).getActionType()).thenReturn((ActionType) v[2]));
+
+        List<BigDecimal> excelGains = new ArrayList<>();
+        for (Double doubleGain : new Double[]{34.62, 69.85, 108.15, 148.3}) {
+            excelGains.add(new BigDecimal(doubleGain).setScale(2,RoundingMode.HALF_UP));
+        }
+
+        //when
+        Map<LocalDate, BigDecimal> gain = financeCalcService.getGain(actions);
+
+        //then
+        for (int i = 0; i < 4; i++) {
+            assertThat(gain.get(capitDates.get(i+1)), is(excelGains.get(i)));
+        }
+    }
 }

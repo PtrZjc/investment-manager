@@ -2,14 +2,19 @@ package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 //TODO Change planned value of action
 //TODO Widthdraw can be only set in current month
 
@@ -25,7 +30,7 @@ public class ActionService {
         this.financeCalcService = financeCalcService;
     }
 
-    public Action createSameMonthLater(Action baseAction) {
+    public Action createTheSameMonthLater(Action baseAction) {
         Action action = new Action();
         action.setBalanceChange(baseAction.getBalanceChange());
         action.setProduct(baseAction.getProduct());
@@ -36,21 +41,7 @@ public class ActionService {
     }
 
     public void initializeInvestmentActions(Investment product) {
-
-        Action open = new Action();
-        open.setActionType(ActionType.PRODUCT_OPEN);
-        open.setAfterActionValue(product.getValue());
-        open.setActionDate(product.getOpenDate());
-        open.setProduct(product);
-
-        Action close = new Action();
-        close.setActionType(ActionType.PRODUCT_CLOSE);
-        close.setAfterActionValue(financeCalcService.getInvestmentValueWithReturn(product));
-        close.setActionDate(product.getOpenDate().plusMonths(product.getMonthsValid()));
-        close.setProduct(product);
-
-        actionRepository.save(open);
-        actionRepository.save(close);
+        setOpenCloseActions(product);
     }
 
     public void initializeSavingsAccountActions(SavingsAccount product) {
@@ -61,9 +52,13 @@ public class ActionService {
          * date is absent).
          * */
 
+        setOpenCloseActions(product);
+
         BigDecimal lastValue = product.getValue();
         List<LocalDate> capitalizationDates = financeCalcService.getCapitalizationDates(product);
-        LocalDate openDate = product.getOpenDate();
+        LocalDate startCalcDate = product.getOpenDate().isBefore(LocalDate.now().withDayOfMonth(1)) ?
+                product.getOpenDate() :
+                LocalDate.now().withDayOfMonth(1);
         LocalDate endDate = product.getValidityDate();
 
         /*
@@ -81,9 +76,9 @@ public class ActionService {
 
             if (i == 0) {
                 //first month
-                capitalizationChange = openDate.getMonth() == product.getCreated().getMonth() ?
+                capitalizationChange = startCalcDate.getMonth() == product.getCreated().getMonth() ?
                         financeCalcService.
-                                getPartialCapitalizedValue(lastValue, product, openDate, true) :
+                                getPartialCapitalizedValue(lastValue, product, startCalcDate, false) :
                         financeCalcService.
                                 getCapitalization(lastValue, product, capitalizationDates.get(i));
             } else if (i < capitalizationDates.size() - 1) {
@@ -94,7 +89,7 @@ public class ActionService {
                 //last month
                 capitalizationChange = endDate != null ?
                         financeCalcService.
-                                getPartialCapitalizedValue(lastValue, product, endDate, false) :
+                                getPartialCapitalizedValue(lastValue, product, endDate, true) :
                         financeCalcService.
                                 getCapitalization(lastValue, product, capitalizationDates.get(i));
             }
@@ -108,11 +103,37 @@ public class ActionService {
         }
     }
 
+    public void setOpenCloseActions(FinanceProduct product) {
+
+        Action open = new Action();
+        open.setActionType(ActionType.PRODUCT_OPEN);
+        open.setAfterActionValue(product.getValue());
+        open.setActionDate(product.getOpenDate());
+        open.setProduct(product);
+
+        Action close = new Action();
+        close.setActionType(ActionType.PRODUCT_CLOSE);
+
+        if (product instanceof Investment) {
+            close.setAfterActionValue(financeCalcService.getInvestmentValueWithReturn((Investment) product));
+            close.setActionDate(product.getOpenDate().plusMonths(((Investment) product).getMonthsValid()));
+        } else if (product instanceof SavingsAccount) {
+            close.setActionDate(((SavingsAccount) product).getValidityDate());
+        }
+        close.setProduct(product);
+
+        actionRepository.save(open);
+        actionRepository.save(close);
+    }
+
+
     public void save(Action action) {
         actionRepository.save(action);
     }
 
+    //TODO choosing yestarday when entering payment gets Nullpointerexception
     public void genBalanceChangeActions(ActionDto actionDto, SavingsAccount product) {
+        //TODO validator throws null if widthdraw in future
         Action action = new Action();
         action.setActionType(ActionType.BALANCE_CHANGE);
         action.setActionDate(actionDto.getActionDate());
@@ -133,7 +154,7 @@ public class ActionService {
                     .orElseThrow(NullPointerException::new);
 
             while (action.getActionDate().isBefore(latestDate.minusMonths(1))) {
-                action = createSameMonthLater(action);
+                action = createTheSameMonthLater(action);
                 actions.add(action);
             }
         }
@@ -164,5 +185,10 @@ public class ActionService {
         return actionDto.getAmount().compareTo(capValue) < 0;
     }
 
+    public List<Action> getChartActions(SavingsAccount product) {
 
+        return product.getActions().stream()
+                .filter(x -> Boolean.FALSE.equals(x.getIsDone()))
+                .collect(Collectors.toList());
+    }
 }

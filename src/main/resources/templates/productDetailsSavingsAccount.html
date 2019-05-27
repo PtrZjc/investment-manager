@@ -5,102 +5,25 @@
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
     <div th:replace="fragments/js:: percentCorrectionText"/>
-    <div th:replace="fragments/chart-js:: ex1"/>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
 
-    <script>
         document.addEventListener("DOMContentLoaded", function () {
+            console.log([[${json}]]);
 
-                var cfg = {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'test 1',
-                            yAxisID: 'A',
-                            data: [{
-                                x: 1472194961,
-                                y: 37
-                            }, {
-                                x: 1472281361,
-                                y: 55
-                            }, {
-                                x: 1472367761,
-                                y: 883
-                            }]
-                        }, {
-                            label: 'test 2',
-                            yAxisID: 'B',
-                            data: [{
-                                x: 1472410961,
-                                y: 2
-                            }, {
-                                x: 1472324561,
-                                y: 13
-                            }, {
-                                x: 1472238161,
-                                y: 783
-                            }]
-                        }]
-                    },
-                    options: {
-                        tooltips: {
-                            mode: 'single',
-                            enabled: true,
-                            callbacks: {
-                                title(datasets) {
-                                    var time = new Date(datasets[0].xLabel * 1000);
-                                    return (time.getMonth() + 1) + '/' + time.getDate() + ' ' + time.getHours();
-                                }
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                position: 'bottom',
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: "Date",
-                                }
-
-                            }],
-                            yAxes: [{
-                                id: 'A',
-                                type: 'linear',
-                                position: 'left',
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: "Hajs",
-                                }
-                            }, {
-                                id: 'B',
-                                type: 'linear',
-                                position: 'right',
-                                gridLines: {
-                                    display: false
-                                },
-                                ticks: {
-                                    max: 500,
-                                    min: 0
-                                },
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: "Zysk",
-                                }
-                            }]
-                        }
-                    }
-                }
-
-                var ctx = document.getElementById('valueChart').getContext('2d');
-
-                ctx.canvas.width = 1000;
-                ctx.canvas.height = 1000;
-
-                var chart = new Chart(ctx, cfg);
+            // var ctx = document.getElementById('valueChart').getContext('2d');
+            //
+            // ctx.canvas.width = 1000;
+            // ctx.canvas.height = 1000;
+            //
+            // var chart = new Chart(ctx, cfg);
 
             }
         )
 
+        /*]]>*/
     </script>
 </head>
 <!--<div th:replace="fragments/headerFooter:: debugStyle"/>-->
@@ -109,7 +32,7 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-
+    <div th:text="${json}"></div>
     <div class="row" style="margin-top: 1rem">
         <div class="col-sm-3"></div>
         <button class="btn btn-info" id="update">Update</button>

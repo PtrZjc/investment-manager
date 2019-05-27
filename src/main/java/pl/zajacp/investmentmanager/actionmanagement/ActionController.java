@@ -37,4 +37,22 @@ public class ActionController {
         return "actionForm";
     }
 
+        SavingsAccount product = (SavingsAccount) productService.findById(productId);
+
+        if (!actionService.areSufficientFunds(actionDto, product)) {
+            result.rejectValue("amount", "error.action.message.notSufficientFunds");
+        }
+
+        if (result.hasErrors()) {
+            return "actionForm";
+        }
+
+        actionService.genBalanceChangeActions(actionDto, product);
+        financeCalcService.recalculateCapitalizations(product, true);
+        productService.sortActionsByDate(product, false);
+
+        model.addAttribute("product", product);
+        return "productDetailsSavingsAccount";
+
+    }
 }

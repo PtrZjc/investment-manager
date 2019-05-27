@@ -10,8 +10,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -123,7 +122,6 @@ public class FinanceCalcService {
          * all actions for given product (with past ones), or all future actions starting from current month.
          * It divides actions into months and changes capitalization values in place, month after month.
          */
-
         product.setActions(actionRepository.findByProductOrderByActionDateAscAfterActionValueAsc(product));
         List<Action> actions = product.getActions();
 
@@ -156,11 +154,11 @@ public class FinanceCalcService {
                 lowerBoundIndex = i + 1;
             }
         }
-
         actionRepository.saveAll(actions);
     }
 
     public void fixMonthlyCapitalization(SavingsAccount product, int lowerMonthBound, int upperMonthBound, BigDecimal initialValue) {
+
         List<Action> actions = product.getActions();
         Action capitalization = actions.get(upperMonthBound);
         BigDecimal withdraws = BigDecimal.ZERO;
@@ -188,5 +186,24 @@ public class FinanceCalcService {
 
         capitalization.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
 
+    }
+
+    public Map<LocalDate, BigDecimal> getGain(List<Action> actions) {
+        /*
+        * Returns map of dates when capitalization occured with calculated gain from open date.
+        * */
+        Map<LocalDate, BigDecimal> gain = new LinkedHashMap<>();
+        BigDecimal currentVal = actions.get(0).getAfterActionValue();
+
+        for (int i = 1; i < actions.size(); i++) {
+            Action currentAction = actions.get(i);
+            if (currentAction.getActionType() == ActionType.BALANCE_CHANGE) {
+                currentVal = currentVal.add(actions.get(i).getBalanceChange());
+            } else if (currentAction.getActionType() == ActionType.CAPITALIZATION) {
+                gain.put(currentAction.getActionDate(), currentAction.getAfterActionValue().subtract(currentVal)
+                        .setScale(2,RoundingMode.HALF_UP));
+            }
+        }
+        return gain;
     }
 }
