@@ -14,8 +14,6 @@ import java.time.LocalDate;
 @SingleWidthdraw
 public class ActionDto {
 
-    //TODO existing date validator
-
     @NotNull
     @ThisMonthAndLater
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -16,7 +16,7 @@ public class DataPoint {
 
     @Getter
     @Setter
-    BigDecimal x;
+    BigDecimal y;
 
     @Getter
     @Setter
@@ -24,10 +24,11 @@ public class DataPoint {
 
     public DataPoint(LocalDate date, ActionType actionType) {
         /*
-         * Epoch shift avoids overlapping of capitalization and balance change datapoints on the chart
+         * Epoch shift avoids overlapping of capitalization and balance change datapoints on the chart.
+         * Balance change is shown at 12:00 PM, while capitalization at 11:59 PM.
          * */
         this.t = actionType == ActionType.BALANCE_CHANGE ?
-                date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() - (12 * 60 * 60) :
-                date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (12 * 60 * 60)) * 1000:
+                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (24 * 60 * 60)-1) * 1000;
     }
 }

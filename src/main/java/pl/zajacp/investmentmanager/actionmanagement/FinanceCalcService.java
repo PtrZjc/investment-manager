@@ -19,6 +19,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class FinanceCalcService {
 
     private final ActionRepository actionRepository;
+    private final BigDecimal BELKA_TAX = new BigDecimal(0.81);
 
     public FinanceCalcService(ActionRepository actionRepository) {
         this.actionRepository = actionRepository;
@@ -30,7 +31,7 @@ public class FinanceCalcService {
 
         return product.getValue().add(product.getValue().multiply(product.getInterest())
                 .multiply(new BigDecimal(1.0 * daysValid / Year.of(product.getOpenDate().getYear()).length()))
-                .multiply(new BigDecimal(0.81)).setScale(2, RoundingMode.HALF_UP));
+                .multiply(BELKA_TAX).setScale(2, RoundingMode.HALF_UP));
     }
 
     public List<LocalDate> getCapitalizationDates(SavingsAccount product) {
@@ -59,7 +60,7 @@ public class FinanceCalcService {
     }
 
     public BigDecimal getCapitalization(BigDecimal value, SavingsAccount product, LocalDate date) {
-        return getCapitalizedProfit(value, product, date).multiply(new BigDecimal(0.81));
+        return getCapitalizedProfit(value, product, date).multiply(BELKA_TAX);
     }
 
     public BigDecimal getPartialCapitalizedValue(BigDecimal value, SavingsAccount product,
@@ -79,7 +80,7 @@ public class FinanceCalcService {
             monthFraction = new BigDecimal(1.0 - (1.0 * date.getDayOfMonth() / daysInMonth));
         }
 
-        return getCapitalizedProfit(value, product, date).multiply(monthFraction).multiply(new BigDecimal(0.81));
+        return getCapitalizedProfit(value, product, date).multiply(monthFraction).multiply(BELKA_TAX);
     }
 
     public BigDecimal getCapitalizedProfit(BigDecimal value, SavingsAccount product, LocalDate date) {
@@ -128,9 +129,6 @@ public class FinanceCalcService {
         LocalDate currentDate = fromTodayCalculation ? LocalDate.now() : actions.get(0).getActionDate();
         BigDecimal currentValue = product.getValue();
 
-        //test:
-        //currentDate = LocalDate.parse("2019-06-25", DateTimeFormatter.ISO_LOCAL_DATE);
-
         int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
 
@@ -166,6 +164,9 @@ public class FinanceCalcService {
         BigDecimal totalCapitalization = BigDecimal.ZERO;
 
         for (int i = lowerMonthBound; i < upperMonthBound; i++) {
+            if (actions.get(i).getActionType() != ActionType.BALANCE_CHANGE) {
+                continue;
+            }
             BigDecimal currentChange = actions.get(i).getBalanceChange();
             if (currentChange.compareTo(BigDecimal.ZERO) > 0) {
                 //payments capitalizations
@@ -180,9 +181,9 @@ public class FinanceCalcService {
             totalValueChange = totalValueChange.add(currentChange);
             actions.get(i).setAfterActionValue(totalValueChange);
         }
-
         //rest of unchanged value capitalization
-        totalCapitalization = totalCapitalization.add(getCapitalization(initialValue.subtract(withdraws), product, capitalization.getActionDate()));
+        totalCapitalization = totalCapitalization
+                .add(getCapitalization(initialValue.subtract(withdraws), product, capitalization.getActionDate()));
 
         capitalization.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
 
@@ -190,8 +191,8 @@ public class FinanceCalcService {
 
     public Map<LocalDate, BigDecimal> getGain(List<Action> actions) {
         /*
-        * Returns map of dates when capitalization occured with calculated gain from open date.
-        * */
+         * Returns map of dates when capitalization occured with calculated gain from open date.
+         * */
         Map<LocalDate, BigDecimal> gain = new LinkedHashMap<>();
         BigDecimal currentVal = actions.get(0).getAfterActionValue();
 
@@ -201,7 +202,7 @@ public class FinanceCalcService {
                 currentVal = currentVal.add(actions.get(i).getBalanceChange());
             } else if (currentAction.getActionType() == ActionType.CAPITALIZATION) {
                 gain.put(currentAction.getActionDate(), currentAction.getAfterActionValue().subtract(currentVal)
-                        .setScale(2,RoundingMode.HALF_UP));
+                        .setScale(2, RoundingMode.HALF_UP));
             }
         }
         return gain;

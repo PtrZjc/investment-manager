@@ -1,17 +1,21 @@
 package pl.zajacp.investmentmanager.products.savings;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.validation.InterestAboveLimitPresent;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Data
+@Getter
+@Setter
 @InterestAboveLimitPresent
 @DiscriminatorValue("savings account")
 public class SavingsAccount extends FinanceProduct {

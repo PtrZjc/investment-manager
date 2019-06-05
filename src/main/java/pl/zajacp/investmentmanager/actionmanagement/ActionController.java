@@ -49,10 +49,10 @@ public class ActionController {
 
         actionService.genBalanceChangeActions(actionDto, product);
         financeCalcService.recalculateCapitalizations(product, true);
-        productService.sortActionsByDate(product, false);
+        productService.sortActionsByDate(product);
+        productService.getAdditionalSavingsAccountViewData(product, model);
 
         model.addAttribute("product", product);
         return "productDetailsSavingsAccount";
-
     }
 }

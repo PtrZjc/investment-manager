@@ -6,19 +6,122 @@
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
     <div th:replace="fragments/js:: percentCorrectionText"/>
 
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
 
 
         document.addEventListener("DOMContentLoaded", function () {
-            console.log([[${json}]]);
+                console.log([[${json}]]);
+                moment.locale('pl');
+                var ctx = document.getElementById('valueChart').getContext('2d');
+                ctx.canvas.width = 1000;
+                ctx.canvas.height = 300;
+                //
+                // ctx.canvas.width = 1000;
+                // ctx.canvas.height = 1000;
+                //
+                // var chart = new Chart(ctx, cfg);
 
-            // var ctx = document.getElementById('valueChart').getContext('2d');
-            //
-            // ctx.canvas.width = 1000;
-            // ctx.canvas.height = 1000;
-            //
-            // var chart = new Chart(ctx, cfg);
+                // var dateFormat = 'MMMM DD YYYY';
+                // var date = moment('April 01 2017', dateFormat);
+                var valueData = JSON.parse([[${valueData}]]);
+                var gainData = JSON.parse([[${gainData}]]);
+
+                gainData.unshift(Object.assign({}, gainData[0]));
+                gainData[0].t = valueData[0].t;
+                gainData[0].y = 0;
+
+                console.log(valueData);
+                console.log(gainData);
+
+                var cfg = {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: [[#{product.charts.label.value}]],
+                            yAxisID: 'A',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgb(54, 162, 235)',
+                            data: valueData,
+                            type: 'line',
+                            pointRadius: 3,
+                            fill: false,
+                            lineTension: 0,
+                            borderWidth: 2,
+                        }, {
+                            label: [[#{product.charts.label.gain}]],
+                            yAxisID: 'B',
+                            backgroundColor: 'rgba(41, 157, 41, 0.5)',
+                            borderColor: 'rgb(41, 157, 41)',
+                            data: gainData,
+                            type: 'line',
+                            pointRadius: 3,
+                            fill: false,
+                            lineTension: 0,
+                            borderWidth: 2
+                        }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                distribution: 'linear',
+                                ticks: {
+                                    autoSkip: true,
+                                    displayFormats: 'LL'
+                                },
+                                time: {
+                                    tooltipFormat: 'LL',
+                                    unit: 'month'
+                                }
+                            }],
+                            yAxes: [{
+                                id: 'A',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                },
+                                ticks: {
+                                    min: 0
+                                },
+                            }, {
+                                id: 'B',
+                                position: 'right',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: [[#{product.charts.label.gain}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                },
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: {
+                                    min: 0
+                                },
+                            }]
+                        },
+                        tooltips: {
+                            intersect: false,
+                            mode: 'nearest',
+                            callbacks: {
+                                label: function (tooltipItem, myData) {
+                                    var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += parseFloat(tooltipItem.value).toFixed(2);
+                                    label += " " + [[#{product.charts.label.currency}]];
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                var chart = new Chart(ctx, cfg);
 
             }
         )

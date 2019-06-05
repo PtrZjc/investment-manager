@@ -1,14 +1,11 @@
 package pl.zajacp.investmentmanager.products;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
-import pl.zajacp.investmentmanager.charts.ChartService;
 import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
@@ -25,15 +22,13 @@ public class ProductController {
     private final ProductService productService;
     private final ActionService actionService;
     private final UserService userService;
-    private final ChartService chartService;
 
 
     @Autowired
-    public ProductController(ProductService productService, ActionService actionService, UserService userService, ChartService chartService) {
+    public ProductController(ProductService productService, ActionService actionService, UserService userService) {
         this.productService = productService;
         this.actionService = actionService;
         this.userService = userService;
-        this.chartService = chartService;
     }
 
     @GetMapping("/")
@@ -113,14 +108,17 @@ public class ProductController {
 
         FinanceProduct product = productService.findById(id);
 
-        productService.sortActionsByDate(product, false);
+        productService.sortActionsByDate(product);
         model.addAttribute("product", product);
+
 
         if (product instanceof Investment) {
             return "productDetailsInvestment";
         } else if (product instanceof SavingsAccount) {
+            productService.getAdditionalSavingsAccountViewData((SavingsAccount) product, model);
             return "productDetailsSavingsAccount";
         }
+
         return "/";
     }
 
