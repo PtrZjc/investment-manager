@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.products.ProductService;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
@@ -53,6 +50,18 @@ public class ActionController {
         productService.getAdditionalSavingsAccountViewData(product, model);
 
         model.addAttribute("product", product);
+
         return "productDetailsSavingsAccount";
     }
+
+    @PostMapping("/delete")
+    public String deleteAction(@RequestParam(name = "id") Long id, HttpSession session) {
+        Action action = actionService.findById(id);
+        SavingsAccount product = (SavingsAccount) action.getProduct();
+        actionService.delete(action);
+        financeCalcService.recalculateCapitalizations(product, true);
+        return "redirect:/product/details";
+    }
+
+
 }

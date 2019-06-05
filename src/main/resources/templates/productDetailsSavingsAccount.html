@@ -49,8 +49,8 @@
                             type: 'line',
                             pointRadius: 3,
                             fill: false,
-                            lineTension: 0,
-                            borderWidth: 2,
+                            steppedLine: true,
+                            borderWidth: 2
                         }, {
                             label: [[#{product.charts.label.gain}]],
                             yAxisID: 'B',
@@ -58,6 +58,7 @@
                             borderColor: 'rgb(41, 157, 41)',
                             data: gainData,
                             type: 'line',
+                            steppedLine: true,
                             pointRadius: 3,
                             fill: false,
                             lineTension: 0,
@@ -86,7 +87,7 @@
                                     labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
                                 },
                                 ticks: {
-                                    min: 0
+                                    // min: 0
                                 },
                             }, {
                                 id: 'B',
@@ -231,10 +232,13 @@
             <td th:text="${action.notes}"></td>
             <td th:text="${action.isDone}"></td>
             <td>
-                <form action="/product/action/delete" method="post">
+                <span th:if="${action.actionType==T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}">
+
+                <form action="/product/operation/delete" method="post">
                     <input type="hidden" name="id" th:value="${action.id}">
                     <input type="submit" class="btn btn-danger" value="Delete">
                 </form>
+      </span>
             </td>
         </tr>
 

@@ -80,9 +80,9 @@ public class ProductController {
         model.addAttribute("investments", products.get(Investment.class));
         model.addAttribute("savingsAccounts", products.get(SavingsAccount.class));
 
-        if(("productId").equals(session.getAttribute("expiredData"))){
+        if (("productId").equals(session.getAttribute("expiredData"))) {
             session.removeAttribute("expiredData");
-            model.addAttribute("expiredData","productId");
+            model.addAttribute("expiredData", "productId");
         }
         return "showAllProducts";
     }
@@ -101,24 +101,43 @@ public class ProductController {
         return "/";
     }
 
+    @GetMapping("/details")
+    public String getDetailedProduct(Model model, HttpSession session) {
+
+        Long productId = (Long) session.getAttribute("productId");
+
+        if (productId == null) {
+            session.setAttribute("expiredData", "productId");
+            return "redirect:/product/all";
+        }
+        return findProductAndRedirect(productId, model);
+    }
+
+
     @PostMapping("/details")
-    public String detailedProduct(@RequestParam(name = "id") Long id, Model model, HttpSession session) {
+    public String postDetailedProduct(@RequestParam(name = "id") Long id, Model model, HttpSession session) {
 
-        session.setAttribute("productId",id);
+        if (id == null) {
+            id = (Long) session.getAttribute("productId");
+        } else {
+            session.setAttribute("productId", id);
+        }
+        return findProductAndRedirect(id, model);
+    }
 
-        FinanceProduct product = productService.findById(id);
+    private String findProductAndRedirect(Long productId, Model model) {
+        FinanceProduct product = productService.findById(productId);
 
         productService.sortActionsByDate(product);
         model.addAttribute("product", product);
 
-
         if (product instanceof Investment) {
             return "productDetailsInvestment";
         } else if (product instanceof SavingsAccount) {
+
             productService.getAdditionalSavingsAccountViewData((SavingsAccount) product, model);
             return "productDetailsSavingsAccount";
         }
-
         return "/";
     }
 

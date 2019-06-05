@@ -163,6 +163,10 @@ public class ActionService {
         product.getActions().addAll(actions);
     }
 
+    public Action findById(Long id){
+        return actionRepository.findById(id).orElseThrow(NullPointerException::new);
+    }
+
     public void delete(Action action) {
         actionRepository.delete(action);
     }
@@ -174,7 +178,7 @@ public class ActionService {
 
         Predicate<Action> previousMonthCap =
                 x -> x.getActionType() == ActionType.CAPITALIZATION &&
-                        x.getActionDate().getMonth().minus(1) == actionDto.getActionDate().getMonth();
+                        x.getActionDate().getMonth().plus(1) == actionDto.getActionDate().getMonth();
 
         BigDecimal capValue = product.getActions().stream()
                 .filter(previousMonthCap)

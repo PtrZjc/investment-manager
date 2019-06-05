@@ -49,7 +49,7 @@ public class FinanceProduct {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Action> actions = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

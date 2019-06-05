@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({FIELD, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = ThisMonthValidator.class)
+@Constraint(validatedBy = ThisMonthAndLaterValidator.class)
 @Documented
 public @interface ThisMonthAndLater {
     String message() default "{ThisMonthAndLater.message}";
