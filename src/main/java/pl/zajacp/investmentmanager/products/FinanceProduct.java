@@ -58,5 +58,19 @@ public class FinanceProduct {
         created = LocalDate.now();
         isActive = true;
     }
+
+    @Override
+    public String toString() {
+        return "FinanceProduct{" +
+                "id=" + id +
+                ", bank='" + bank + '\'' +
+                ", openDate=" + openDate +
+                ", value=" + value +
+                ", interest=" + interest +
+                ", notes='" + notes + '\'' +
+                ", isActive=" + isActive +
+                ", created=" + created +
+                '}';
+    }
 }
 

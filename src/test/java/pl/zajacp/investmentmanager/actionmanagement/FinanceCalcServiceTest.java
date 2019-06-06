@@ -26,7 +26,7 @@ public class FinanceCalcServiceTest {
     private static Investment investment;
     private static List<Action> actions;
 
-    static void prepareProducts() {
+    private static void prepareProducts() {
         LocalDate openDate = LocalDate.parse("2018-03-01", DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDate validityDate = LocalDate.parse("2018-09-10", DateTimeFormatter.ISO_LOCAL_DATE);
         savingsAccount = mock(SavingsAccount.class);

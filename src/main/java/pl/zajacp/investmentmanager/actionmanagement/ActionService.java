@@ -15,8 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-//TODO Change planned value of action
-//TODO Widthdraw can be only set in current month
 
 @Service
 @Transactional
@@ -133,7 +131,6 @@ public class ActionService {
 
     //TODO choosing yestarday when entering payment gets Nullpointerexception
     public void genBalanceChangeActions(ActionDto actionDto, SavingsAccount product) {
-        //TODO validator throws null if widthdraw in future
         Action action = new Action();
         action.setActionType(ActionType.BALANCE_CHANGE);
         action.setActionDate(actionDto.getActionDate());
@@ -190,9 +187,14 @@ public class ActionService {
     }
 
     public List<Action> getChartActions(SavingsAccount product) {
-
         return product.getActions().stream()
                 .filter(x -> Boolean.FALSE.equals(x.getIsDone()))
                 .collect(Collectors.toList());
+    }
+
+    public void sortActionsByDate(List<Action> actions) {
+        actions.sort(Comparator
+                .comparing(Action::getActionDate)
+                .thenComparing(a -> a.getActionType().toString()));
     }
 }

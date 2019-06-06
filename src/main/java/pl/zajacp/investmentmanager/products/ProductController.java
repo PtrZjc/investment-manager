@@ -128,7 +128,7 @@ public class ProductController {
     private String findProductAndRedirect(Long productId, Model model) {
         FinanceProduct product = productService.findById(productId);
 
-        productService.sortActionsByDate(product);
+        actionService.sortActionsByDate(product.getActions());
         model.addAttribute("product", product);
 
         if (product instanceof Investment) {

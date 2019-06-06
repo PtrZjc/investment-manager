@@ -4,10 +4,8 @@
     <title th:text="#{product.add.title.product}">Title</title>
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
-    <div th:replace="fragments/js:: percentCorrectionText"/>
 
-    <script src="https://momentjs.com/downloads/moment-with-locales.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
+    <div th:replace="fragments/js:: percentCorrectionText"/>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -19,20 +17,15 @@
                 var ctx = document.getElementById('valueChart').getContext('2d');
                 ctx.canvas.width = 1000;
                 ctx.canvas.height = 300;
-                //
-                // ctx.canvas.width = 1000;
-                // ctx.canvas.height = 1000;
-                //
-                // var chart = new Chart(ctx, cfg);
 
-                // var dateFormat = 'MMMM DD YYYY';
-                // var date = moment('April 01 2017', dateFormat);
                 var valueData = JSON.parse([[${valueData}]]);
                 var gainData = JSON.parse([[${gainData}]]);
 
-                gainData.unshift(Object.assign({}, gainData[0]));
-                gainData[0].t = valueData[0].t;
-                gainData[0].y = 0;
+                if (gainData[0].t > valueData[0].t) {
+                    gainData.unshift(Object.assign({}, gainData[0]));
+                    gainData[0].t = valueData[0].t;
+                    gainData[0].y = 0;
+                }
 
                 console.log(valueData);
                 console.log(gainData);

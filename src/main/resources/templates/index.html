@@ -3,6 +3,192 @@
 <head>
     <title>Home</title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
+    <div th:replace="fragments/headerFooter::chart-js-lib"/>
+
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        document.addEventListener("DOMContentLoaded", function () {
+                // console.log([[${json}]]);
+
+                moment.locale('pl');
+
+                var data = JSON.parse([[${data}]]);
+
+                data.sort(function (a, b) {
+                    return a.valuePlot[0].y - b.valuePlot[0].y
+                });
+
+                var valueDatasets = [];
+                var isFirst = true;
+                for (const el of data) {
+
+                    var R = Math.floor(Math.random() * 255 + 1);
+                    var G = Math.floor(Math.random() * 255 + 1);
+                    var B = Math.floor(Math.random() * 255 + 1);
+                    var fill;
+
+                    if (isFirst){
+                        fill = 'origin';
+                        isFirst = false;
+                    }else{
+                        fill = '-1';
+                    }
+
+                    var valueDataset = {
+                        label: el.productName,
+                        backgroundColor: 'rgba(' + R + ', ' + G + ', ' + B + ', 0.5)',
+                        borderColor: 'rgb(' + R + ', ' + G + ', ' + B + ')',
+                        data: el.valuePlot,
+                        type: 'line',
+                        pointRadius: 0,
+                        fill: fill,
+                        steppedLine: true,
+                        borderWidth: 2
+                    };
+                    valueDatasets.push(valueDataset)
+                }
+
+
+                var tooltips = {
+                    intersect: false,
+                    mode: 'nearest',
+                    callbacks: {
+                        label: function (tooltipItem, myData) {
+                            var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += parseFloat(tooltipItem.value).toFixed(2);
+                            label += " " + [[#{product.charts.label.currency}]];
+                            return label;
+                        }
+                    }
+                };
+
+                console.log(data);
+
+                var cfgValue = {
+                    type: 'line',
+                    data: {
+                        datasets: valueDatasets
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                distribution: 'linear',
+                                ticks: {
+                                    autoSkip: true,
+                                    displayFormats: 'LL'
+                                },
+                                time: {
+                                    max: [[${maxCommonTime}]],
+                                    tooltipFormat: 'LL',
+                                    unit: 'month'
+                                }
+                            }],
+                            yAxes: {
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                },
+                                // stacked: true,
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }
+                        },
+                        tooltips: tooltips,
+                        // plugins: {
+                        //     filler: {
+                        //         propagate: true
+                        //     }
+                        // }
+                    }
+                };
+
+                // var cfgGain = {
+                //     type: 'line',
+                //     data: {
+                //         datasets: datasets
+                //     },
+                //     options: {
+                //         scales: {
+                //             xAxes: [{
+                //                 type: 'time',
+                //                 distribution: 'linear',
+                //                 ticks: {
+                //                     autoSkip: true,
+                //                     displayFormats: 'LL'
+                //                 },
+                //                 time: {
+                //                     tooltipFormat: 'LL',
+                //                     unit: 'month'
+                //                 }
+                //             }],
+                //             yAxes: [{
+                //                 id: 'A',
+                //                 scaleLabel: {
+                //                     display: true,
+                //                     labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                //                 },
+                //                 ticks: {
+                //                     // min: 0
+                //                 },
+                //             }, {
+                //                 id: 'B',
+                //                 position: 'right',
+                //                 scaleLabel: {
+                //                     display: true,
+                //                     labelString: [[#{product.charts.label.gain}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                //                 },
+                //                 gridLines: {
+                //                     display: false
+                //                 },
+                //                 ticks: {
+                //                     min: 0
+                //                 },
+                //             }]
+                //         },
+                //
+                //         tooltips: {
+                //             intersect: false,
+                //             mode: 'nearest',
+                //             callbacks: {
+                //                 label: function (tooltipItem, myData) {
+                //                     var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
+                //                     if (label) {
+                //                         label += ': ';
+                //                     }
+                //                     label += parseFloat(tooltipItem.value).toFixed(2);
+                //                     label += " " + [[#{product.charts.label.currency}]];
+                //                     return label;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // };
+
+            var ctxValue = document.getElementById('valueChart').getContext('2d');
+            ctxValue.canvas.width = 1000;
+            ctxValue.canvas.height = 300;
+
+            var ctxGain = document.getElementById('gainChart').getContext('2d');
+            ctxGain.canvas.width = 1000;
+            ctxGain.canvas.height = 300;
+
+            var valueChart = new Chart(ctxValue, cfgValue);
+            // var gainChart = new Chart(ctxGain, cfgGain);
+
+            }
+        )
+
+        /*]]>*/
+    </script>
+
+
 </head>
 
 <body>
@@ -10,8 +196,31 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-
-<h2 th:text="'Index page'">index</h2>
+    <div class="row">
+        <div class="col-sm">
+            <h4 th:text="'Index page'" class="text-center">Summary</h4>
+            Wytaj uzytkowniku. MAsz X produktow, z czego tyle to takie, tyle to takie.
+            Przez ostatnie X zarobiles:
+            1
+            3
+            6
+            od poczatku
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <canvas id="valueChart"></canvas>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <canvas id="gainChart"></canvas>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
 
     <div th:replace="fragments/headerFooter:: footer"/>
 </div>

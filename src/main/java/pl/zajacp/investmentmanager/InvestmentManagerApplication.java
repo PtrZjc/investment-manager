@@ -10,6 +10,7 @@ public class InvestmentManagerApplication {
     public static void main(String[] args) {
         SpringApplication.run(InvestmentManagerApplication.class, args);
     }
-
 }
+
+
 

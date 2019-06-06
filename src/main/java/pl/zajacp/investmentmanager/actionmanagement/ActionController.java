@@ -45,8 +45,8 @@ public class ActionController {
         }
 
         actionService.genBalanceChangeActions(actionDto, product);
+        actionService.sortActionsByDate(product.getActions());
         financeCalcService.recalculateCapitalizations(product, true);
-        productService.sortActionsByDate(product);
         productService.getAdditionalSavingsAccountViewData(product, model);
 
         model.addAttribute("product", product);

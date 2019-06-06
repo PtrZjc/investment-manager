@@ -17,5 +17,11 @@ public class Investment extends FinanceProduct {
     @NotNull
     private Long monthsValid;
 
+    @Override
+    public String toString() {
+        return "Investment{" +
+                "monthsValid=" + monthsValid +
+                "} " + super.toString();
+    }
 }
 

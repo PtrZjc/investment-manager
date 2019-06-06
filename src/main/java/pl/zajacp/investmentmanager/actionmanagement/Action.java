@@ -41,6 +41,18 @@ public class Action {
         isDone = false;
     }
 
+    @Override
+    public String toString() {
+        return "Action{" +
+                "id=" + id +
+                ", actionType=" + actionType +
+                ", actionDate=" + actionDate +
+                ", balanceChange=" + balanceChange +
+                ", afterActionValue=" + afterActionValue +
+                ", notes='" + notes + '\'' +
+                ", isDone=" + isDone +
+                '}';
+    }
 }
 
 

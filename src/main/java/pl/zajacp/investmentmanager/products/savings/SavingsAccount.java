@@ -33,4 +33,12 @@ public class SavingsAccount extends FinanceProduct {
     @DecimalMax("100")
     private BigDecimal interestAboveLimit;
 
+    @Override
+    public String toString() {
+        return "SavingsAccount{" +
+                "valueLimit=" + valueLimit +
+                ", validityDate=" + validityDate +
+                ", interestAboveLimit=" + interestAboveLimit +
+                "} " + super.toString();
+    }
 }

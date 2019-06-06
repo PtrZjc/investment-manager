@@ -10,14 +10,13 @@
     </div>
 
     <div th:fragment="chart-js-lib" th:remove="tag">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>-->
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>-->
-<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css" />-->
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>-->
-<!--        <script th:src="@{/chart-utils.js}"></script>-->
+        <script src="https://momentjs.com/downloads/moment-with-locales.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
     </div>
+
 </head>
+
+
 <div th:fragment="debugStyle" th:remove="tag">
     <style>
         div {
@@ -41,12 +40,12 @@
 <div th:fragment="navbar" th:remove="tag">
     <nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center mb-3">
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/login}" href="#">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/registration}" href="#">Register</a>
-            </li>
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link" th:href="@{/login}" href="#">Login</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link" th:href="@{/registration}" href="#">Register</a>-->
+<!--            </li>-->
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/product/}" href="#">Add product</a>
             </li>
@@ -54,7 +53,7 @@
                 <a class="nav-link" th:href="@{/product/all/}" href="#">Show all</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" href="#">Summary</a>
+                <a class="nav-link" th:href="@{/home/}" href="#">Summary</a>
             </li>
         </ul>
     </nav>

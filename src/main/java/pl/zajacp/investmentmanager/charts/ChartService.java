@@ -6,7 +6,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionType;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,21 +15,23 @@ import java.util.stream.Collectors;
 @Service
 public class ChartService {
 
-    public ChartService(){};
+    public ChartService() {
+    }
 
-    public String getValuePlot(SavingsAccount product, List<Action> actions) {
+    ;
 
+    public String jsonMapper(Collection objectToJson) {
         ObjectMapper mapper = new ObjectMapper();
-        String totalValueData = null;
+        String jsonString = null;
         try {
-            totalValueData = mapper.writeValueAsString(initializeValueData(actions));
+            jsonString = mapper.writeValueAsString(objectToJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return totalValueData;
+        return jsonString;
     }
 
-    private List<DataPoint> initializeValueData(List<Action> actions) {
+    public List<DataPoint> initializeValueData(List<Action> actions) {
         List<DataPoint> data = new ArrayList<>();
         BigDecimal currentValue = actions.get(0).getAfterActionValue();
         Locale locale = LocaleContextHolder.getLocale();
@@ -66,24 +67,10 @@ public class ChartService {
         return data;
     }
 
-    public String getGainPlot(SavingsAccount product, Map<LocalDate, BigDecimal> gain, List<Action> actions ) {
+    public List<DataPoint> initializeGainData(Map<LocalDate, BigDecimal> gains, LocalDate startDate) {
 
-        ObjectMapper mapper = new ObjectMapper();
-        String gainData = null;
-        try {
-            gainData = mapper.writeValueAsString(initializeGainData(gain, actions));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return gainData;
-    }
-
-    private List<DataPoint> initializeGainData(Map<LocalDate, BigDecimal> gains, List<Action> actions) {
-        LocalDate startPoint = actions.get(0).getActionDate();
-
-        LocalDate date = actions.get(0).getActionDate();
         List<Map.Entry<LocalDate, BigDecimal>> futureGains = gains.entrySet().stream()
-                .filter(e -> e.getKey().isAfter(date))
+                .filter(e -> e.getKey().isAfter(startDate))
                 .collect(Collectors.toList());
 
         List<DataPoint> data = new ArrayList<>();
@@ -99,4 +86,36 @@ public class ChartService {
         return data;
     }
 
+    public void equalizeSummaryChartPlots(List<SummaryChartDTO> charts) {
+        long maxValueTime = charts.stream()
+                .flatMap(chart -> chart.getValuePlot().stream())
+                .map(DataPoint::getT)
+                .max(Long::compareTo)
+                .orElseThrow(NullPointerException::new);
+
+        for (SummaryChartDTO chartData : charts) {
+            List<DataPoint> valuePlot = chartData.getValuePlot();
+            int lastIndex = valuePlot.size() - 1;
+            if (valuePlot.get(lastIndex).getT() == maxValueTime) {
+                continue;
+            }
+
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.setT(maxValueTime);
+            dataPoint.setY(valuePlot.get(lastIndex).getY());
+            valuePlot.add(dataPoint);
+        }
+    }
+
+    public long getMaxCommonTime(List<SummaryChartDTO> charts) {
+        List<Long> maxTimes = new ArrayList<>();
+        for (SummaryChartDTO chartData : charts) {
+            List<DataPoint> valuePlot = chartData.getValuePlot();
+            int lastIndex = valuePlot.size() - 1;
+            maxTimes.add(valuePlot.get(lastIndex).getT());
+        }
+        return maxTimes.stream()
+                .min(Long::compareTo)
+                .orElseThrow(NullPointerException::new);
+    }
 }

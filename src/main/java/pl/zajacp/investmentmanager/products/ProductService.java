@@ -9,13 +9,13 @@ import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
 import pl.zajacp.investmentmanager.charts.ChartService;
+import pl.zajacp.investmentmanager.charts.DataPoint;
 import pl.zajacp.investmentmanager.products.investment.Investment;
 import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final UserService userService;
-    private final ActionService actionService;
+    public final ActionService actionService;
     private final ProductRepository productRepository;
     private final ChartService chartService;
     private final FinanceCalcService financeCalcService;
@@ -68,24 +68,17 @@ public class ProductService {
                 .collect(Collectors.groupingBy(FinanceProduct::getClass));
     }
 
-    public void sortActionsByDate(FinanceProduct product) {
-        List<Action> actions = product.getActions();
-        actions.sort(Comparator
-                .comparing(Action::getActionDate)
-                .thenComparing(a -> a.getActionType().toString()));
-
-        product.setActions(actions);
-    }
-
     public void getAdditionalSavingsAccountViewData(SavingsAccount product, Model model) {
         List<Action> actions = actionService.getChartActions((SavingsAccount) product);
+
+        LocalDate startDate = actions.get(0).getActionDate().minusMonths(1);
         Map<LocalDate, BigDecimal> gain = financeCalcService.getGain(actions);
+        List<DataPoint> gainPlot = chartService.initializeGainData(gain,startDate);
+        String jsonGainPlot = chartService.jsonMapper(gainPlot);
+        model.addAttribute("gainData", jsonGainPlot);
 
-        String valueChartData = chartService.getValuePlot((SavingsAccount) product, actions);
-        String gainChartData = chartService.getGainPlot((SavingsAccount) product, gain, actions);
-
-        model.addAttribute("valueData", valueChartData);
-        model.addAttribute("gainData", gainChartData);
+        List<DataPoint> valuePlot = chartService.initializeValueData(actions);
+        String jsonValuePlot = chartService.jsonMapper(valuePlot);
+        model.addAttribute("valueData", jsonValuePlot);
     }
-
 }
