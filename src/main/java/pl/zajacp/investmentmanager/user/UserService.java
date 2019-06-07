@@ -6,12 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.zajacp.investmentmanager.user.registration.validation.EmailExistsException;
-import pl.zajacp.investmentmanager.user.registration.validation.LoginExistsException;
+import pl.zajacp.investmentmanager.user.validation.EmailExistsException;
+import pl.zajacp.investmentmanager.user.validation.LoginExistsException;
 
 @Service
 @Transactional
-public class UserService implements IUserService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -22,8 +22,7 @@ public class UserService implements IUserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public User registerNewUserAccount(UserDto userDto)
+    public void registerNewUserAccount(UserDto userDto)
             throws LoginExistsException, EmailExistsException {
 
         if (loginExists(userDto.getLogin())){
@@ -37,8 +36,7 @@ public class UserService implements IUserService {
         user.setLogin(userDto.getLogin());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEmail(userDto.getEmail());
-        return userRepository.save(user);
-
+        userRepository.save(user);
     }
 
     private boolean emailExist(String email) {

@@ -6,8 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
-import pl.zajacp.investmentmanager.products.investment.Investment;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import javax.servlet.http.HttpSession;

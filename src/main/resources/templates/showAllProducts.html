@@ -12,12 +12,12 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-    <h4 class="text-center">Short term investments</h4>
+    <h4 class="text-center" th:text="#{product.choose.investments}">Short term investments</h4>
     <div class="table-responsive">
         <table class="table table-hover">
             <tr>
-                <th th:text="#{product.add.created}">created</th>
-                <th th:text="#{product.add.id}">id</th>
+<!--                <th th:text="#{product.add.created}">created</th>-->
+<!--                <th th:text="#{product.add.id}">id</th>-->
                 <th th:text="#{product.add.bank}">bank</th>
                 <th th:text="#{product.add.value}">value</th>
                 <th th:text="#{product.add.openDate}">open_date</th>
@@ -29,8 +29,8 @@
 
             </tr>
             <tr th:each="investment: ${investments}">
-                <td th:text="${investment.created}"></td>
-                <td th:text="${investment.id}"></td>
+<!--                <td th:text="${investment.created}"></td>-->
+<!--                <td th:text="${investment.id}"></td>-->
                 <td th:text="${investment.bank}"></td>
                 <td th:text="${investment.value}"></td>
                 <td th:text="${investment.openDate}"></td>
@@ -39,10 +39,6 @@
                 <td th:text="${investment.isActive}"></td>
                 <td th:text="${investment.notes}"></td>
                 <td>
-                    <form action="/product/edit" method="post">
-                        <input type="hidden" name="id" th:value="${investment.id}">
-                        <input class="btn btn-primary" type="submit" value="Edit">
-                    </form>
                     <form action="/product/delete" method="post">
                         <input type="hidden" name="id" th:value="${investment.id}">
                         <input type="submit" class="btn btn-danger" value="Delete">
@@ -56,12 +52,12 @@
 
         </table>
     </div>
-    <h4 class="text-center">Savings accounts</h4>
+    <h4 class="text-center" th:text="#{product.choose.savingsAccounts}">Savings accounts</h4>
     <div class="table-responsive">
         <table class="table table-hover">
             <tr>
-                <th th:text="#{product.add.created}">created</th>
-                <th th:text="#{product.add.id}">id</th>
+<!--                <th th:text="#{product.add.created}">created</th>-->
+<!--                <th th:text="#{product.add.id}">id</th>-->
                 <th th:text="#{product.add.bank}">bank</th>
                 <th th:text="#{product.add.value}">value</th>
                 <th th:text="#{product.add.openDate}">open_date</th>
@@ -76,8 +72,8 @@
 
 
             <tr th:each="account: ${savingsAccounts}">
-                <td th:text="${account.created}"></td>
-                <td th:text="${account.id}"></td>
+<!--                <td th:text="${account.created}"></td>-->
+<!--                <td th:text="${account.id}"></td>-->
                 <td th:text="${account.bank}"></td>
                 <td th:text="${account.value}"></td>
                 <td th:text="${account.openDate}"></td>
@@ -88,10 +84,6 @@
                 <td th:text="${account.isActive}"></td>
                 <td th:text="${account.notes}"></td>
                 <td>
-                    <form action="/product/edit" method="post">
-                        <input type="hidden" name="id" th:value="${account.id}">
-                        <input class="btn btn-primary" type="submit" value="Edit">
-                    </form>
                     <form action="/product/delete" method="post">
                         <input type="hidden" name="id" th:value="${account.id}">
                         <input type="submit" class="btn btn-danger" value="Delete">

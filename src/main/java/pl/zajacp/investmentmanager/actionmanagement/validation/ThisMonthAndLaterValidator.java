@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 
-public class ThisMonthValidator
+public class ThisMonthAndLaterValidator
   implements ConstraintValidator<ThisMonthAndLater, LocalDate> {
      
     @Override

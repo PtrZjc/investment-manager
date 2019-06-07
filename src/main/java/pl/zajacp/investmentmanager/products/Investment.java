@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.products.investment;
+package pl.zajacp.investmentmanager.products;
 
 import lombok.Getter;
 import lombok.Setter;

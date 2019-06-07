@@ -2,8 +2,8 @@ package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.junit.Test;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
-import pl.zajacp.investmentmanager.products.investment.Investment;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
+import pl.zajacp.investmentmanager.products.Investment;
+import pl.zajacp.investmentmanager.products.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

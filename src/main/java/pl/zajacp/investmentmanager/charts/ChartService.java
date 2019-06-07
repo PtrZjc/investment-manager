@@ -5,7 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
+import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.actionmanagement.ActionType;
+import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
+import pl.zajacp.investmentmanager.products.SavingsAccount;
+import pl.zajacp.investmentmanager.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,10 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class ChartService {
 
-    public ChartService() {
-    }
+    private final ActionService actionService;
+    private final FinanceCalcService financeCalcService;
 
-    ;
+    public ChartService(ActionService actionService, FinanceCalcService financeCalcService) {
+        this.actionService = actionService;
+        this.financeCalcService = financeCalcService;
+    }
 
     public String jsonMapper(Collection objectToJson) {
         ObjectMapper mapper = new ObjectMapper();
@@ -34,8 +42,6 @@ public class ChartService {
     public List<DataPoint> initializeValueData(List<Action> actions) {
         List<DataPoint> data = new ArrayList<>();
         BigDecimal currentValue = actions.get(0).getAfterActionValue();
-        Locale locale = LocaleContextHolder.getLocale();
-        ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
 
         for (Action action : actions) {
 
@@ -44,21 +50,21 @@ public class ChartService {
             switch (action.getActionType()) {
                 case CAPITALIZATION:
                     currentValue = action.getAfterActionValue();
-                    point.setAction(messages.getString("product.charts.action.capitalization"));
+                    point.setAction(setLocaleLabel("product.charts.action.capitalization"));
                     break;
                 case BALANCE_CHANGE:
                     currentValue = currentValue.add(action.getBalanceChange());
                     if (action.getBalanceChange().compareTo(BigDecimal.ZERO) > 0) {
-                        point.setAction(messages.getString("product.charts.action.payment"));
+                        point.setAction(setLocaleLabel("product.charts.action.payment"));
                     } else {
-                        point.setAction(messages.getString("product.charts.action.widthdraw"));
+                        point.setAction(setLocaleLabel("product.charts.action.widthdraw"));
                     }
                     break;
                 case PRODUCT_CLOSE:
-                    point.setAction(messages.getString("product.charts.action.endPromotion"));
+                    point.setAction(setLocaleLabel("product.charts.action.endPromotion"));
                     break;
                 case PRODUCT_OPEN:
-                    point.setAction(messages.getString("product.charts.action.productOpen"));
+                    point.setAction(setLocaleLabel("product.charts.action.productOpen"));
                     break;
             }
             point.setY(currentValue);
@@ -74,37 +80,84 @@ public class ChartService {
                 .collect(Collectors.toList());
 
         List<DataPoint> data = new ArrayList<>();
-        Locale locale = LocaleContextHolder.getLocale();
-        ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
+
 
         for (Map.Entry<LocalDate, BigDecimal> gain : futureGains) {
             DataPoint point = new DataPoint(gain.getKey(), ActionType.GAIN);
-            point.setAction(messages.getString("product.charts.action.gain"));
+            point.setAction(setLocaleLabel("product.charts.action.gain"));
             point.setY(gain.getValue());
             data.add(point);
         }
         return data;
     }
 
-    public void equalizeSummaryChartPlots(List<SummaryChartDTO> charts) {
-        long maxValueTime = charts.stream()
-                .flatMap(chart -> chart.getValuePlot().stream())
-                .map(DataPoint::getT)
-                .max(Long::compareTo)
+    public List<SummaryChartDTO> initializeSummaryChartData(User user) {
+
+        List<FinanceProduct> products = user.getProducts();
+        List<List<Action>> chartActions = products.stream()
+                .filter(product -> product instanceof SavingsAccount)
+                .map(FinanceProduct::getActions)
+                .collect(Collectors.toList());
+
+        chartActions.forEach(actionService::sortActionsByDate);
+
+        List<Map<LocalDate, BigDecimal>> productGains = chartActions.stream()
+                .map(financeCalcService::getGain)
+                .collect(Collectors.toList());
+
+        List<SummaryChartDTO> chartData = new ArrayList<>();
+
+        for (int i = 0; i < chartActions.size(); i++) {
+            LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
+            String productName = chartActions.get(i).get(0).getProduct().getBank();
+            List<DataPoint> valuePlot = initializeValueData(chartActions.get(i));
+            List<DataPoint> gainPlot = initializeGainData(productGains.get(i), startDate);
+
+            SummaryChartDTO dataset = new SummaryChartDTO();
+            dataset.setProductName(productName);
+            dataset.setValuePlot(valuePlot);
+            dataset.setGainPlot(gainPlot);
+            chartData.add(dataset);
+        }
+        return chartData;
+    }
+
+    public void equalizeSummaryGainPlots(List<SummaryChartDTO> charts) {
+        SummaryChartDTO oldestChart = charts.stream()
+                .min((ch1, ch2) -> (int) (ch1.getGainPlot().get(0).getT() - ch2.getGainPlot().get(0).getT()))
                 .orElseThrow(NullPointerException::new);
 
+        List<DataPoint> oldestGainPlot = oldestChart.getGainPlot();
+        addInitialZeroGain(oldestGainPlot);
+
         for (SummaryChartDTO chartData : charts) {
-            List<DataPoint> valuePlot = chartData.getValuePlot();
-            int lastIndex = valuePlot.size() - 1;
-            if (valuePlot.get(lastIndex).getT() == maxValueTime) {
+            List<DataPoint> gainPlot = chartData.getGainPlot();
+            if (gainPlot == oldestGainPlot) {
                 continue;
             }
 
-            DataPoint dataPoint = new DataPoint();
-            dataPoint.setT(maxValueTime);
-            dataPoint.setY(valuePlot.get(lastIndex).getY());
-            valuePlot.add(dataPoint);
+            List<DataPoint> dataWithTrailingZeros = new ArrayList<>();
+
+            int i = 0;
+            while (gainPlot.get(0).getT() != oldestGainPlot.get(i).getT()) {
+                DataPoint dataPoint = new DataPoint();
+                dataPoint.setY(BigDecimal.ZERO);
+                dataPoint.setT(oldestGainPlot.get(i++).getT());
+                dataPoint.setAction(setLocaleLabel("product.charts.action.gain"));
+                dataWithTrailingZeros.add(dataPoint);
+            }
+            dataWithTrailingZeros.addAll(gainPlot);
+            chartData.setGainPlot(dataWithTrailingZeros);
         }
+    }
+
+    private void addInitialZeroGain(List<DataPoint> gainPlot){
+        LocalDate firstGainDate = LocalDate.ofEpochDay(gainPlot.get(0).getT() / 86400);
+        LocalDate monthBeforeFirstGain = firstGainDate.minusMonths(1);
+        DataPoint initialZeroGain = new DataPoint(monthBeforeFirstGain,ActionType.GAIN);
+        initialZeroGain.setY(BigDecimal.ZERO);
+        initialZeroGain.setAction(setLocaleLabel("product.charts.action.gain"));
+        gainPlot.add(0,initialZeroGain);
     }
 
     public long getMaxCommonTime(List<SummaryChartDTO> charts) {
@@ -117,5 +170,11 @@ public class ChartService {
         return maxTimes.stream()
                 .min(Long::compareTo)
                 .orElseThrow(NullPointerException::new);
+    }
+
+    private String setLocaleLabel(String messageKey){
+        Locale locale = LocaleContextHolder.getLocale();
+        ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
+        return  messages.getString(messageKey);
     }
 }

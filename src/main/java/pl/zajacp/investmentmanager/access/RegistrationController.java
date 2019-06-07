@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.user;
+package pl.zajacp.investmentmanager.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -6,8 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
-import pl.zajacp.investmentmanager.user.registration.validation.EmailExistsException;
-import pl.zajacp.investmentmanager.user.registration.validation.LoginExistsException;
+import pl.zajacp.investmentmanager.user.UserDto;
+import pl.zajacp.investmentmanager.user.UserService;
+import pl.zajacp.investmentmanager.user.validation.EmailExistsException;
+import pl.zajacp.investmentmanager.user.validation.LoginExistsException;
 
 import javax.validation.Valid;
 

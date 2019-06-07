@@ -1,0 +1,23 @@
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ActionService actionService;
+
+    @Autowired
+    private ChartService chartService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private FinanceCalcService financeCalcService;
+
+    @Autowired
+    private ActionRepository actionRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    EntityManager entityManager;

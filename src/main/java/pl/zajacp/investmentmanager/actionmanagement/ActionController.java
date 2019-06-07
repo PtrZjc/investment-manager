@@ -1,13 +1,11 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.products.ProductService;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
-import pl.zajacp.investmentmanager.user.UserService;
+import pl.zajacp.investmentmanager.products.SavingsAccount;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -18,21 +16,34 @@ public class ActionController {
 
     private final ProductService productService;
     private final ActionService actionService;
-    private final UserService userService;
     private final FinanceCalcService financeCalcService;
 
-    @Autowired
-    public ActionController(ProductService productService, ActionService actionService, UserService userService, FinanceCalcService financeCalcService) {
+    public ActionController(ProductService productService, ActionService actionService, FinanceCalcService financeCalcService) {
         this.productService = productService;
         this.actionService = actionService;
-        this.userService = userService;
         this.financeCalcService = financeCalcService;
     }
 
     @GetMapping("/add")
-    public String chooseProduct() {
+    public String addAction(Model model) {
+
+        model.addAttribute("actionDto", new ActionDto());
         return "actionForm";
     }
+
+    @PostMapping("/add")
+    public String saveAction(@ModelAttribute("actionDto") @Valid ActionDto actionDto,
+                             BindingResult result, HttpSession session, Model model) {
+        Long productId = (Long) session.getAttribute("productId");
+
+        if (productId == null) {
+            session.setAttribute("expiredData", "productId");
+            return "redirect:/product/all";
+        }
+
+        if (result.hasErrors()) {
+            return "actionForm";
+        }
 
         SavingsAccount product = (SavingsAccount) productService.findById(productId);
 

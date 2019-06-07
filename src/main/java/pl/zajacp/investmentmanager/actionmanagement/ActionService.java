@@ -3,8 +3,8 @@ package pl.zajacp.investmentmanager.actionmanagement;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
-import pl.zajacp.investmentmanager.products.investment.Investment;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
+import pl.zajacp.investmentmanager.products.Investment;
+import pl.zajacp.investmentmanager.products.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -184,12 +183,6 @@ public class ActionService {
                 .orElseThrow(NullPointerException::new);
 
         return actionDto.getAmount().compareTo(capValue) < 0;
-    }
-
-    public List<Action> getChartActions(SavingsAccount product) {
-        return product.getActions().stream()
-                .filter(x -> Boolean.FALSE.equals(x.getIsDone()))
-                .collect(Collectors.toList());
     }
 
     public void sortActionsByDate(List<Action> actions) {

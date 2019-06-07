@@ -1,6 +1,6 @@
 package pl.zajacp.investmentmanager.products.validation;
 
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
+import pl.zajacp.investmentmanager.products.SavingsAccount;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

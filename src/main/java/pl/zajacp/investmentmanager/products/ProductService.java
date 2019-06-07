@@ -10,8 +10,6 @@ import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
 import pl.zajacp.investmentmanager.charts.ChartService;
 import pl.zajacp.investmentmanager.charts.DataPoint;
-import pl.zajacp.investmentmanager.products.investment.Investment;
-import pl.zajacp.investmentmanager.products.savings.SavingsAccount;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import java.math.BigDecimal;
@@ -69,7 +67,7 @@ public class ProductService {
     }
 
     public void getAdditionalSavingsAccountViewData(SavingsAccount product, Model model) {
-        List<Action> actions = actionService.getChartActions((SavingsAccount) product);
+        List<Action> actions = product.getActions();
 
         LocalDate startDate = actions.get(0).getActionDate().minusMonths(1);
         Map<LocalDate, BigDecimal> gain = financeCalcService.getGain(actions);

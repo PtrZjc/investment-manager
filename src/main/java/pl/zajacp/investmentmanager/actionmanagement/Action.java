@@ -1,10 +1,10 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -20,7 +20,7 @@ public class Action {
     @Enumerated(EnumType.STRING)
     private ActionType actionType;
 
-    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate actionDate;
 
     private BigDecimal balanceChange;

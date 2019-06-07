@@ -1,9 +1,8 @@
-package pl.zajacp.investmentmanager.products.savings;
+package pl.zajacp.investmentmanager.products;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.validation.InterestAboveLimitPresent;
 
 import javax.persistence.Column;

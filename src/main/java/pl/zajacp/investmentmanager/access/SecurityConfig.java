@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.security;
+package pl.zajacp.investmentmanager.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

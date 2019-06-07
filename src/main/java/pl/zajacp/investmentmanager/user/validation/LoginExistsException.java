@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.user.registration.validation;
+package pl.zajacp.investmentmanager.user.validation;
 
 public class LoginExistsException extends Throwable {
 

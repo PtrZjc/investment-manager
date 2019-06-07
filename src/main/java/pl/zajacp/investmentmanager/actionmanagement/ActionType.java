@@ -7,5 +7,3 @@ public enum ActionType {
     BALANCE_CHANGE,
     GAIN,
 }
-
-//balance correction musi tworzyć akcję z różnicą salda do aktualnej wartości i pod koniec miesiąca musi być rozliczona.

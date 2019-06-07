@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-public class DataPoint {
+public class DataPoint implements Cloneable {
 
     @Getter
     @Setter
@@ -22,13 +22,24 @@ public class DataPoint {
     @Setter
     String action;
 
-    public DataPoint(LocalDate date, ActionType actionType) {
+    DataPoint(){};
+
+    DataPoint(LocalDate date, ActionType actionType) {
         /*
          * Epoch shift avoids overlapping of capitalization and balance change datapoints on the chart.
          * Balance change is shown at 12:00 PM, while capitalization at 11:59 PM.
          * */
-        this.t = actionType == ActionType.BALANCE_CHANGE ?
-                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (12 * 60 * 60)) * 1000:
-                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (24 * 60 * 60)-1) * 1000;
+        this.t = ActionType.BALANCE_CHANGE.equals(actionType) ?
+                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (12 * 60 * 60)) * 1000 :
+                (date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond() + (24 * 60 * 60) - 1) * 1000;
+    }
+
+    public DataPoint copy() {
+        DataPoint copied = new DataPoint();
+        copied.setAction(this.action);
+        copied.setY(this.y);
+        copied.setT(this.t);
+        return copied;
     }
 }
+

@@ -6,17 +6,17 @@
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
 
     <div th:replace="fragments/js:: percentCorrectionText"/>
+<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-
 
         document.addEventListener("DOMContentLoaded", function () {
                 console.log([[${json}]]);
                 moment.locale('pl');
                 var ctx = document.getElementById('valueChart').getContext('2d');
                 ctx.canvas.width = 1000;
-                ctx.canvas.height = 300;
+                ctx.canvas.height = 650;
 
                 var valueData = JSON.parse([[${valueData}]]);
                 var gainData = JSON.parse([[${gainData}]]);
@@ -129,29 +129,27 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-    <div th:text="${json}"></div>
     <div class="row" style="margin-top: 1rem">
-        <div class="col-sm-3"></div>
-        <button class="btn btn-info" id="update">Update</button>
-        <div class="col-sm-1"></div>
-        <div class="col-sm-2">
-            <form action="/product/all" class="form-inline" method="get">
-                <input class="btn btn-primary" type="submit" value="Go back">
-            </form>
-        </div>
-        <div class="col-sm-2">
-            <form action="/product/operation/add" class="form-inline" method="get">
-                <input type="submit" class="btn btn-info" value="Add new operation">
-            </form>
-        </div>
-        <div class="col-sm-4"></div>
-    </div>
-
-    <div class="row">
         <div class="col-sm-8">
-            <canvas id="valueChart"></canvas>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <form action="/product/all" class="form-inline" method="get">
+                        <input class="btn btn-primary" type="submit" th:value="#{form.button.goback}" value="Go back">
+                    </form>
+                </div>
+                <div class="col-sm-4">
+                    <form action="/product/operation/add" class="form-inline" method="get">
+                        <input type="submit" class="btn btn-info" th:value="#{action.add.button}" value="Add new operation">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="valueChart"></canvas>
+            </div>
         </div>
         <div class="col-sm-4">
+
             <table class="table table-hover">
                 <tr>
                     <th th:text="#{product.add.created}">created</th>
@@ -203,39 +201,41 @@
         </div>
     </div>
 
-    <h6 class="text-center">Associated operations:</h6>
+    <div class="row">
+        <h6 class="text-center" th:text="#{action.add.associatedOperations}">Associated operations:</h6>
 
-    <table class="table table-hover">
-        <tr>
-            <th th:text="#{action.add.id}">id</th>
-            <th th:text="#{action.add.actionType}">actionType</th>
-            <th th:text="#{action.add.actionDate}">actionDate</th>
-            <th th:text="#{action.add.balanceChange}">balanceChange</th>
-            <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
-            <th th:text="#{action.add.notes}">notes</th>
-            <th th:text="#{action.add.isDone}">isDone</th>
-            <th th:text="#{action.add.actions}">actions</th>
-        </tr>
-        <tr th:each="action: ${product.actions}">
-            <td th:text="${action.id}"></td>
-            <td th:text="${action.actionType}"></td>
-            <td th:text="${action.actionDate}"></td>
-            <td th:text="${action.balanceChange}"></td>
-            <td th:text="${action.afterActionValue}"></td>
-            <td th:text="${action.notes}"></td>
-            <td th:text="${action.isDone}"></td>
-            <td>
+        <table class="table table-hover">
+            <tr>
+                <th th:text="#{action.add.id}">id</th>
+                <th th:text="#{action.add.actionType}">actionType</th>
+                <th th:text="#{action.add.actionDate}">actionDate</th>
+                <th th:text="#{action.add.balanceChange}">balanceChange</th>
+                <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
+                <th th:text="#{action.add.notes}">notes</th>
+                <th th:text="#{action.add.isDone}">isDone</th>
+                <th th:text="#{action.add.actions}">actions</th>
+            </tr>
+            <tr th:each="action: ${product.actions}">
+                <td th:text="${action.id}"></td>
+                <td th:text="${action.actionType}"></td>
+                <td th:text="${action.actionDate}"></td>
+                <td th:text="${action.balanceChange}"></td>
+                <td th:text="${action.afterActionValue}"></td>
+                <td th:text="${action.notes}"></td>
+                <td th:text="${action.isDone}"></td>
+                <td>
                 <span th:if="${action.actionType==T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}">
+                  <form action="/product/operation/delete" method="post">
+                     <input type="hidden" name="id" th:value="${action.id}">
+                      <input type="submit" class="btn btn-danger" value="Delete">
+                    </form>
+                </span>
+                </td>
+            </tr>
 
-                <form action="/product/operation/delete" method="post">
-                    <input type="hidden" name="id" th:value="${action.id}">
-                    <input type="submit" class="btn btn-danger" value="Delete">
-                </form>
-      </span>
-            </td>
-        </tr>
+        </table>
+    </div>
 
-    </table>
     <div th:replace="fragments/headerFooter:: footer"/>
 </div>
 
