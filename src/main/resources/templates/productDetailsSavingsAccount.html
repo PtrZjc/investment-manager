@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="#{product.add.title.product}">Title</title>
+    <title th:text="#{product.product}">Title</title>
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
 
@@ -34,7 +34,7 @@
                     type: 'line',
                     data: {
                         datasets: [{
-                            label: [[#{product.charts.label.value}]],
+                            label: [[#{product.value}]],
                             yAxisID: 'A',
                             backgroundColor: 'rgba(54, 162, 235, 0.5)',
                             borderColor: 'rgb(54, 162, 235)',
@@ -45,7 +45,7 @@
                             steppedLine: true,
                             borderWidth: 2
                         }, {
-                            label: [[#{product.charts.label.gain}]],
+                            label: [[#{product.gain}]],
                             yAxisID: 'B',
                             backgroundColor: 'rgba(41, 157, 41, 0.5)',
                             borderColor: 'rgb(41, 157, 41)',
@@ -77,7 +77,7 @@
                                 id: 'A',
                                 scaleLabel: {
                                     display: true,
-                                    labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                    labelString: [[#{product.value}]] + " (" + [[#{product.currency}]] + ")"
                                 },
                                 ticks: {
                                     // min: 0
@@ -87,7 +87,7 @@
                                 position: 'right',
                                 scaleLabel: {
                                     display: true,
-                                    labelString: [[#{product.charts.label.gain}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                    labelString: [[#{product.gain}]] + " (" + [[#{product.currency}]] + ")"
                                 },
                                 gridLines: {
                                     display: false
@@ -107,7 +107,7 @@
                                         label += ': ';
                                     }
                                     label += parseFloat(tooltipItem.value).toFixed(2);
-                                    label += " " + [[#{product.charts.label.currency}]];
+                                    label += " " + [[#{product.currency}]];
                                     return label;
                                 }
                             }
@@ -140,7 +140,7 @@
                 </div>
                 <div class="col-sm-4">
                     <form action="/product/operation/add" class="form-inline" method="get">
-                        <input type="submit" class="btn btn-info" th:value="#{action.add.button}" value="Add new operation">
+                        <input type="submit" class="btn btn-info" th:value="#{action.button}" value="Add new operation">
                     </form>
                 </div>
             </div>
@@ -152,47 +152,47 @@
 
             <table class="table table-hover">
                 <tr>
-                    <th th:text="#{product.add.created}">created</th>
+                    <th th:text="#{product.created}">created</th>
                     <td th:text="${product.created}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.id}">id</th>
+                    <th th:text="#{product.id}">id</th>
                     <td th:text="${product.id}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.bank}">bank</th>
+                    <th th:text="#{product.bank}">bank</th>
                     <td th:text="${product.bank}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.value}">value</th>
+                    <th th:text="#{product.value}">value</th>
                     <td th:text="${product.value}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.openDate}">open_date</th>
+                    <th th:text="#{product.openDate}">open_date</th>
                     <td th:text="${product.openDate}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.validityDate}">validity_date</th>
+                    <th th:text="#{product.validityDate}">validity_date</th>
                     <td th:text="${product.validityDate}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.interest}">interest</th>
+                    <th th:text="#{product.interest}">interest</th>
                     <td th:text="${product.interest}" class="percentage"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.valueLimit}">value_limit</th>
+                    <th th:text="#{product.valueLimit}">value_limit</th>
                     <td th:text="${product.valueLimit}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.interestAboveLimit}">interest_above_limit</th>
+                    <th th:text="#{product.interestAboveLimit}">interest_above_limit</th>
                     <td th:text="${product.interestAboveLimit}" class="percentage"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.isActive}">is_active</th>
+                    <th th:text="#{product.isActive}">is_active</th>
                     <td th:text="${product.isActive}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.notes}">notes</th>
+                    <th th:text="#{product.notes}">notes</th>
                     <td th:text="${product.notes}"></td>
                 </tr>
 
@@ -202,18 +202,18 @@
     </div>
 
     <div class="row">
-        <h6 class="text-center" th:text="#{action.add.associatedOperations}">Associated operations:</h6>
+        <h6 class="text-center" th:text="#{action.associatedOperations}">Associated operations:</h6>
 
         <table class="table table-hover">
             <tr>
-                <th th:text="#{action.add.id}">id</th>
-                <th th:text="#{action.add.actionType}">actionType</th>
-                <th th:text="#{action.add.actionDate}">actionDate</th>
-                <th th:text="#{action.add.balanceChange}">balanceChange</th>
-                <th th:text="#{action.add.afterActionValue}">afterActionValue</th>
-                <th th:text="#{action.add.notes}">notes</th>
-                <th th:text="#{action.add.isDone}">isDone</th>
-                <th th:text="#{action.add.actions}">actions</th>
+                <th th:text="#{action.id}">id</th>
+                <th th:text="#{action.actionType}">actionType</th>
+                <th th:text="#{action.actionDate}">actionDate</th>
+                <th th:text="#{action.balanceChange}">balanceChange</th>
+                <th th:text="#{action.afterActionValue}">afterActionValue</th>
+                <th th:text="#{action.notes}">notes</th>
+                <th th:text="#{action.isDone}">isDone</th>
+                <th th:text="#{action.actions}">actions</th>
             </tr>
             <tr th:each="action: ${product.actions}">
                 <td th:text="${action.id}"></td>

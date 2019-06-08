@@ -48,7 +48,7 @@ public class ActionController {
         SavingsAccount product = (SavingsAccount) productService.findById(productId);
 
         if (!actionService.areSufficientFunds(actionDto, product)) {
-            result.rejectValue("amount", "error.action.message.notSufficientFunds");
+            result.rejectValue("amount", "error.notSufficientFunds");
         }
 
         if (result.hasErrors()) {

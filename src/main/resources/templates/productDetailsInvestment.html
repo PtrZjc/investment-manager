@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="#{product.add.title.product}">Title</title>
+    <title th:text="#{product.product}">Title</title>
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/js:: percentCorrectionText"/>
 
@@ -23,39 +23,39 @@
         <div class="col-sm-6">
             <table class="table table-hover">
                 <tr>
-                    <th th:text="#{product.add.created}">created</th>
+                    <th th:text="#{product.created}">created</th>
                     <td th:text="${product.created}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.id}">id</th>
+                    <th th:text="#{product.id}">id</th>
                     <td th:text="${product.id}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.bank}">bank</th>
+                    <th th:text="#{product.bank}">bank</th>
                     <td th:text="${product.bank}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.value}">value</th>
+                    <th th:text="#{product.value}">value</th>
                     <td th:text="${product.value}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.openDate}">open_date</th>
+                    <th th:text="#{product.openDate}">open_date</th>
                     <td th:text="${product.openDate}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.interest}">interest</th>
+                    <th th:text="#{product.interest}">interest</th>
                     <td th:text="${product.interest}" class="percentage"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.monthsValid}">months_valid</th>
+                    <th th:text="#{product.monthsValid}">months_valid</th>
                     <td th:text="${product.monthsValid}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.isActive}">is_active</th>
+                    <th th:text="#{product.isActive}">is_active</th>
                     <td th:text="${product.isActive}"></td>
                 </tr>
                 <tr>
-                    <th th:text="#{product.add.notes}">notes</th>
+                    <th th:text="#{product.notes}">notes</th>
                     <td th:text="${product.notes}"></td>
                 </tr>
 

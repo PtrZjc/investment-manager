@@ -39,9 +39,9 @@ public class RegistrationController {
             try {
                 userService.registerNewUserAccount(userDto);
             } catch (LoginExistsException e) {
-                result.rejectValue("login", "error.message.loginExists");
+                result.rejectValue("login", "error.loginExists");
             } catch (EmailExistsException e) {
-                result.rejectValue("email", "error.message.emailExists");
+                result.rejectValue("email", "error.emailExists");
             }
         }
 

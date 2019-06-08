@@ -12,20 +12,20 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-    <h4 class="text-center" th:text="#{product.choose.investments}">Short term investments</h4>
+    <h4 class="text-center" th:text="#{product.investments}">Short term investments</h4>
     <div class="table-responsive">
         <table class="table table-hover">
             <tr>
-<!--                <th th:text="#{product.add.created}">created</th>-->
-<!--                <th th:text="#{product.add.id}">id</th>-->
-                <th th:text="#{product.add.bank}">bank</th>
-                <th th:text="#{product.add.value}">value</th>
-                <th th:text="#{product.add.openDate}">open_date</th>
-                <th th:text="#{product.add.interest}">interest</th>
-                <th th:text="#{product.add.monthsValid}">months_valid</th>
-                <th th:text="#{product.add.isActive}">is_active</th>
-                <th th:text="#{product.add.notes}">notes</th>
-                <th th:text="#{product.add.actions}">actions</th>
+<!--                <th th:text="#{product.created}">created</th>-->
+<!--                <th th:text="#{product.id}">id</th>-->
+                <th th:text="#{product.bank}">bank</th>
+                <th th:text="#{product.value}">value</th>
+                <th th:text="#{product.openDate}">open_date</th>
+                <th th:text="#{product.interest}">interest</th>
+                <th th:text="#{product.monthsValid}">months_valid</th>
+                <th th:text="#{product.isActive}">is_active</th>
+                <th th:text="#{product.notes}">notes</th>
+                <th th:text="#{product.actions}">actions</th>
 
             </tr>
             <tr th:each="investment: ${investments}">
@@ -52,22 +52,22 @@
 
         </table>
     </div>
-    <h4 class="text-center" th:text="#{product.choose.savingsAccounts}">Savings accounts</h4>
+    <h4 class="text-center" th:text="#{product.savingsAccounts}">Savings accounts</h4>
     <div class="table-responsive">
         <table class="table table-hover">
             <tr>
-<!--                <th th:text="#{product.add.created}">created</th>-->
-<!--                <th th:text="#{product.add.id}">id</th>-->
-                <th th:text="#{product.add.bank}">bank</th>
-                <th th:text="#{product.add.value}">value</th>
-                <th th:text="#{product.add.openDate}">open_date</th>
-                <th th:text="#{product.add.validityDate}">validity_date</th>
-                <th th:text="#{product.add.interest}">interest</th>
-                <th th:text="#{product.add.valueLimit}">value_limit</th>
-                <th th:text="#{product.add.interestAboveLimit}">interest_above_limit</th>
-                <th th:text="#{product.add.isActive}">is_active</th>
-                <th th:text="#{product.add.notes}">notes</th>
-                <th th:text="#{product.add.actions}">actions</th>
+<!--                <th th:text="#{product.created}">created</th>-->
+<!--                <th th:text="#{product.id}">id</th>-->
+                <th th:text="#{product.bank}">bank</th>
+                <th th:text="#{product.value}">value</th>
+                <th th:text="#{product.openDate}">open_date</th>
+                <th th:text="#{product.validityDate}">validity_date</th>
+                <th th:text="#{product.interest}">interest</th>
+                <th th:text="#{product.valueLimit}">value_limit</th>
+                <th th:text="#{product.interestAboveLimit}">interest_above_limit</th>
+                <th th:text="#{product.isActive}">is_active</th>
+                <th th:text="#{product.notes}">notes</th>
+                <th th:text="#{product.actions}">actions</th>
             </tr>
 
 
@@ -106,12 +106,12 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" th:if="${expiredData == 'productId'}" th:text="#{action.add.productIdNullmodal.head}">No
+                    <h4 class="modal-title" th:if="${expiredData == 'productId'}" th:text="#{action.productIdNullmodal.head}">No
                         product id header</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p th:if="${expiredData == 'productId'}" th:text="#{action.add.productIdNullmodal.text}">No product id
+                    <p th:if="${expiredData == 'productId'}" th:text="#{action.productIdNullmodal.text}">No product id
                         text</p>
                 </div>
                 <div class="modal-footer">

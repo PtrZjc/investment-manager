@@ -29,7 +29,8 @@ public class HomeController {
         User activeUser = userService.getLoggedUser();
         List<SummaryChartDTO> chartData = chartService.initializeSummaryChartData(activeUser);
         chartService.equalizeSummaryGainPlots(chartData);
-        model.addAttribute("maxCommonTime", chartService.getMaxCommonTime(chartData));
+        model.addAttribute("maxTime", chartService.getMaxDataPointTime(chartData));
+        model.addAttribute("maxSharedTime", chartService.getMaxDataPointTime(chartData, true));
         model.addAttribute("data", chartService.jsonMapper(chartData));
         return "index";
     }

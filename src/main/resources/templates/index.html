@@ -15,17 +15,12 @@
             var data = JSON.parse([[${data}]]);
 
             data.sort(function (a, b) {
-                return a.valuePlot[0].y - b.valuePlot[0].y
+                return b.valuePlot[0].y - a.valuePlot[0].y
             });
 
             var valueDatasets = [];
             var gainDatasets = [];
-            var gainLabels = [];
             var isFirst = true;
-
-            for (const el of data[0].gainPlot) {
-                gainLabels.push(moment(el.t).format('LL'))
-            }
 
             for (const set of data) {
 
@@ -49,16 +44,10 @@
                     data: set.valuePlot,
                     type: 'line',
                     pointRadius: 0,
-                    fill: fill,
                     steppedLine: true,
-                    borderWidth: 2
+                    borderWidth: 2,
+                    fill: fill
                 };
-
-                var gainData = [];
-                for (const dataPoint of set.gainPlot) {
-                    gainData.push(dataPoint.y);
-                    if (gainData.length === gainLabels.length) break;
-                }
 
                 var gainDataset = {
                     label: set.productName,
@@ -67,14 +56,15 @@
                     data: set.gainPlot,
                     type: 'line',
                     pointRadius: 0,
-                    fill: fill,
                     steppedLine: true,
-                    borderWidth: 2
+                    borderWidth: 2,
+                    fill: fill
                 };
 
                 valueDatasets.push(valueDataset);
                 gainDatasets.push(gainDataset);
             }
+
 
             console.log(gainDatasets);
 
@@ -88,7 +78,7 @@
                             label += ': ';
                         }
                         label += parseFloat(tooltipItem.value).toFixed(2);
-                        label += " " + [[#{product.charts.label.currency}]];
+                        label += " " + [[#{product.label.currency}]];
                         return label;
                     }
                 }
@@ -110,7 +100,7 @@
                             },
                             time: {
                                 min: moment().format(),
-                                max: [[${maxCommonTime}]],
+                                max: [[${maxSharedTime}]],
                                 tooltipFormat: 'LL',
                                 unit: 'month'
                             }
@@ -118,7 +108,7 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: [[#{product.charts.label.value}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                labelString: [[#{product.label.value}]] + " (" + [[#{product.label.currency}]] + ")"
                             },
                             stacked: true,
                             ticks: {
@@ -129,6 +119,7 @@
                     tooltips: tooltips,
                 }
             };
+
 
             var cfgGain = {
                 type: 'line',
@@ -146,7 +137,7 @@
                             },
                             time: {
                                 min: moment().format(),
-                                max: [[${maxCommonTime}]],
+                                max: [[${maxTime}]],
                                 tooltipFormat: 'LL',
                                 unit: 'month'
                             }
@@ -154,7 +145,7 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: [[#{product.charts.label.gain}]] + " (" + [[#{product.charts.label.currency}]] + ")"
+                                labelString: [[#{product.gain}]] + " (" + [[#{product.label.currency}]] + ")"
                             },
                             stacked: true,
                             ticks: {
@@ -176,10 +167,10 @@
 
             var valueChart = new Chart(ctxValue, cfgValue);
             var gainChart = new Chart(ctxGain, cfgGain);
-            var gainChart = new Chart(ctxGain, cfgGain);
-console.log(gainDatasets);
+            console.log(gainDatasets);
 
-        })
+        });
+
         /*]]>*/
     </script>
 
@@ -193,14 +184,15 @@ console.log(gainDatasets);
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <h4 th:text="'Index page'" class="text-center">Summary</h4>
-            Wytaj uzytkowniku. MAsz X produktow, z czego tyle to takie, tyle to takie.
-            Przez ostatnie X zarobiles:
-            1
-            3
-            6
-            od poczatku
+            <h4 th:text="#{summary.welcome}" class="text-center">Summary</h4>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <h6 th:text="#{summary.chart.value}" class="text-center">value chart</h6>
+        </div>
+        <div class="col-sm-2"></div>
     </div>
     <div class="row">
         <div class="col-sm-2"></div>
@@ -212,7 +204,7 @@ console.log(gainDatasets);
     <div class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-8">
-            <canvas id="gainChart"></canvas>
+            <h6 th:text="#{summary.chart.gain}" class="text-center">gain chart</h6>
         </div>
         <div class="col-sm-2"></div>
     </div>
@@ -223,8 +215,6 @@ console.log(gainDatasets);
         </div>
         <div class="col-sm-2"></div>
     </div>
-
-
 
     <div th:replace="fragments/headerFooter:: footer"/>
 </div>

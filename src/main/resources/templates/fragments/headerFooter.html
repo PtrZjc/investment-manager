@@ -66,14 +66,14 @@
 
         <div sec:authorize="isAnonymous()">
             <p class="text-center">
-                <a th:href="@{/login}" th:text="'login'">login</a> |
-                <a th:href="@{/registration}" th:text="'register'">register</a>
+                <a th:href="@{/login}" th:text="#{footer.login}">login</a> |
+                <a th:href="@{/registration}" th:text="#{footer.register}">register</a>
             </p>
         </div>
 
         <div sec:authorize="isAuthenticated()">
-            <p class="text-center">Logged user: <span sec:authentication="name"/> |
-                <a th:href="@{/logout}">Sign Out</a></p>
+            <p class="text-center"><span th:text="#{footer.logged}">Logged user:</span> <span sec:authentication="name"/> |
+                <a th:href="@{/logout}" th:text="#{footer.logout}">Sign Out</a></p>
         </div>
 
     </footer>
