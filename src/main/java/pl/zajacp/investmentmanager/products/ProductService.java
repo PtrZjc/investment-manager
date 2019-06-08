@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final UserService userService;
-    public final ActionService actionService;
+    private final ActionService actionService;
     private final ProductRepository productRepository;
     private final ChartService chartService;
     private final FinanceCalcService financeCalcService;

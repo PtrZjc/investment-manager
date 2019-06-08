@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import pl.zajacp.investmentmanager.charts.ChartService;
 import pl.zajacp.investmentmanager.charts.SummaryChartDTO;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.user.User;
 import pl.zajacp.investmentmanager.user.UserService;
 
@@ -27,11 +28,16 @@ public class HomeController {
     public String index(Model model) {
 
         User activeUser = userService.getLoggedUser();
-        List<SummaryChartDTO> chartData = chartService.initializeSummaryChartData(activeUser);
-        chartService.equalizeSummaryGainPlots(chartData);
-        model.addAttribute("maxTime", chartService.getMaxDataPointTime(chartData));
-        model.addAttribute("maxSharedTime", chartService.getMaxDataPointTime(chartData, true));
-        model.addAttribute("data", chartService.jsonMapper(chartData));
+        List<FinanceProduct> products = activeUser.getProducts();
+
+        if(products.size()>0) {
+            List<SummaryChartDTO> chartData = chartService.initializeSummaryChartData(products);
+            chartService.equalizeSummaryGainPlots(chartData);
+            model.addAttribute("maxTime", chartService.getMaxDataPointTime(chartData));
+            model.addAttribute("maxSharedTime", chartService.getMaxDataPointTime(chartData, true));
+            model.addAttribute("data", chartService.jsonMapper(chartData));
+        }
+
         return "index";
     }
 

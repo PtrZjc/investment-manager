@@ -8,47 +8,70 @@
 <body>
 
 <div th:replace="fragments/headerFooter:: navbar"/>
+<!--<div th:replace="fragments/headerFooter:: debugStyle"/>-->
 
 <div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
 
-    <h1 th:text="#{label.form.registerTitle}">form</h1>
-    <form action="/registration" th:object="${user}" method="POST" enctype="utf8">
-        <div>
-            <label th:text="#{label.user.name}">name</label>
-            <input th:field="*{name}"/>
-            <p th:each="error: ${#fields.errors('name')}"
-               th:text="${error}">error</p>
-        </div>
-        <div>
-            <label th:text="#{label.user.login}">login</label>
-            <input th:field="*{login}"/>
-            <p th:each="error: ${#fields.errors('login')}"
-               th:text="${error}">Validation error</p>
-        </div>
-        <div>
-            <label th:text="#{label.user.email}">email</label>
-            <input type="email" th:field="*{email}"/>
-            <p th:each="error : ${#fields.errors('email')}"
-               th:text="${error}">Validation error</p>
-        </div>
-        <div>
-            <label th:text="#{label.user.password}">password</label>
-            <input type="password" th:field="*{password}"/>
-            <p th:each="error : ${#fields.errors('password')}"
-               th:text="${error}">Validation error</p>
-        </div>
-        <div>
-            <label th:text="#{label.form.confirmPass}">confirm</label>
-            <input type="password" th:field="*{matchingPassword}" class="danger"/>
-            <p th:each="error : ${#fields.globalErrors()}"
-               th:text="${error}">Validation error</p>
+            <h3 th:text="#{label.form.registerTitle}" class="text-center">form</h3>
+            <form action="/registration" th:object="${user}" method="POST" enctype="utf8">
+                <fieldset>
+                    <div>
+                        <div class="form-group">
+                            <input type="text" name="username" id="username" class="form-control input-lg"
+                                   th:placeholder="#{label.user.name}" th:field="*{name}" placeholder="login"
+                                   required="true" autofocus="true"/>
+                        </div>
+                        <p th:each="error: ${#fields.errors('name')}"
+                           th:text="${error}">error</p>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input type="text" name="username" id="login" class="form-control input-lg"
+                                   th:placeholder="#{label.user.login}" th:field="*{login}" placeholder="login"
+                                   required="true"/>
+                        </div>
+                        <p th:each="error: ${#fields.errors('login')}"
+                           th:text="${error}">Validation error</p>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input type="text" name="username" id="email" class="form-control input-lg"
+                                   th:placeholder="#{label.user.email}" th:field="*{email}" placeholder="email"
+                                   required="true"/>
+                        </div>
+                        <p th:each="error : ${#fields.errors('email')}"
+                           th:text="${error}">Validation error</p>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input type="password" name="username" id="password" class="form-control input-lg"
+                                   th:placeholder="#{label.user.password}" th:field="*{password}" placeholder="password"
+                                   required="true"/>
+                        </div>
+                        <p th:each="error : ${#fields.errors('password')}"
+                           th:text="${error}">Validation error</p>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input type="password" name="username" id="confirmPass" class="form-control input-lg"
+                                   th:placeholder="#{label.form.confirmPass}" th:field="*{matchingPassword}"
+                                   placeholder="confirm password"/>
+                        </div>
+                        <p th:each="error : ${#fields.globalErrors()}"
+                           th:text="${error}">Validation error</p>
 
+                    </div>
+                    <button type="submit" th:text="#{label.form.submit}">submit</button>
+                </fieldset>
+            </form>
         </div>
-        <button type="submit" th:text="#{label.form.submit}">submit</button>
-    </form>
+        <div class="col-sm-3"></div>
+    </div>
 
-
-       <div th:replace="fragments/headerFooter:: footer"/>
+    <div th:replace="fragments/headerFooter:: footer"/>
 </div>
 </body>
 </html>

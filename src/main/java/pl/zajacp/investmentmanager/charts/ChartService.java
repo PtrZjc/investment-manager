@@ -10,7 +10,6 @@ import pl.zajacp.investmentmanager.actionmanagement.ActionType;
 import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.SavingsAccount;
-import pl.zajacp.investmentmanager.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -91,9 +90,8 @@ public class ChartService {
         return data;
     }
 
-    public List<SummaryChartDTO> initializeSummaryChartData(User user) {
+    public List<SummaryChartDTO> initializeSummaryChartData(List<FinanceProduct> products) {
 
-        List<FinanceProduct> products = user.getProducts();
         List<List<Action>> chartActions = products.stream()
                 .filter(product -> product instanceof SavingsAccount)
                 .map(FinanceProduct::getActions)
@@ -217,7 +215,6 @@ public class ChartService {
                 .max(Long::compareTo)
                 .orElseThrow(NullPointerException::new);
     }
-
 
     private String setLocaleLabel(String messageKey) {
         Locale locale = LocaleContextHolder.getLocale();
