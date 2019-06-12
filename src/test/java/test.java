@@ -9,7 +9,7 @@ public class test {
 
         ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
 
-        System.out.println(messages.getString("product.charts.action.capitalization"));
+        System.out.println(messages.getString("product.capitalization"));
 
     }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 public class SummaryChartDTO {
 
     private String productName;
+    private String productType;
     private List<DataPoint> valuePlot;
     private List<DataPoint> gainPlot;
 }

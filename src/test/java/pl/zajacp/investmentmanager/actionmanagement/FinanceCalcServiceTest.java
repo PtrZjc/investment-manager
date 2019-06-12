@@ -99,7 +99,7 @@ public class FinanceCalcServiceTest {
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal CapitalizedValue = value.add(financeCalcService.getCapitalization(value, savingsAccount, date)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal CapitalizedValue = value.add(financeCalcService.getFullCapitalization(value, savingsAccount, date)).setScale(2, RoundingMode.HALF_UP);
         //then
 
         assertThat(CapitalizedValue, is(expectedValue));
@@ -118,7 +118,7 @@ public class FinanceCalcServiceTest {
         BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
         //when
 
-        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getCapitalization(value, savingsAccount, date));
+        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getFullCapitalization(value, savingsAccount, date));
         //then
         assertThat(valueCapitalizedAtLimit, is(closeTo(excelCalculation, excelFloatError)));
     }
@@ -139,7 +139,7 @@ public class FinanceCalcServiceTest {
         BigDecimal excelCalculation = new BigDecimal(500235.43);
         BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
         //when
-        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getCapitalization(value, savingsAccount, date));
+        BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getFullCapitalization(value, savingsAccount, date));
         //then
         assertThat(valueCapitalizedAtLimit, is(closeTo(excelCalculation, excelFloatError)));
     }
@@ -155,9 +155,9 @@ public class FinanceCalcServiceTest {
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal firstHalf = value.add(financeCalcService.getPartialCapitalizedValue
+        BigDecimal firstHalf = value.add(financeCalcService.getFirstOrLastMonthCapitalization
                 (value, savingsAccount, date, true)).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal secondHalf = value.add(financeCalcService.getPartialCapitalizedValue
+        BigDecimal secondHalf = value.add(financeCalcService.getFirstOrLastMonthCapitalization
                 (value, savingsAccount, date, false)).setScale(2, RoundingMode.HALF_UP);
         //then
         assertThat(firstHalf, is(firstHalfExpectedValue));

@@ -27,15 +27,36 @@ public class ChartService {
         this.financeCalcService = financeCalcService;
     }
 
-    public String jsonMapper(Collection objectToJson) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = null;
-        try {
-            jsonString = mapper.writeValueAsString(objectToJson);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+    public List<SummaryChartDTO> initializeSummaryChartData(List<FinanceProduct> products) {
+
+        List<List<Action>> chartActions = products.stream()
+                .filter(product -> product instanceof SavingsAccount)
+                .map(FinanceProduct::getActions)
+                .collect(Collectors.toList());
+
+        chartActions.forEach(actionService::sortActionsByDate);
+
+        List<Map<LocalDate, BigDecimal>> productGains = chartActions.stream()
+                .map(financeCalcService::getGain)
+                .collect(Collectors.toList());
+
+        List<SummaryChartDTO> chartData = new ArrayList<>();
+
+        for (int i = 0; i < chartActions.size(); i++) {
+            LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
+            String productName = chartActions.get(i).get(0).getProduct().getBank();
+            String productType = chartActions.get(i).get(0).getProduct().getClass().toString();
+            List<DataPoint> valuePlot = initializeValueData(chartActions.get(i));
+            List<DataPoint> gainPlot = initializeGainData(productGains.get(i), startDate);
+
+            SummaryChartDTO dataset = new SummaryChartDTO();
+            dataset.setProductName(productName);
+            dataset.setProductType(productType);
+            dataset.setValuePlot(valuePlot);
+            dataset.setGainPlot(gainPlot);
+            chartData.add(dataset);
         }
-        return jsonString;
+        return chartData;
     }
 
     public List<DataPoint> initializeValueData(List<Action> actions) {
@@ -60,7 +81,7 @@ public class ChartService {
                     }
                     break;
                 case PRODUCT_CLOSE:
-                    point.setAction(setLocaleLabel("product.endPromotion"));
+                    point.setAction(setLocaleLabel("product.productClose"));
                     break;
                 case PRODUCT_OPEN:
                     point.setAction(setLocaleLabel("product.productOpen"));
@@ -88,36 +109,6 @@ public class ChartService {
             data.add(point);
         }
         return data;
-    }
-
-    public List<SummaryChartDTO> initializeSummaryChartData(List<FinanceProduct> products) {
-
-        List<List<Action>> chartActions = products.stream()
-                .filter(product -> product instanceof SavingsAccount)
-                .map(FinanceProduct::getActions)
-                .collect(Collectors.toList());
-
-        chartActions.forEach(actionService::sortActionsByDate);
-
-        List<Map<LocalDate, BigDecimal>> productGains = chartActions.stream()
-                .map(financeCalcService::getGain)
-                .collect(Collectors.toList());
-
-        List<SummaryChartDTO> chartData = new ArrayList<>();
-
-        for (int i = 0; i < chartActions.size(); i++) {
-            LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
-            String productName = chartActions.get(i).get(0).getProduct().getBank();
-            List<DataPoint> valuePlot = initializeValueData(chartActions.get(i));
-            List<DataPoint> gainPlot = initializeGainData(productGains.get(i), startDate);
-
-            SummaryChartDTO dataset = new SummaryChartDTO();
-            dataset.setProductName(productName);
-            dataset.setValuePlot(valuePlot);
-            dataset.setGainPlot(gainPlot);
-            chartData.add(dataset);
-        }
-        return chartData;
     }
 
     public void equalizeSummaryGainPlots(List<SummaryChartDTO> charts) {
@@ -220,5 +211,16 @@ public class ChartService {
         Locale locale = LocaleContextHolder.getLocale();
         ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
         return messages.getString(messageKey);
+    }
+
+    public String jsonMapper(Collection objectToJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = mapper.writeValueAsString(objectToJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return jsonString;
     }
 }

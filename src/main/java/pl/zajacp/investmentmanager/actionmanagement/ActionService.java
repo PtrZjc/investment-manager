@@ -57,7 +57,7 @@ public class ActionService {
                 product.getOpenDate() :
                 LocalDate.now().withDayOfMonth(1);
         LocalDate endDate = product.getValidityDate();
-
+        int endDateIndex = getEndDateIndex(capitalizationDates, endDate);
         /*
          * The value of each subsequent generated capitalization is dependent on the previous one value.
          * First and last months need to be calculated proportionally.
@@ -72,23 +72,17 @@ public class ActionService {
             BigDecimal capitalizationChange;
 
             if (i == 0) {
-                //first month
-                capitalizationChange = startCalcDate.getMonth() == product.getCreated().getMonth() ?
-                        financeCalcService.
-                                getPartialCapitalizedValue(lastValue, product, startCalcDate, false) :
-                        financeCalcService.
-                                getCapitalization(lastValue, product, capitalizationDates.get(i));
-            } else if (i < capitalizationDates.size() - 1) {
-                //all months but last
                 capitalizationChange = financeCalcService.
-                        getCapitalization(lastValue, product, capitalizationDates.get(i));
+                        getFirstOrLastMonthCapitalization(lastValue, product, startCalcDate, false);
+            } else if (i < endDateIndex) {
+                capitalizationChange = financeCalcService.
+                        getFullCapitalization(lastValue, product, capitalizationDates.get(i));
+            } else if (i == endDateIndex) {
+                capitalizationChange = financeCalcService.
+                        getFirstOrLastMonthCapitalization(lastValue, product, endDate, true);
             } else {
-                //last month
-                capitalizationChange = endDate != null ?
-                        financeCalcService.
-                                getPartialCapitalizedValue(lastValue, product, endDate, true) :
-                        financeCalcService.
-                                getCapitalization(lastValue, product, capitalizationDates.get(i));
+                capitalizationChange = financeCalcService.
+                        getAfterPromotionCapitalization(lastValue, product, capitalizationDates.get(i));
             }
 
             capitalizationAction.
@@ -98,6 +92,16 @@ public class ActionService {
 
             actionRepository.save(capitalizationAction);
         }
+
+    }
+
+    private int getEndDateIndex(List<LocalDate> capitalizationDates, LocalDate endDate) {
+        for (int i = 0; i < capitalizationDates.size() - 1; i++) {
+            if (endDate.isBefore(capitalizationDates.get(i))) {
+                return i;
+            }
+        }
+        throw new NullPointerException();
     }
 
     public void setOpenCloseActions(FinanceProduct product) {
@@ -159,7 +163,7 @@ public class ActionService {
         product.getActions().addAll(actions);
     }
 
-    public Action findById(Long id){
+    public Action findById(Long id) {
         return actionRepository.findById(id).orElseThrow(NullPointerException::new);
     }
 

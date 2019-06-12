@@ -3,6 +3,7 @@ package pl.zajacp.investmentmanager.products;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
+import pl.zajacp.investmentmanager.products.validation.OnlyThisMonth;
 import pl.zajacp.investmentmanager.user.User;
 
 import javax.persistence.*;
@@ -27,7 +28,7 @@ public class FinanceProduct {
     private String bank;
 
     @NotNull
-    @Past
+    @OnlyThisMonth
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate openDate;
 

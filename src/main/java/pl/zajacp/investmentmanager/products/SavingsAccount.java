@@ -28,7 +28,7 @@ public class SavingsAccount extends FinanceProduct {
     private LocalDate validityDate;
 
     @Column(precision = 5, scale=4)
-    @DecimalMin("0.00")
+    @DecimalMin("0")
     @DecimalMax("100")
     private BigDecimal interestAboveLimit;
 
