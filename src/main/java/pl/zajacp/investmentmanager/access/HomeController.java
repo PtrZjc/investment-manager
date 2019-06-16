@@ -33,6 +33,7 @@ public class HomeController {
         if(products.size()>0) {
             List<SummaryChartDTO> chartData = chartService.initializeSummaryChartData(products);
             chartService.equalizeSummaryGainPlots(chartData);
+            chartService.equalizeSummaryValuePlots(chartData);
             model.addAttribute("maxTime", chartService.getMaxDataPointTime(chartData));
             model.addAttribute("maxSharedTime", chartService.getMaxDataPointTime(chartData, true));
             model.addAttribute("data", chartService.jsonMapper(chartData));

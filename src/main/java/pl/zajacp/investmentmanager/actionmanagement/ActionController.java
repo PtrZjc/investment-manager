@@ -16,12 +16,10 @@ public class ActionController {
 
     private final ProductService productService;
     private final ActionService actionService;
-    private final FinanceCalcService financeCalcService;
 
-    public ActionController(ProductService productService, ActionService actionService, FinanceCalcService financeCalcService) {
+    public ActionController(ProductService productService, ActionService actionService) {
         this.productService = productService;
         this.actionService = actionService;
-        this.financeCalcService = financeCalcService;
     }
 
     @GetMapping("/add")
@@ -56,8 +54,7 @@ public class ActionController {
         }
 
         actionService.genBalanceChangeActions(actionDto, product);
-        actionService.sortActionsByDate(product.getActions());
-        financeCalcService.recalculateCapitalizations(product, true);
+        actionService.recalculateCapitalizations(product);
         productService.getAdditionalSavingsAccountViewData(product, model);
 
         model.addAttribute("product", product);
@@ -70,9 +67,8 @@ public class ActionController {
         Action action = actionService.findById(id);
         SavingsAccount product = (SavingsAccount) action.getProduct();
         actionService.delete(action);
-        financeCalcService.recalculateCapitalizations(product, true);
+        actionService.recalculateCapitalizations(product);
         return "redirect:/product/details";
     }
-
 
 }

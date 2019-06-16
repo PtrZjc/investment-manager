@@ -93,6 +93,44 @@ public class ChartService {
         return data;
     }
 
+    public void equalizeSummaryValuePlots(List<SummaryChartDTO> charts) {
+
+        List<Long> allUniqueTimePoints = charts.stream()
+                .map(SummaryChartDTO::getValuePlot)
+                .flatMap(Collection::stream)
+                .map(DataPoint::getT)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        for (SummaryChartDTO chart : charts) {
+            fillWithSharedDataPoints(chart, allUniqueTimePoints);
+        }
+    }
+
+    private void fillWithSharedDataPoints(SummaryChartDTO chart, List<Long> allUniqueTimePoints) {
+
+        List<DataPoint> valuePlot = chart.getValuePlot();
+        List<DataPoint> plotWithSharedPoints = new ArrayList<>(allUniqueTimePoints.size());
+
+        int currentPointIndex = 0;
+        BigDecimal currentValue = BigDecimal.ZERO;
+        DataPoint currentPoint = valuePlot.get(0);
+
+        for (Long dataPointTime : allUniqueTimePoints) {
+            if (currentPoint.getT() == dataPointTime && currentPointIndex < valuePlot.size()-1) {
+                currentPoint = valuePlot.get(++currentPointIndex);
+                currentValue = currentPoint.getY();
+            }
+            DataPoint point = new DataPoint();
+            point.setT(dataPointTime);
+            point.setY(currentValue);
+            plotWithSharedPoints.add(point);
+        }
+
+        chart.setValuePlot(plotWithSharedPoints);
+    }
+
     public List<DataPoint> initializeGainData(Map<LocalDate, BigDecimal> gains, LocalDate startDate) {
 
         List<Map.Entry<LocalDate, BigDecimal>> futureGains = gains.entrySet().stream()
@@ -186,18 +224,18 @@ public class ChartService {
         }
     }
 
-    public long getMaxDataPointTime(List<SummaryChartDTO> charts){
-        return getMaxDataPointTime(charts,false);
+    public long getMaxDataPointTime(List<SummaryChartDTO> charts) {
+        return getMaxDataPointTime(charts, false);
     }
 
-    public long getMaxDataPointTime(List<SummaryChartDTO> charts,boolean sharedTime) {
+    public long getMaxDataPointTime(List<SummaryChartDTO> charts, boolean sharedTime) {
         List<Long> maxTimes = new ArrayList<>();
         for (SummaryChartDTO chartData : charts) {
             List<DataPoint> valuePlot = chartData.getValuePlot();
             int lastIndex = valuePlot.size() - 1;
             maxTimes.add(valuePlot.get(lastIndex).getT());
         }
-        if(sharedTime){
+        if (sharedTime) {
             return maxTimes.stream()
                     .min(Long::compareTo)
                     .orElseThrow(NullPointerException::new);

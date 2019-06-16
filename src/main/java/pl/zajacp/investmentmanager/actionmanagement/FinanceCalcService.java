@@ -118,12 +118,14 @@ public class FinanceCalcService {
     //TODO need to work as original
     public void recalculateCapitalizations(SavingsAccount product, boolean fromTodayCalculation) {
         /*
-         * Recalculates all capitalization actions taking into account all withdraws and payments. Recalculates either
+         * Recalculates all capitalization actions including all withdraws and payments. Recalculates either
          * all actions for given product (with past ones), or all future actions starting from current month.
          * It divides actions into months and changes capitalization values in place, month after month.
          */
-        product.setActions(actionRepository.findByProductOrderByActionDateAscAfterActionValueAsc(product));
         List<Action> actions = product.getActions();
+
+//        List<Action> actions = actionRepository.findChronologicalActive(product);
+//        List<Action> actions = product.getActions();
 
         LocalDate currentDate = fromTodayCalculation ? LocalDate.now() : actions.get(0).getActionDate();
         BigDecimal currentValue = product.getValue();
@@ -199,7 +201,7 @@ public class FinanceCalcService {
             Action currentAction = actions.get(i);
             if (currentAction.getActionType() == ActionType.BALANCE_CHANGE) {
                 currentVal = currentVal.add(actions.get(i).getBalanceChange());
-            } else if (currentAction.getActionType() == ActionType.CAPITALIZATION) {
+            } else if (currentAction.getActionType() == ActionType.CAPITALIZATION || currentAction.getProduct() instanceof Investment) {
                 gain.put(currentAction.getActionDate(), currentAction.getAfterActionValue().subtract(currentVal)
                         .setScale(2, RoundingMode.HALF_UP));
             }

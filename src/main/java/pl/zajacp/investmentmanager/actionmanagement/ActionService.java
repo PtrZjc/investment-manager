@@ -163,6 +163,13 @@ public class ActionService {
         product.getActions().addAll(actions);
     }
 
+
+
+    public void recalculateCapitalizations(SavingsAccount product){
+        sortActionsByDate(product.getActions());
+        financeCalcService.recalculateCapitalizations(product, true);
+    }
+
     public Action findById(Long id) {
         return actionRepository.findById(id).orElseThrow(NullPointerException::new);
     }
