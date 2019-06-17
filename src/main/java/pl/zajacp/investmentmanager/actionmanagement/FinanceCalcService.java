@@ -2,6 +2,7 @@ package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.Investment;
 import pl.zajacp.investmentmanager.products.SavingsAccount;
 
@@ -10,7 +11,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -18,11 +22,9 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Transactional
 public class FinanceCalcService {
 
-    private final ActionRepository actionRepository;
     private final BigDecimal BELKA_TAX = new BigDecimal(0.81);
 
-    public FinanceCalcService(ActionRepository actionRepository) {
-        this.actionRepository = actionRepository;
+    public FinanceCalcService() {
     }
 
     public BigDecimal getInvestmentValueWithReturn(Investment product) {
@@ -94,7 +96,7 @@ public class FinanceCalcService {
 
 
     public BigDecimal getFirstOrLastMonthCapitalization(BigDecimal value, SavingsAccount product,
-                                                        LocalDate date, boolean closureMonth) {
+                                                        LocalDate date, MonthType monthType) {
         /*
          * Date used in first and last have to be open/close date, as days number is used for calculation.
          * All other months in between are using capitalization date.
@@ -104,7 +106,7 @@ public class FinanceCalcService {
         BigDecimal correctedProfit = null;
         BigDecimal secondMonthPart = new BigDecimal(1.0 - (1.0 * date.getDayOfMonth() / daysInMonth));
 
-        if (closureMonth) {
+        if (monthType==MonthType.CLOSURE) {
             BigDecimal firstMonthPart = new BigDecimal(1.0 * date.getDayOfMonth() / daysInMonth);
             secondMonthPart = new BigDecimal(1.0 - (1.0 * date.getDayOfMonth() / daysInMonth));
             BigDecimal firstMonthPartProfit = getFullCapitalization(value, product, date).multiply(firstMonthPart);
@@ -115,8 +117,8 @@ public class FinanceCalcService {
         }
         return correctedProfit;
     }
-    //TODO need to work as original
-    public void recalculateCapitalizations(SavingsAccount product, boolean fromTodayCalculation) {
+
+    public List<Action> recalculateCapitalizations(SavingsAccount product, boolean fromTodayCalculation) {
         /*
          * Recalculates all capitalization actions including all withdraws and payments. Recalculates either
          * all actions for given product (with past ones), or all future actions starting from current month.
@@ -133,7 +135,8 @@ public class FinanceCalcService {
         int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
 
-        int upperBoundIndex, lowerBoundIndex = 0;
+        int monthCapitalizationIndex, firstMonthActionIndex = 0;
+        int endDateIndex = getEndDateIndex(actions);
 
         for (int i = 0; i < actions.size(); i++) {
             int actionYear = actions.get(i).getActionDate().getYear();
@@ -141,46 +144,88 @@ public class FinanceCalcService {
 
             //In case of calculation from actual date, here it omits past months
             if (fromTodayCalculation && currentMonth > actionMonth && currentYear >= actionYear) {
-                lowerBoundIndex = i + 1;
+                firstMonthActionIndex = i + 1;
                 continue;
             }
 
             if (actions.get(i).getActionType() == ActionType.CAPITALIZATION) {
-                upperBoundIndex = i;
-                fixMonthlyCapitalization(product, lowerBoundIndex, upperBoundIndex, currentValue);
-                System.out.println(lowerBoundIndex + " / " + upperBoundIndex);
+                MonthType monthType;
+                monthCapitalizationIndex = i;
+                
+                if (firstMonthActionIndex == 0) {
+                    monthType = MonthType.OPEN;
+                } else if (monthCapitalizationIndex < endDateIndex) {
+                    monthType = MonthType.VALID;
+                } else if (firstMonthActionIndex < endDateIndex && endDateIndex < monthCapitalizationIndex) {
+                    monthType = MonthType.CLOSURE;
+                } else {
+                    monthType = MonthType.POST_VALID;
+                }
+                                
+                List<Action> currentMonthActions = actions.subList(firstMonthActionIndex, monthCapitalizationIndex+1);
+
+                fixMonthlyCapitalization(currentValue, currentMonthActions, monthType);
+
+                System.out.println(firstMonthActionIndex + " / " + monthCapitalizationIndex);
                 currentValue = actions.get(i).getAfterActionValue();
-                lowerBoundIndex = i + 1;
+                firstMonthActionIndex = monthCapitalizationIndex+1;
             }
         }
-        actionRepository.saveAll(actions);
+        return actions;
     }
 
-    public void fixMonthlyCapitalization(SavingsAccount product, int lowerMonthBound, int upperMonthBound, BigDecimal initialValue) {
+    private void fixMonthlyCapitalization(BigDecimal currentValue, List<Action> currentMonthActions, MonthType monthType) {
 
-        List<Action> actions = product.getActions();
-        Action capitalization = actions.get(upperMonthBound);
+        SavingsAccount product = (SavingsAccount) currentMonthActions.get(0).getProduct();
         BigDecimal withdraws = BigDecimal.ZERO;
-        BigDecimal totalValueChange = initialValue;
+        BigDecimal totalValueChange = currentValue;
         BigDecimal totalCapitalization = BigDecimal.ZERO;
 
-        for (int i = lowerMonthBound; i < upperMonthBound; i++) {
-            if (actions.get(i).getActionType() != ActionType.BALANCE_CHANGE) {
+        for (int i = 0; i < currentMonthActions.size(); i++) {
+            BigDecimal currentChange = currentMonthActions.get(i).getBalanceChange();
+            if (currentChange == null) {
                 continue;
             }
-            BigDecimal currentChange = actions.get(i).getBalanceChange();
-            if (currentChange.compareTo(BigDecimal.ZERO) > 0) {
-                //payments capitalizations
-                totalCapitalization = totalCapitalization.add(getFirstOrLastMonthCapitalization
-                        (currentChange, product, actions.get(i).getActionDate(), false));
-            } else {
-                //widthdraws capitalizations
-                totalCapitalization = totalCapitalization.subtract(getFirstOrLastMonthCapitalization
-                        (currentChange.abs(), product, actions.get(i).getActionDate(), false));
-                withdraws = withdraws.subtract(currentChange);
+
+            boolean isPayment = currentChange.compareTo(BigDecimal.ZERO) > 0;
+
+            switch (monthType){
+                case OPEN:
+                    if(isPayment) {
+                        totalCapitalization = totalCapitalization.add(getSinglePaymentCapitalization(
+                                currentChange, product, currentMonthActions.get(i).getActionDate()));
+                    }else{
+                        //TODO firstMonthWidthrawCapitalization
+                        withdraws = withdraws.subtract(currentChange);
+                    }
+                case VALID:
+                    if(isPayment){
+                        totalCapitalization = totalCapitalization.add(getSinglePaymentCapitalization(
+                                currentChange, product, currentMonthActions.get(i).getActionDate()));
+                    }else{
+                        totalCapitalization = totalCapitalization.subtract(getSingleWidthdrawAbsCapitalization(
+                                currentChange, product, currentMonthActions.get(i).getActionDate()));
+                        withdraws = withdraws.subtract(currentChange);
+                    }
+                    break;
+                case CLOSURE:
+                    if(isPayment) {
+                        totalCapitalization = totalCapitalization.add(getSinglePaymentCapitalization(
+                                currentChange, product, currentMonthActions.get(i).getActionDate()));
+                    }else{
+                        //TODO  closureMonthWidthrawCapitalization
+                        withdraws = withdraws.subtract(currentChange);
+                    }
+                    break;
+                case POST_VALID:
+                    //TODO  postValidCapitalization
+                    if(!isPayment){
+                        withdraws = withdraws.subtract(currentChange);
+                    }
+                    break;
             }
             totalValueChange = totalValueChange.add(currentChange);
-            actions.get(i).setAfterActionValue(totalValueChange);
+            currentMonthActions.get(i).setAfterActionValue(totalValueChange);
         }
         //rest of unchanged value capitalization
         totalCapitalization = totalCapitalization
@@ -188,6 +233,31 @@ public class FinanceCalcService {
 
         capitalization.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
 
+
+    }
+
+    private BigDecimal getSinglePaymentCapitalization(BigDecimal value, SavingsAccount product, LocalDate date){
+        return getFirstOrLastMonthCapitalization(value, product, date, MonthType.OPEN);
+    }
+
+    private BigDecimal getSingleWidthdrawAbsCapitalization(BigDecimal value, SavingsAccount product, LocalDate date){
+        BigDecimal secondHalf = getFirstOrLastMonthCapitalization(value, product, date, MonthType.OPEN);
+        BigDecimal wholeMonth = getFullCapitalization(value, product, date);
+        return wholeMonth.subtract(secondHalf);
+    }
+
+    private int getEndDateIndex(List<Action> actions) {
+        int endDateIndex = 0;
+        for (int i = 0; i < actions.size(); i++) {
+            if (actions.get(i).getActionType().equals(ActionType.PRODUCT_CLOSE)) {
+                endDateIndex = i;
+                break;
+            }
+        }
+        if (endDateIndex == 0) {
+            throw new IllegalArgumentException();
+        }
+        return endDateIndex;
     }
 
     public Map<LocalDate, BigDecimal> getGain(List<Action> actions) {
@@ -208,4 +278,10 @@ public class FinanceCalcService {
         }
         return gain;
     }
+
+//    @Getter
+//    @Setter
+//    class ActionIndexDTO {
+//        int
+//    }
 }

@@ -73,13 +73,13 @@ public class ActionService {
 
             if (i == 0) {
                 capitalizationChange = financeCalcService.
-                        getFirstOrLastMonthCapitalization(lastValue, product, startCalcDate, false);
+                        getFirstOrLastMonthCapitalization(lastValue, product, startCalcDate, MonthType.OPEN);
             } else if (i < endDateIndex) {
                 capitalizationChange = financeCalcService.
                         getFullCapitalization(lastValue, product, capitalizationDates.get(i));
             } else if (i == endDateIndex) {
                 capitalizationChange = financeCalcService.
-                        getFirstOrLastMonthCapitalization(lastValue, product, endDate, true);
+                        getFirstOrLastMonthCapitalization(lastValue, product, endDate, MonthType.CLOSURE);
             } else {
                 capitalizationChange = financeCalcService.
                         getAfterPromotionCapitalization(lastValue, product, capitalizationDates.get(i));
@@ -167,7 +167,8 @@ public class ActionService {
 
     public void recalculateCapitalizations(SavingsAccount product){
         sortActionsByDate(product.getActions());
-        financeCalcService.recalculateCapitalizations(product, true);
+        List<Action> actions = financeCalcService.recalculateCapitalizations(product, true);
+        actionRepository.saveAll(actions);
     }
 
     public Action findById(Long id) {

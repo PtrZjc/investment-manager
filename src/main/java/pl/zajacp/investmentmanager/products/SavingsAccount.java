@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+//TODO InterestAboveLimit higher than valueLimit
 @InterestAboveLimitPresent
 @DiscriminatorValue("savings account")
 public class SavingsAccount extends FinanceProduct {
