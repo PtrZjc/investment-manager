@@ -1,0 +1,10 @@
+TODO pobieranie danych również z lokat
+TODO Obecna wartość dla kont oszczędnościowych
+TODO Ile zarobiłeś przez ostatni miesiac, 3, 6, 12
+TODO dopasowanie danych pod wykres stackowany
+TODO 1. Dołożenie do wszystkich list z punktami kont oszczednościowych punkty wpłat i wypłat dla innych kont oszczędnościowych ORAZ obu punktów wszystkich lokat
+TODO 2. Dołożenie do list lokat WSZYSTKICH punktow wplat i wyplat kont oszczednosciowych
+
+TODO scheduler
+TODO archiwizacja produktu
+TODO wyświetlanie na statystykach tylko aktualnych produktów

@@ -10,6 +10,8 @@ import pl.zajacp.investmentmanager.user.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
@@ -64,10 +66,18 @@ public class ProductController {
     }
 
     @PostMapping("/add/savings-account")
-    public String postSavingsAccount(@ModelAttribute("product") @Valid SavingsAccount product, BindingResult result) {
+    public String postSavingsAccount(@ModelAttribute("product") @Valid SavingsAccount product,
+                                     BindingResult result, @RequestParam("lastValidMonth") String validityDate) {
+        YearMonth validityMonth = YearMonth.parse(validityDate);
+
+        if (!YearMonth.from(LocalDate.now()).isBefore(validityMonth)) {
+            result.rejectValue("validityDate", "error.form.validityDate");
+        }
         if (result.hasErrors()) {
             return "productFormSavingsAccount";
         }
+        product.setValidityDate(validityMonth.atEndOfMonth());
+
         productService.save(product);
         return "success";
     }

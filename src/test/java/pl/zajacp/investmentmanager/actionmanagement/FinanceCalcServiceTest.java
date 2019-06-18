@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class FinanceCalcServiceTest {
 
-    private static FinanceCalcService financeCalcService = new FinanceCalcService(mock(ActionRepository.class));
+    private static FinanceCalcService financeCalcService = new FinanceCalcService();
     private static SavingsAccount savingsAccount;
     private static Investment investment;
     private static List<Action> actions;
@@ -156,9 +156,9 @@ public class FinanceCalcServiceTest {
         LocalDate date = savingsAccount.getValidityDate();
         //when
         BigDecimal firstHalf = value.add(financeCalcService.getFirstOrLastMonthCapitalization
-                (value, savingsAccount, date, true)).setScale(2, RoundingMode.HALF_UP);
+                (value, savingsAccount, date, MonthType.CLOSURE)).setScale(2, RoundingMode.HALF_UP);
         BigDecimal secondHalf = value.add(financeCalcService.getFirstOrLastMonthCapitalization
-                (value, savingsAccount, date, false)).setScale(2, RoundingMode.HALF_UP);
+                (value, savingsAccount, date, MonthType.OPEN)).setScale(2, RoundingMode.HALF_UP);
         //then
         assertThat(firstHalf, is(firstHalfExpectedValue));
         assertThat(secondHalf, is(secondHalfExpectedValue));

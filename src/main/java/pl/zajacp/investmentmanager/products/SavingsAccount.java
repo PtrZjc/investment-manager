@@ -24,7 +24,6 @@ public class SavingsAccount extends FinanceProduct {
     @NotNull
     private BigDecimal valueLimit;
 
-    @Future
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate validityDate;
 

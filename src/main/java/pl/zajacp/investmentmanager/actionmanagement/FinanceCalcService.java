@@ -2,7 +2,6 @@ package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.Investment;
 import pl.zajacp.investmentmanager.products.SavingsAccount;
 
@@ -180,6 +179,10 @@ public class FinanceCalcService {
         BigDecimal withdraws = BigDecimal.ZERO;
         BigDecimal totalValueChange = currentValue;
         BigDecimal totalCapitalization = BigDecimal.ZERO;
+        Action capitalizationAction = currentMonthActions.stream()
+                .filter(a->a.getActionType()==ActionType.CAPITALIZATION)
+                .findFirst()
+                .orElseThrow(NullPointerException::new);
 
         for (int i = 0; i < currentMonthActions.size(); i++) {
             BigDecimal currentChange = currentMonthActions.get(i).getBalanceChange();
@@ -227,11 +230,12 @@ public class FinanceCalcService {
             totalValueChange = totalValueChange.add(currentChange);
             currentMonthActions.get(i).setAfterActionValue(totalValueChange);
         }
+
         //rest of unchanged value capitalization
         totalCapitalization = totalCapitalization
-                .add(getFullCapitalization(initialValue.subtract(withdraws), product, capitalization.getActionDate()));
+                .add(getFullCapitalization(currentValue.subtract(withdraws), product,capitalizationAction.getActionDate()));
 
-        capitalization.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
+        capitalizationAction.setAfterActionValue(totalValueChange.add(totalCapitalization).setScale(2, RoundingMode.HALF_UP));
 
 
     }
