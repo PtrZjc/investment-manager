@@ -1,8 +1,7 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
 public enum MonthType {
-    OPEN,
+    FIRST,
     VALID,
-    CLOSURE,
-    POST_VALID
+    AFTER_PROMOTION
 }

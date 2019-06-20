@@ -44,53 +44,44 @@ public class ActionService {
     public void initializeSavingsAccountActions(SavingsAccount product) {
 
         /*
-         * Initializes capitalization actions for the saving accounts. Generated are up to 12 capitalization actions,
-         * one at last day of month, starting at product creation month up to validity date or 12 (in case validity
-         * date is absent).
+         * Initializes capitalization actions for the saving accounts. Generates 12 capitalization actions,
+         * one at last day of month, starting at product creation month.
          * */
 
         setOpenCloseActions(product);
 
         BigDecimal lastValue = product.getValue();
         List<LocalDate> capitalizationDates = financeCalcService.getCapitalizationDates(product);
-        LocalDate startCalcDate = product.getOpenDate().isBefore(LocalDate.now().withDayOfMonth(1)) ?
-                product.getOpenDate() :
-                LocalDate.now().withDayOfMonth(1);
+        LocalDate startCalcDate =product.getOpenDate();
         LocalDate endDate = product.getValidityDate();
         int endDateIndex = getEndDateIndex(capitalizationDates, endDate);
         /*
          * The value of each subsequent generated capitalization is dependent on the previous one value.
-         * First and last months need to be calculated proportionally.
+         * First month needs to be calculated proportionally.
          * */
         for (int i = 0; i < capitalizationDates.size(); i++) {
             Action capitalizationAction = new Action();
             capitalizationAction.setProduct(product);
             capitalizationAction.setActionType(ActionType.CAPITALIZATION);
             capitalizationAction.setActionDate(capitalizationDates.get(i));
-            capitalizationAction.setIsDone(false);
 
             BigDecimal capitalizationChange;
 
             if (i == 0) {
                 capitalizationChange = financeCalcService.
-                        getFirstOrLastMonthCapitalization(lastValue, product, startCalcDate, MonthType.OPEN);
-            } else if (i < endDateIndex) {
+                        getFirstMonthCapitalization(lastValue, product, startCalcDate);
+            } else if (i <= endDateIndex) {
                 capitalizationChange = financeCalcService.
-                        getFullCapitalization(lastValue, product, capitalizationDates.get(i));
-            } else if (i == endDateIndex) {
-                capitalizationChange = financeCalcService.
-                        getFirstOrLastMonthCapitalization(lastValue, product, endDate, MonthType.CLOSURE);
+                        getMonthCapitalization(lastValue, product, capitalizationDates.get(i));
             } else {
                 capitalizationChange = financeCalcService.
                         getAfterPromotionCapitalization(lastValue, product, capitalizationDates.get(i));
             }
-
             capitalizationAction.
-                    setAfterActionValue(lastValue.add(capitalizationChange).setScale(2, RoundingMode.HALF_UP));
-
+                    setAfterActionValue(lastValue.add(capitalizationChange).setScale(2, RoundingMode.DOWN));
+            actionRepository.save(capitalizationAction);
             lastValue = capitalizationAction.getAfterActionValue();
 
-            actionRepository.save(capitalizationAction);
         }
 
     }
@@ -149,8 +140,9 @@ public class ActionService {
 
         if (!actionDto.getIsSingle()) {
             LocalDate latestDate = product.getActions().stream()
-                    .max(Comparator.comparing(Action::getActionDate))
+                    .filter(x->x.getActionType()==ActionType.PRODUCT_CLOSE)
                     .map(Action::getActionDate)
+                    .findFirst()
                     .orElseThrow(NullPointerException::new);
 
             while (action.getActionDate().isBefore(latestDate.minusMonths(1))) {
@@ -193,6 +185,16 @@ public class ActionService {
                 .min(Comparator.comparing(Action::getActionDate))
                 .map(Action::getAfterActionValue)
                 .orElseThrow(NullPointerException::new);
+
+        Predicate<Action> widthdrawFilter = a-> a.getActionType()==ActionType.BALANCE_CHANGE
+                && a.getBalanceChange().compareTo(BigDecimal.ZERO)<0;
+
+        BigDecimal widthdraws = product.getActions().stream()
+                .filter(widthdrawFilter)
+                .map(Action::getBalanceChange)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        capValue = capValue.add(widthdraws);
 
         return actionDto.getAmount().compareTo(capValue) < 0;
     }

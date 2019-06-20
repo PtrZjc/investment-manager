@@ -48,15 +48,16 @@ public class ProductController {
     }
 
     @PostMapping("/add/investment")
-    public String postInvestment(@ModelAttribute("product") @Valid Investment product, BindingResult result) {
+    public String postInvestment(@ModelAttribute("product") @Valid Investment product,
+                                 BindingResult result, HttpSession session) {
         if (result.hasErrors()) {
             return "productFormInvestment";
         }
 
 //        actionService.generateInvestmentActions(product);
         productService.save(product);
-
-        return "success";
+        session.setAttribute("productId", product.getId());
+        return "redirect:/product/details";
     }
 
     @GetMapping("/add/savings-account")
@@ -66,8 +67,8 @@ public class ProductController {
     }
 
     @PostMapping("/add/savings-account")
-    public String postSavingsAccount(@ModelAttribute("product") @Valid SavingsAccount product,
-                                     BindingResult result, @RequestParam("lastValidMonth") String validityDate) {
+    public String postSavingsAccount(@ModelAttribute("product") @Valid SavingsAccount product, BindingResult result,
+                                     @RequestParam("lastValidMonth") String validityDate, HttpSession session) {
         YearMonth validityMonth = YearMonth.parse(validityDate);
 
         if (!YearMonth.from(LocalDate.now()).isBefore(validityMonth)) {
@@ -77,9 +78,9 @@ public class ProductController {
             return "productFormSavingsAccount";
         }
         product.setValidityDate(validityMonth.atEndOfMonth());
-
         productService.save(product);
-        return "success";
+        session.setAttribute("productId", product.getId());
+        return "redirect:/product/details";
     }
 
     @GetMapping("/all")
