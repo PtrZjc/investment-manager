@@ -69,7 +69,7 @@ public class ActionService {
 
             if (i == 0) {
                 capitalizationChange = financeCalcService.
-                        getFirstMonthCapitalization(lastValue, product, startCalcDate);
+                        getFirstMonthCapitalization(lastValue, product);
             } else if (i <= endDateIndex) {
                 capitalizationChange = financeCalcService.
                         getMonthCapitalization(lastValue, product, capitalizationDates.get(i));

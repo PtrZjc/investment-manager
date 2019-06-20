@@ -63,7 +63,7 @@ public class FinanceCalcService {
         return getCapitalizedProfit(value, product, date, interestRate).multiply(applicableMonthFraction);
     }
 
-    public BigDecimal getFirstMonthCapitalization(BigDecimal value, SavingsAccount product, LocalDate date) {
+    public BigDecimal getFirstMonthCapitalization(BigDecimal value, SavingsAccount product) {
         /*
          * Date parameter needs to be account open date, as days number is used for calculation.
          * All other months in between are using capitalization dates.
@@ -76,7 +76,7 @@ public class FinanceCalcService {
         BigDecimal capitalization = null;
         switch (monthType) {
             case FIRST:
-                capitalization = getFirstMonthCapitalization(value, product, date);
+                capitalization = getFirstMonthCapitalization(value, product);
                 break;
             case VALID:
                 capitalization = getMonthCapitalization(value, product, date);

@@ -71,7 +71,7 @@ public class FinanceCalcServiceTest {
     public void shouldInvestmentValueWithReturn() {
         //given
         prepareProducts();
-        BigDecimal expectedReturn = new BigDecimal(1000 + (1000 * 0.035) * 0.81).setScale(2, RoundingMode.DOWN);
+        BigDecimal expectedReturn = new BigDecimal(1000 + (1000 * 0.035) * 0.81).setScale(2,RoundingMode.HALF_DOWN);
         //when
         BigDecimal returnValue = financeCalcService.getInvestmentValueWithReturn(investment);
         //then
@@ -87,7 +87,7 @@ public class FinanceCalcServiceTest {
         List<LocalDate> dates = financeCalcService.getCapitalizationDates(savingsAccount);
         //then
         assertThat(dates, hasItem(lastCapitalisationDate));
-        assertThat(dates.size(), is(6));
+        assertThat(dates.size(), is(12));
     }
 
     @Test
@@ -95,11 +95,12 @@ public class FinanceCalcServiceTest {
         //given
         prepareProducts();
         BigDecimal expectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81))
-                .setScale(2, RoundingMode.DOWN);
+                .setScale(2, RoundingMode.HALF_DOWN);
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
         //when
-        BigDecimal CapitalizedValue = value.add(financeCalcService.getMonthCapitalization(value, savingsAccount, date)).setScale(2, RoundingMode.DOWN);
+        BigDecimal CapitalizedValue = value.add(financeCalcService.getMonthCapitalization(value, savingsAccount, date))
+                .setScale(2, RoundingMode.HALF_DOWN);
         //then
 
         assertThat(CapitalizedValue, is(expectedValue));
@@ -148,18 +149,23 @@ public class FinanceCalcServiceTest {
     public void shouldPartialCapitalizedValue() {
         //given
         prepareProducts();
-        BigDecimal firstHalfExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81 * 10.0 / 30))
+        BigDecimal fullMonthExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81))
                 .setScale(2, RoundingMode.DOWN);
         BigDecimal secondHalfExpectedValue = new BigDecimal(1000 + (1000 * 0.035 * (30.0 / 365) * 0.81 * (1 - 10.0 / 30)))
                 .setScale(2, RoundingMode.DOWN);
+        BigDecimal firstHalfExpectedValue = fullMonthExpectedValue.subtract(secondHalfExpectedValue);
+
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
+
+//        LocalDate date = savingsAccount.getOpenDate();
         //when
-        BigDecimal firstHalf = value.add(financeCalcService.getFirstMonthCapitalization
+        BigDecimal fullMonth = value.add(financeCalcService.getMonthCapitalization
                 (value, savingsAccount, date)).setScale(2, RoundingMode.DOWN);
-        BigDecimal secondHalf = value.add(financeCalcService.getFirstMonthCapitalization
-                (value, savingsAccount, date)).setScale(2, RoundingMode.DOWN);
-        //then
+        BigDecimal secondHalf = value.add(financeCalcService.getPartialMonthCapitalization(
+                value, savingsAccount, date, savingsAccount.getInterest())).setScale(2, RoundingMode.DOWN);
+        BigDecimal firstHalf = fullMonth.subtract(secondHalf);
+                //then
         assertThat(firstHalf, is(firstHalfExpectedValue));
         assertThat(secondHalf, is(secondHalfExpectedValue));
     }
@@ -197,8 +203,8 @@ public class FinanceCalcServiceTest {
         initValues.forEach((i, v) -> when(actions.get(i).getActionType()).thenReturn((ActionType) v[2]));
 
         List<BigDecimal> excelGains = new ArrayList<>();
-        for (Double doubleGain : new Double[]{34.62, 69.85, 108.15, 148.3}) {
-            excelGains.add(new BigDecimal(doubleGain).setScale(2,RoundingMode.DOWN));
+        for (Double doubleGain : new Double[]{34.62, 69.85, 108.14, 148.29}) {
+            excelGains.add(new BigDecimal(doubleGain).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         //when
