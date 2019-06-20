@@ -179,13 +179,12 @@ public class FinanceCalcService {
         BigDecimal totalCapitalization = BigDecimal.ZERO;
         Action capitalizationAction = currentMonthActions.get(currentMonthActions.size() - 1);
 
-        for (int i = 0; i < currentMonthActions.size(); i++) {
-            BigDecimal currentChange = currentMonthActions.get(i).getBalanceChange();
+        for (Action action : currentMonthActions) {
+            BigDecimal currentChange = action.getBalanceChange();
             if (currentChange == null) {
                 continue;
             }
-
-            LocalDate actionDate = currentMonthActions.get(i).getActionDate();
+            LocalDate actionDate = action.getActionDate();
 
             if (currentChange.compareTo(BigDecimal.ZERO) > 0) {
                 totalCapitalization = totalCapitalization.add(getSelectedCapitalization(
@@ -197,7 +196,7 @@ public class FinanceCalcService {
             }
 
             totalValueChange = totalValueChange.add(currentChange);
-            currentMonthActions.get(i).setAfterActionValue(totalValueChange.setScale(2, RoundingMode.DOWN));
+            action.setAfterActionValue(totalValueChange.setScale(2, RoundingMode.DOWN));
         }
 
         BigDecimal baseValueCapitalization = getSelectedCapitalization
@@ -240,7 +239,7 @@ public class FinanceCalcService {
         /*
          * Returns map of dates when capitalization occured with calculated gain from open date.
          * */
-        Map<LocalDate, BigDecimal> gain = new LinkedHashMap<>();
+        Map<LocalDate, BigDecimal> gains = new LinkedHashMap<>();
         BigDecimal currentVal = actions.get(0).getAfterActionValue();
 
         for (int i = 1; i < actions.size(); i++) {
@@ -248,10 +247,10 @@ public class FinanceCalcService {
             if (currentAction.getActionType() == ActionType.BALANCE_CHANGE) {
                 currentVal = currentVal.add(actions.get(i).getBalanceChange());
             } else if (currentAction.getActionType() == ActionType.CAPITALIZATION || currentAction.getProduct() instanceof Investment) {
-                gain.put(currentAction.getActionDate(), currentAction.getAfterActionValue().subtract(currentVal)
+                gains.put(currentAction.getActionDate(), currentAction.getAfterActionValue().subtract(currentVal)
                         .setScale(2, RoundingMode.DOWN));
             }
         }
-        return gain;
+        return gains;
     }
 }

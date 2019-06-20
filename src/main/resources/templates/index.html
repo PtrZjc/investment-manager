@@ -14,10 +14,6 @@
 
             var data = JSON.parse([[${data}]]);
 
-            data.sort(function (a, b) {
-                return b.valuePlot[0].y - a.valuePlot[0].y
-            });
-
             var valueDatasets = [];
             var gainDatasets = [];
             var isFirst = true;
@@ -99,7 +95,7 @@
                                 displayFormats: 'LL'
                             },
                             time: {
-                                min: moment().format(),
+                                min: moment().startOf('month').format(),
                                 max: [[${maxSharedTime}]],
                                 tooltipFormat: 'LL',
                                 unit: 'month'
@@ -136,7 +132,7 @@
                                 displayFormats: 'LL'
                             },
                             time: {
-                                min: moment().format(),
+                                min: moment().startOf('month').format(),
                                 max: [[${maxTime}]],
                                 tooltipFormat: 'LL',
                                 unit: 'month'

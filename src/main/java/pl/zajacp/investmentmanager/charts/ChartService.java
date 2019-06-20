@@ -9,7 +9,7 @@ import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.actionmanagement.ActionType;
 import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
-import pl.zajacp.investmentmanager.products.SavingsAccount;
+import pl.zajacp.investmentmanager.products.Investment;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChartService {
+
+    private enum PlotType {
+        GAIN, VALUE;
+    }
 
     private final ActionService actionService;
     private final FinanceCalcService financeCalcService;
@@ -30,7 +34,6 @@ public class ChartService {
     public List<SummaryChartDTO> initializeSummaryChartData(List<FinanceProduct> products) {
 
         List<List<Action>> chartActions = products.stream()
-                .filter(product -> product instanceof SavingsAccount)
                 .map(FinanceProduct::getActions)
                 .collect(Collectors.toList());
 
@@ -45,7 +48,7 @@ public class ChartService {
         for (int i = 0; i < chartActions.size(); i++) {
             LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
             String productName = chartActions.get(i).get(0).getProduct().getBank();
-            String productType = chartActions.get(i).get(0).getProduct().getClass().toString();
+            String productType = chartActions.get(i).get(0).getProduct().getClass().toString().split("\\.")[4];
             List<DataPoint> valuePlot = initializeValueData(chartActions.get(i));
             List<DataPoint> gainPlot = initializeGainData(productGains.get(i), startDate);
 
@@ -56,6 +59,10 @@ public class ChartService {
             dataset.setGainPlot(gainPlot);
             chartData.add(dataset);
         }
+        addInitialZeroGainToOldestGainPlot(chartData);
+        equalizeSummaryPlots(chartData);
+        ensureProperOrderOnChart(chartData);
+
         return chartData;
     }
 
@@ -81,7 +88,12 @@ public class ChartService {
                     }
                     break;
                 case PRODUCT_CLOSE:
-                    point.setAction(setLocaleLabel("product.productClose"));
+                    if (action.getProduct() instanceof Investment) {
+                        currentValue = action.getAfterActionValue();
+                        point.setAction(setLocaleLabel("product.investmentEnd"));
+                    } else {
+                        point.setAction(setLocaleLabel("product.productClose"));
+                    }
                     break;
                 case PRODUCT_OPEN:
                     point.setAction(setLocaleLabel("product.productOpen"));
@@ -93,9 +105,9 @@ public class ChartService {
         return data;
     }
 
-    public void equalizeSummaryValuePlots(List<SummaryChartDTO> charts) {
+    private void equalizeSummaryPlots(List<SummaryChartDTO> charts) {
 
-        List<Long> allUniqueTimePoints = charts.stream()
+        List<Long> uniqueValueTimePoints = charts.stream()
                 .map(SummaryChartDTO::getValuePlot)
                 .flatMap(Collection::stream)
                 .map(DataPoint::getT)
@@ -103,24 +115,49 @@ public class ChartService {
                 .sorted()
                 .collect(Collectors.toCollection(ArrayList::new));
 
+        List<Long> uniqueGainTimePoints = charts.stream()
+                .map(SummaryChartDTO::getGainPlot)
+                .flatMap(Collection::stream)
+                .map(DataPoint::getT)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toCollection(ArrayList::new));
+
         for (SummaryChartDTO chart : charts) {
-            fillWithSharedDataPoints(chart, allUniqueTimePoints);
+            fillChartWithSharedDataPoints(chart, uniqueValueTimePoints, PlotType.VALUE);
+            fillChartWithSharedDataPoints(chart, uniqueGainTimePoints, PlotType.GAIN);
         }
     }
 
-    private void fillWithSharedDataPoints(SummaryChartDTO chart, List<Long> allUniqueTimePoints) {
+    private void fillChartWithSharedDataPoints(SummaryChartDTO chart, List<Long> allUniqueTimePoints, PlotType plotType) {
 
-        List<DataPoint> valuePlot = chart.getValuePlot();
+        List<DataPoint> plot = null;
+        if (plotType == PlotType.GAIN) {
+            plot = chart.getGainPlot();
+        } else if (plotType == PlotType.VALUE) {
+            plot = chart.getValuePlot();
+        }
+
         List<DataPoint> plotWithSharedPoints = new ArrayList<>(allUniqueTimePoints.size());
+        boolean isInvestment = "Investment".equals(chart.getProductType());
+
+        if (isInvestment && plotType == PlotType.VALUE) {
+            plot.add(plot.get(1).copy());
+        }
 
         int currentPointIndex = 0;
         BigDecimal currentValue = BigDecimal.ZERO;
-        DataPoint currentPoint = valuePlot.get(0);
+        DataPoint currentPoint = plot.get(0);
 
         for (Long dataPointTime : allUniqueTimePoints) {
-            if (currentPoint.getT() == dataPointTime && currentPointIndex < valuePlot.size()-1) {
-                currentPoint = valuePlot.get(++currentPointIndex);
+            if (currentPoint.getT() == dataPointTime &&
+                    (currentPointIndex < plot.size() - 1 || isInvestment)) {
                 currentValue = currentPoint.getY();
+                if (plotType == PlotType.GAIN && !isInvestment) {
+                    currentPoint = plot.get(++currentPointIndex);
+                } else if (plotType == PlotType.VALUE) {
+                    currentPoint = plot.get(++currentPointIndex);
+                }
             }
             DataPoint point = new DataPoint();
             point.setT(dataPointTime);
@@ -128,7 +165,11 @@ public class ChartService {
             plotWithSharedPoints.add(point);
         }
 
-        chart.setValuePlot(plotWithSharedPoints);
+        if (plotType == PlotType.GAIN) {
+            chart.setGainPlot(plotWithSharedPoints);
+        } else if (plotType == PlotType.VALUE) {
+            chart.setValuePlot(plotWithSharedPoints);
+        }
     }
 
     public List<DataPoint> initializeGainData(Map<LocalDate, BigDecimal> gains, LocalDate startDate) {
@@ -139,7 +180,6 @@ public class ChartService {
 
         List<DataPoint> data = new ArrayList<>();
 
-
         for (Map.Entry<LocalDate, BigDecimal> gain : futureGains) {
             DataPoint point = new DataPoint(gain.getKey(), ActionType.GAIN);
             point.setAction(setLocaleLabel("product.gain"));
@@ -149,80 +189,23 @@ public class ChartService {
         return data;
     }
 
-    public void equalizeSummaryGainPlots(List<SummaryChartDTO> charts) {
+    private void addInitialZeroGainToOldestGainPlot(List<SummaryChartDTO> charts) {
 
-        SummaryChartDTO oldestChart = charts.stream()
-                .min((ch1, ch2) -> (int) (ch1.getGainPlot().get(0).getT() - ch2.getGainPlot().get(0).getT()))
+        List<DataPoint> oldestGainPlot = charts.stream()
+                .map(SummaryChartDTO::getGainPlot)
+                .filter(p -> p.size() > 1)
+                .min((p1, p2) -> (int) (p1.get(0).getT() - p2.get(0).getT()))
                 .orElseThrow(NullPointerException::new);
 
-        long latestDataPointTime = charts.stream()
-                .map(ch -> ch.getGainPlot().get(ch.getGainPlot().size() - 1).getT())
-                .max(Long::compareTo)
-                .orElseThrow(NullPointerException::new);
-
-        List<DataPoint> oldestGainPlot = oldestChart.getGainPlot();
-        addInitialZeroGain(oldestGainPlot);
-
-        for (SummaryChartDTO chartData : charts) {
-            List<DataPoint> gainPlot = chartData.getGainPlot();
-            if (gainPlot == oldestGainPlot) {
-                continue;
-            }
-
-            List<DataPoint> dataWithTrailingZeros = addLeadingZeroGainLikeOldest(gainPlot, oldestGainPlot);
-            dataWithTrailingZeros.addAll(gainPlot);
-            chartData.setGainPlot(dataWithTrailingZeros);
-        }
-        fillTrailingConstantGainToLatest(charts);
-    }
-
-    private void addInitialZeroGain(List<DataPoint> gainPlot) {
-        LocalDate firstGainDate = LocalDate.ofEpochDay(gainPlot.get(0).getT() / 86400000);
+        LocalDate firstGainDate = LocalDate.ofEpochDay(oldestGainPlot.get(0).getT() / 86400000);
         LocalDate monthBeforeFirstGain = firstGainDate.minusMonths(1);
         DataPoint initialZeroGain = new DataPoint(monthBeforeFirstGain, ActionType.GAIN);
         initialZeroGain.setY(BigDecimal.ZERO);
         initialZeroGain.setAction(setLocaleLabel("product.gain"));
-        gainPlot.add(0, initialZeroGain);
+        oldestGainPlot.add(0, initialZeroGain);
+
     }
 
-    private List<DataPoint> addLeadingZeroGainLikeOldest(List<DataPoint> gainPlot, List<DataPoint> oldestGainPlot) {
-        List<DataPoint> dataWithTrailingZeros = new ArrayList<>();
-        int i = 0;
-        while (gainPlot.get(0).getT() != oldestGainPlot.get(i).getT()) {
-            DataPoint dataPoint = new DataPoint();
-            dataPoint.setY(BigDecimal.ZERO);
-            dataPoint.setT(oldestGainPlot.get(i++).getT());
-            dataPoint.setAction(setLocaleLabel("product.gain"));
-            dataWithTrailingZeros.add(dataPoint);
-        }
-        return dataWithTrailingZeros;
-    }
-
-    private void fillTrailingConstantGainToLatest(List<SummaryChartDTO> charts) {
-        Comparator<SummaryChartDTO> lastDataPointTimeComparator =
-                (ch1, ch2) -> (int) (ch1.getGainPlot().get(ch1.getGainPlot().size() - 1).getT()
-                        - ch2.getGainPlot().get(ch2.getGainPlot().size() - 1).getT());
-
-        List<DataPoint> latestGainPlot = charts.stream()
-                .max(lastDataPointTimeComparator)
-                .map(SummaryChartDTO::getGainPlot)
-                .orElseThrow(NullPointerException::new);
-
-        for (SummaryChartDTO chart : charts) {
-            List<DataPoint> gainPlot = chart.getGainPlot();
-
-            int index = gainPlot.size() - 1;
-
-            long latestDataPointTime = latestGainPlot.get(latestGainPlot.size() - 1).getT();
-            while (gainPlot.get(index).getT() != latestDataPointTime) {
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.setY(gainPlot.get(index).getY());
-                dataPoint.setT(latestGainPlot.get(++index).getT());
-                dataPoint.setAction(setLocaleLabel("product.gain"));
-                gainPlot.add(dataPoint);
-            }
-        }
-    }
 
     public long getMaxDataPointTime(List<SummaryChartDTO> charts) {
         return getMaxDataPointTime(charts, false);
@@ -245,6 +228,7 @@ public class ChartService {
                 .orElseThrow(NullPointerException::new);
     }
 
+
     private String setLocaleLabel(String messageKey) {
         Locale locale = LocaleContextHolder.getLocale();
         ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
@@ -260,5 +244,16 @@ public class ChartService {
             e.printStackTrace();
         }
         return jsonString;
+    }
+
+    private void ensureProperOrderOnChart(List<SummaryChartDTO> chartData) {
+        int midValueIndex = chartData.get(0).getValuePlot().size() / 2;
+        Comparator<SummaryChartDTO> compareMidValue = Comparator.comparing
+                (ch -> ch.getValuePlot().get(midValueIndex).getY(), Comparator.reverseOrder());
+
+        chartData.sort(Comparator
+                .comparing(SummaryChartDTO::getProductType)
+                .thenComparing(compareMidValue));
+        int x = 1;
     }
 }
