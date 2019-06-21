@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.charts;
+package pl.zajacp.investmentmanager.data;
 
 import lombok.Getter;
 import lombok.Setter;

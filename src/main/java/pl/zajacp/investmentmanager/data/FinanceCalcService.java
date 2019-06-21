@@ -1,7 +1,9 @@
-package pl.zajacp.investmentmanager.actionmanagement;
+package pl.zajacp.investmentmanager.data;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.zajacp.investmentmanager.actionmanagement.Action;
+import pl.zajacp.investmentmanager.actionmanagement.ActionType;
 import pl.zajacp.investmentmanager.products.Investment;
 import pl.zajacp.investmentmanager.products.SavingsAccount;
 
@@ -21,7 +23,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Transactional
 public class FinanceCalcService {
 
-    private final BigDecimal BELKA_TAX = new BigDecimal(0.81);
+    private final BigDecimal BELKA_TAX = BigDecimal.valueOf(0.81);
 
     public FinanceCalcService() {
     }
@@ -253,4 +255,7 @@ public class FinanceCalcService {
         }
         return gains;
     }
+
+
+
 }

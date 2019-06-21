@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.actionmanagement;
+package pl.zajacp.investmentmanager.data;
 
 public enum MonthType {
     FIRST,

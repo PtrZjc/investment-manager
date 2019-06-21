@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
-import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
-import pl.zajacp.investmentmanager.charts.ChartService;
-import pl.zajacp.investmentmanager.charts.DataPoint;
+import pl.zajacp.investmentmanager.data.FinanceCalcService;
+import pl.zajacp.investmentmanager.data.ChartService;
+import pl.zajacp.investmentmanager.data.DataPoint;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import java.math.BigDecimal;

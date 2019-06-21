@@ -1,6 +1,7 @@
 package pl.zajacp.investmentmanager.actionmanagement;
 
 import org.junit.Test;
+import pl.zajacp.investmentmanager.data.FinanceCalcService;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.Investment;
 import pl.zajacp.investmentmanager.products.SavingsAccount;
@@ -36,16 +37,16 @@ public class FinanceCalcServiceTest {
         for (FinanceProduct prod : new FinanceProduct[]{savingsAccount, investment}) {
             when(prod.getOpenDate()).thenReturn(openDate);
             when(prod.getCreated()).thenReturn(openDate.plusMonths(1));
-            when(prod.getInterest()).thenReturn(new BigDecimal(0.035));
-            when(prod.getValue()).thenReturn(new BigDecimal(1000));
+            when(prod.getInterest()).thenReturn(BigDecimal.valueOf(0.035));
+            when(prod.getValue()).thenReturn(BigDecimal.valueOf(1000));
         }
         when(investment.getMonthsValid()).thenReturn(12L);
         when(savingsAccount.getValidityDate()).thenReturn(validityDate);
-        when(savingsAccount.getInterestAboveLimit()).thenReturn(new BigDecimal(0.005));
-        when(savingsAccount.getValueLimit()).thenReturn(new BigDecimal(10000));
+        when(savingsAccount.getInterestAboveLimit()).thenReturn(BigDecimal.valueOf(0.005));
+        when(savingsAccount.getValueLimit()).thenReturn(BigDecimal.valueOf(10000));
     }
 
-    static void prepareActions() {
+    public static void prepareActions() {
         String[] dates = {"2019-05-15", "2019-05-20", "2019-05-25", "2019-05-31", "2019-06-15", "2019-06-20",
                 "2019-06-25", "2019-06-30", "2019-06-30", "2019-07-15", "2019-07-20", "2019-07-25", "2019-07-31"};
 
@@ -110,13 +111,13 @@ public class FinanceCalcServiceTest {
     public void shouldCapitalizedValueAtLimit() {
         //given
         prepareProducts();
-        when(savingsAccount.getValue()).thenReturn(new BigDecimal(9980));
+        when(savingsAccount.getValue()).thenReturn(BigDecimal.valueOf(9980));
 
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
 
-        BigDecimal excelCalculation = new BigDecimal(10008.69);
-        BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
+        BigDecimal excelCalculation = BigDecimal.valueOf(10008.69);
+        BigDecimal excelFloatError = excelCalculation.multiply(BigDecimal.valueOf(0.00003));
         //when
 
         BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getMonthCapitalization(value, savingsAccount, date));
@@ -129,16 +130,16 @@ public class FinanceCalcServiceTest {
 
         //given
         prepareProducts();
-        when(savingsAccount.getValue()).thenReturn(new BigDecimal(499000));
-        when(savingsAccount.getValueLimit()).thenReturn(new BigDecimal(500000));
-        when(savingsAccount.getInterest()).thenReturn(new BigDecimal(0.05));
-        when(savingsAccount.getInterestAboveLimit()).thenReturn(new BigDecimal(0.002));
+        when(savingsAccount.getValue()).thenReturn(BigDecimal.valueOf(499000));
+        when(savingsAccount.getValueLimit()).thenReturn(BigDecimal.valueOf(500000));
+        when(savingsAccount.getInterest()).thenReturn(BigDecimal.valueOf(0.05));
+        when(savingsAccount.getInterestAboveLimit()).thenReturn(BigDecimal.valueOf(0.002));
 
         BigDecimal value = savingsAccount.getValue();
         LocalDate date = savingsAccount.getValidityDate();
 
-        BigDecimal excelCalculation = new BigDecimal(500235.43);
-        BigDecimal excelFloatError = excelCalculation.multiply(new BigDecimal(0.00003));
+        BigDecimal excelCalculation = BigDecimal.valueOf(500235.43);
+        BigDecimal excelFloatError = excelCalculation.multiply(BigDecimal.valueOf(0.00003));
         //when
         BigDecimal valueCapitalizedAtLimit = value.add(financeCalcService.getMonthCapitalization(value, savingsAccount, date));
         //then
@@ -179,7 +180,7 @@ public class FinanceCalcServiceTest {
         }
 
         for (int i = 0; i < 4; i++) {
-            when(actions.get(i*2+1).getBalanceChange()).thenReturn(new BigDecimal(500));
+            when(actions.get(i*2+1).getBalanceChange()).thenReturn(BigDecimal.valueOf(500));
             when(actions.get(i*2+1).getActionType()).thenReturn(ActionType.BALANCE_CHANGE);
         }
 

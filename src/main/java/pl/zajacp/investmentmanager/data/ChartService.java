@@ -1,4 +1,4 @@
-package pl.zajacp.investmentmanager.charts;
+package pl.zajacp.investmentmanager.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
 import pl.zajacp.investmentmanager.actionmanagement.ActionType;
-import pl.zajacp.investmentmanager.actionmanagement.FinanceCalcService;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
 import pl.zajacp.investmentmanager.products.Investment;
 
@@ -31,19 +30,25 @@ public class ChartService {
         this.financeCalcService = financeCalcService;
     }
 
-    public List<SummaryChartDTO> initializeSummaryChartData(List<FinanceProduct> products) {
-
+    public List<List<Action>> getInitialChartActions(List<FinanceProduct> products) {
         List<List<Action>> chartActions = products.stream()
+                .filter(FinanceProduct::getIsActive)
                 .map(FinanceProduct::getActions)
                 .collect(Collectors.toList());
 
         chartActions.forEach(actionService::sortActionsByDate);
+        return chartActions;
+    }
 
-        List<Map<LocalDate, BigDecimal>> productGains = chartActions.stream()
+    public List<Map<LocalDate, BigDecimal>> getInitialProductGains(List<List<Action>> chartActions) {
+        return chartActions.stream()
                 .map(financeCalcService::getGain)
                 .collect(Collectors.toList());
+    }
 
-        List<SummaryChartDTO> chartData = new ArrayList<>();
+    public List<SummaryChartDTO> initializeSummaryChartData(List<List<Action>> chartActions,
+                                                            List<Map<LocalDate, BigDecimal>> productGains) {
+                List<SummaryChartDTO> chartData = new ArrayList<>();
 
         for (int i = 0; i < chartActions.size(); i++) {
             LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
@@ -206,7 +211,6 @@ public class ChartService {
 
     }
 
-
     public long getMaxDataPointTime(List<SummaryChartDTO> charts) {
         return getMaxDataPointTime(charts, false);
     }
@@ -254,6 +258,5 @@ public class ChartService {
         chartData.sort(Comparator
                 .comparing(SummaryChartDTO::getProductType)
                 .thenComparing(compareMidValue));
-        int x = 1;
     }
 }
