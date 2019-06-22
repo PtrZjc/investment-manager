@@ -43,9 +43,8 @@ public class StatisticsService {
                             .filter(a -> a.getActionDate().isBefore(investmentDate))
                             .map(Action::getAfterActionValue)
                             .max(BigDecimal::compareTo)
-                            .orElseThrow(NullPointerException::new));
+                            .orElse(BigDecimal.ZERO));
         }
-
         //past capitalizations
         Predicate<Action> pastMonthCapitalization = a ->
                 a.getActionDate().isEqual(YearMonth.now().minusMonths(minusMonths + 1).atEndOfMonth()) &&
@@ -67,7 +66,7 @@ public class StatisticsService {
                         .filter(p -> p.getOpenDate().isAfter(YearMonth.now().minusMonths(1).atEndOfMonth()))
                         .map(FinanceProduct::getActions)
                         .flatMap(Collection::stream)
-                        .filter(a->a.getActionType()==ActionType.PRODUCT_OPEN)
+                        .filter(a -> a.getActionType() == ActionType.PRODUCT_OPEN)
                         .map(Action::getAfterActionValue)
                         .reduce(BigDecimal.ZERO, BigDecimal::add));
 
@@ -83,7 +82,7 @@ public class StatisticsService {
                             .map(FinanceProduct::getActions)
                             .flatMap(Collection::stream)
                             .filter(thisMonthBalanceChanges)
-                            .map(Action::getAfterActionValue)
+                            .map(Action::getBalanceChange)
                             .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
         return value.setScale(2, RoundingMode.DOWN);
@@ -106,4 +105,41 @@ public class StatisticsService {
                 .setScale(2, RoundingMode.DOWN);
     }
 
+    public BigDecimal getActualSavingsAccountValue(SavingsAccount product) {
+        BigDecimal value = BigDecimal.ZERO;
+
+        //possible past capitalization
+        if (product.getOpenDate().isBefore(YearMonth.now().atDay(1))) {
+            Predicate<Action> pastMonthCapitalization = a ->
+                    a.getActionDate().isEqual(YearMonth.now().minusMonths(1).atEndOfMonth()) &&
+                            a.getActionType() == ActionType.CAPITALIZATION;
+            value = value.add(
+                    product.getActions().stream()
+                            .filter(pastMonthCapitalization)
+                            .map(Action::getAfterActionValue)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
+
+        //value if account was opened this month
+        if (product.getOpenDate().isAfter(YearMonth.now().minusMonths(1).atEndOfMonth())) {
+            value = value.add(
+                    product.getActions().stream()
+                            .filter(a -> a.getActionType() == ActionType.PRODUCT_OPEN)
+                            .map(Action::getAfterActionValue)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
+
+        //balance changes
+        Predicate<Action> thisMonthBalanceChanges = a ->
+                a.getActionDate().isBefore(LocalDate.now()) &&
+                        a.getActionDate().isAfter(YearMonth.now().minusMonths(1).atEndOfMonth()) &&
+                        a.getActionType() == ActionType.BALANCE_CHANGE;
+
+        value = value.add(
+                product.getActions().stream()
+                        .filter(thisMonthBalanceChanges)
+                        .map(Action::getBalanceChange)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add));
+        return value;
+    }
 }

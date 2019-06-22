@@ -3,13 +3,17 @@ package pl.zajacp.investmentmanager.products.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
-//TODO implement future month condition
 public class OnlyThisMonthValidator
   implements ConstraintValidator<OnlyThisMonth, LocalDate> {
 
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext context){
-        return LocalDate.now().withDayOfMonth(1).isBefore(date);
+        if(date==null){
+            return false;
+        }
+        return YearMonth.now().minusMonths(1).atEndOfMonth().isBefore(date) &&
+                YearMonth.now().plusMonths(1).atDay(1).isAfter(date);
     }
 }

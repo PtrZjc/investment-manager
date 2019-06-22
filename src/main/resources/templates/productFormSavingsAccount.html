@@ -28,13 +28,13 @@
                     <label class="bmd-label-floating" th:text="#{product.validityDate}">validityDate</label>
                     <input type="month" name="lastValidMonth" class="form-control" id="month"
                            th:min="${#dates.format(#dates.create(#dates.year(#dates.createNow())
-                            ,#dates.month(#dates.createNow())+1,1),'yyyy-MM')}"/>
+                            ,#dates.month(#dates.createNow())+1,1),'yyyy-MM')}" required/>
 
                     <p th:each="error: ${#fields.errors('validityDate')}" th:text="${error}"></p>
                 </div>
                 <div class="form-group">
                     <label class="bmd-label-floating" th:text="#{product.valueLimit}">valueLimit</label>
-                    <input type="number" min="1" step="0.01" th:field="*{valueLimit}" class="form-control"/>
+                    <input type="number" min="1" step="0.01" th:field="*{valueLimit}" class="form-control required"/>
                     <p th:each="error: ${#fields.errors('valueLimit')}" th:text="${error}"></p>
                 </div>
 
@@ -42,7 +42,7 @@
                     <label class="bmd-label-floating"
                            th:text="#{product.interestAboveLimit}">interestAboveLimit</label>
                     <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
-                           class="percentage form-control"/>
+                           class="percentage form-control" required/>
                     <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
                 </div>
 

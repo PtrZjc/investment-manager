@@ -1,0 +1,169 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="charts" th:remove="tag">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function () {
+
+            moment.locale('pl');
+
+            var data = JSON.parse([[${data}]]);
+
+            var valueDatasets = [];
+            var gainDatasets = [];
+            var isFirst = true;
+
+            for (const set of data) {
+
+                var R = Math.floor(Math.random() * 255 + 1);
+                var G = Math.floor(Math.random() * 255 + 1);
+                var B = Math.floor(Math.random() * 255 + 1);
+
+                var fill;
+
+                if (isFirst) {
+                    fill = 'origin';
+                    isFirst = false;
+                } else {
+                    fill = '-1';
+                }
+
+                var valueDataset = {
+                    label: set.productName,
+                    backgroundColor: 'rgba(' + R + ', ' + G + ', ' + B + ', 0.5)',
+                    borderColor: 'rgb(' + R + ', ' + G + ', ' + B + ')',
+                    data: set.valuePlot,
+                    type: 'line',
+                    pointRadius: 0,
+                    steppedLine: true,
+                    borderWidth: 2,
+                    fill: fill
+                };
+
+                var gainDataset = {
+                    label: set.productName,
+                    backgroundColor: 'rgba(' + R + ', ' + G + ', ' + B + ', 0.5)',
+                    borderColor: 'rgb(' + R + ', ' + G + ', ' + B + ')',
+                    data: set.gainPlot,
+                    type: 'line',
+                    pointRadius: 0,
+                    steppedLine: true,
+                    borderWidth: 2,
+                    fill: fill
+                };
+
+                valueDatasets.push(valueDataset);
+                gainDatasets.push(gainDataset);
+            }
+
+
+            console.log(gainDatasets);
+
+            var tooltips = {
+                intersect: false,
+                mode: 'nearest',
+                callbacks: {
+                    label: function (tooltipItem, myData) {
+                        var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += parseFloat(tooltipItem.value).toFixed(2);
+                        label += " " + [[#{product.label.currency}]];
+                        return label;
+                    }
+                }
+            };
+
+            var cfgValue = {
+                type: 'line',
+                data: {
+                    datasets: valueDatasets
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            distribution: 'linear',
+                            ticks: {
+                                autoSkip: true,
+                                displayFormats: 'LL'
+                            },
+                            time: {
+                                min: moment().startOf('month').format(),
+                                max: [[${maxSharedTime}]],
+                                tooltipFormat: 'LL',
+                                unit: 'month'
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: [[#{product.label.value}]] + " (" + [[#{product.label.currency}]] + ")"
+                            },
+                            stacked: true,
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                    tooltips: tooltips,
+                }
+            };
+
+
+            var cfgGain = {
+                type: 'line',
+                data: {
+                    datasets: gainDatasets
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            distribution: 'linear',
+                            ticks: {
+                                autoSkip: true,
+                                displayFormats: 'LL'
+                            },
+                            time: {
+                                min: moment().startOf('month').format(),
+                                max: [[${maxTime}]],
+                                tooltipFormat: 'LL',
+                                unit: 'month'
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: [[#{product.gain}]] + " (" + [[#{product.label.currency}]] + ")"
+                            },
+                            stacked: true,
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                    tooltips: tooltips,
+                }
+            };
+
+            var ctxValue = document.getElementById('valueChart').getContext('2d');
+            ctxValue.canvas.width = 1000;
+            ctxValue.canvas.height = 600;
+
+            var ctxGain = document.getElementById('gainChart').getContext('2d');
+            ctxGain.canvas.width = 1000;
+            ctxGain.canvas.height = 600;
+
+            var valueChart = new Chart(ctxValue, cfgValue);
+            var gainChart = new Chart(ctxGain, cfgGain);
+            console.log(gainDatasets);
+
+        });
+
+        /*]]>*/
+    </script>
+</div>
+</html>
+

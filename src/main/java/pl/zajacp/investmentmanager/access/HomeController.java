@@ -36,7 +36,10 @@ public class HomeController {
 
         User activeUser = userService.getLoggedUser();
         List<FinanceProduct> products = activeUser.getProducts();
+
         if (products.size() > 0) {
+            model.addAttribute("products", true);
+
             List<List<Action>> chartActions = chartService.getInitialChartActions(products);
             List<Map<LocalDate, BigDecimal>> gains = chartService.getInitialProductGains(chartActions);
             List<SummaryChartDTO> chartData = chartService.initializeSummaryChartData(chartActions, gains);
@@ -50,11 +53,14 @@ public class HomeController {
             BigDecimal gainThreeMonthsAgo = statisticsService.getUserGainInMonth(gains, 3);
             BigDecimal gainTwelveMonthsAgo = statisticsService.getUserGainInMonth(gains, 12);
 
-            int x = 1;
-//            model.addAttribute("lastMonthGain", statisticsService.getUserValueOfLastMonths(activeUser, 1));
-//            model.addAttribute("last3MonthsGain", statisticsService.getUserValueOfLastMonths(activeUser, 3));
-//            model.addAttribute("last12MonthsGain", statisticsService.getUserValueOfLastMonths(activeUser, 12));
+            model.addAttribute("currentValue", currentValue);
+            model.addAttribute("gainOneMonthAgo", gainOneMonthAgo);
+            model.addAttribute("gainThreeMonthsAgo", gainThreeMonthsAgo);
+            model.addAttribute("gainTwelveMonthsAgo", gainTwelveMonthsAgo);
+        } else {
+            model.addAttribute("products", false);
         }
+        model.addAttribute("userName", activeUser.getName());
 
         return "index";
     }

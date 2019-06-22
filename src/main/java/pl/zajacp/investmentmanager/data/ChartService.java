@@ -200,7 +200,7 @@ public class ChartService {
                 .map(SummaryChartDTO::getGainPlot)
                 .filter(p -> p.size() > 1)
                 .min((p1, p2) -> (int) (p1.get(0).getT() - p2.get(0).getT()))
-                .orElseThrow(NullPointerException::new);
+                .orElse(charts.get(0).getGainPlot());
 
         LocalDate firstGainDate = LocalDate.ofEpochDay(oldestGainPlot.get(0).getT() / 86400000);
         LocalDate monthBeforeFirstGain = firstGainDate.minusMonths(1);
