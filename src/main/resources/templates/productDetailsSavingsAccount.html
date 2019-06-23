@@ -6,7 +6,7 @@
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
 
     <div th:replace="fragments/minorJs:: percentCorrectionText"/>
-<!--        <div th:replace="fragments/headerFooter::debugStyle"/>-->
+<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
 
     <div th:replace="fragments/detailedSavingsAccountChart::chart"/>
 
@@ -85,51 +85,59 @@
             </div>
         </div>
     </div>
-
+    <div class="row justify-content-center">
+            <h5 th:text="#{action.associatedOperations}" style="margin-top: 1rem; margin-bottom: 0.5rem">Associated
+                operations:</h5>
+    </div>
     <div class="row">
-        <h6 class="text-center" th:text="#{action.associatedOperations}" style="margin-top: 1rem; margin-bottom: 0.5rem">Associated operations:</h6>
 
-        <table class="table table-hover">
-            <tr>
-                <th th:text="#{action.actionType}">actionType</th>
-                <th th:text="#{action.actionDate}">actionDate</th>
-                <th th:text="#{action.balanceChange}">balanceChange</th>
-                <th th:text="#{action.afterActionValue}">afterActionValue</th>
-                <th th:text="#{action.notes}">notes</th>
-                <th th:text="#{action.isDone}">isDone</th>
-                <th th:text="#{action.actions}">actions</th>
-            </tr>
+        <div class="col-2"></div>
+        <div class="col-8">
+            <table class="table table-hover">
+                <tr>
+                    <th th:text="#{action.actionType}">actionType</th>
+                    <th th:text="#{action.actionDate}">actionDate</th>
+                    <th th:text="#{action.balanceChange}">balanceChange</th>
+                    <th th:text="#{action.afterActionValue}">afterActionValue</th>
+                    <!--                <th th:text="#{action.notes}">notes</th>-->
+                    <!--                <th th:text="#{action.isDone}">isDone</th>-->
+                    <th th:text="#{action.actions}">actions</th>
+                </tr>
 
-            <tr th:each="action: ${product.actions}">
-                <th:block th:switch="${action.actionType}">
-                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_OPEN}"
-                        th:text="#{product.productOpen}"></td>
-                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_CLOSE}"
-                        th:text="#{product.productClose}"></td>
-                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}"
-                        th:text="#{action.balanceChange}"></td>
-                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).CAPITALIZATION}"
-                        th:text="#{product.capitalization}"></td>
-                </th:block>
-                <td th:text="${action.actionDate}"></td>
-                <td th:text="${action.balanceChange}"></td>
-                <td th:text="${action.afterActionValue}"></td>
-                <td th:text="${action.notes}"></td>
-                <td th:text="${action.isDone}"></td>
-                <td>
+                <tr th:each="action: ${product.actions}">
+                    <th:block th:switch="${action.actionType}">
+                        <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_OPEN}"
+                            th:text="#{product.productOpen}"></td>
+                        <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_CLOSE}"
+                            th:text="#{product.productClose}"></td>
+                        <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}"
+                            th:text="#{action.balanceChange}"></td>
+                        <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).CAPITALIZATION}"
+                            th:text="#{product.capitalization}"></td>
+                    </th:block>
+                    <td th:text="${action.actionDate}"></td>
+                    <td th:text="${action.balanceChange}"></td>
+                    <td th:text="${action.afterActionValue}"></td>
+                    <!--                <td th:text="${action.notes}"></td>-->
+                    <!--                <td th:text="${action.isDone}"></td>-->
+                    <td>
                 <span th:if="${action.actionType==T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}">
                   <form action="/product/operation/delete" method="post">
                      <input type="hidden" name="id" th:value="${action.id}">
-                      <input type="submit" class="btn btn-danger" value="Delete">
+                      <input type="submit" class="btn btn-danger btn-sm" value="Delete">
                     </form>
                 </span>
-                </td>
-            </tr>
+                    </td>
+                </tr>
 
-        </table>
+            </table>
+        </div>
+        <div class="col-2"></div>
     </div>
 
-    <div th:replace="fragments/headerFooter:: footer"/>
+</div>
+
+<div th:replace="fragments/headerFooter:: footer"/>
 </div>
 
 </body>

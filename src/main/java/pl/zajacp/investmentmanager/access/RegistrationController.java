@@ -50,6 +50,7 @@ public class RegistrationController {
         if (result.hasErrors()) {
             return "registration";
         }
-        return "success";
+        model.addAttribute("registered", true);
+        return "login";
     }
 }

@@ -12,81 +12,94 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-    <h4 class="text-center" th:text="#{product.investments}" style="margin-bottom: 1rem">Short term investments</h4>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <!--                <th th:text="#{product.created}">created</th>-->
-                <!--                <th th:text="#{product.id}">id</th>-->
-                <th th:text="#{product.bank}">bank</th>
-                <th th:text="#{product.value}">value</th>
-                <th th:text="#{product.openDate}">open_date</th>
-                <th th:text="#{product.interest}">interest</th>
-                <th th:text="#{product.monthsValid}">months_valid</th>
-                <th th:text="#{product.actions}">actions</th>
+<!--    <div th:if="${(investments!= null and investments.isEmpty()) or (savingsAccounts!= null and savingsAccounts.isEmpty())}" th:remove="tag">-->
+<!--        <div class="row">-->
+<!--            <div class="col-3"></div>-->
+<!--            <div class="col-6">-->
+<!--                <div th:text="#{showAll.message.noProducts}" class="alert alert-primary"></div>-->
+<!--            </div>-->
+<!--            <div class="col-3"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div th:if="${investments!= null and !investments.isEmpty()}" th:remove="tag">
+        <h4 class="text-center" th:text="#{product.investments}" style="margin-bottom: 1rem">Short term investments</h4>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tr>
+                    <!--                <th th:text="#{product.created}">created</th>-->
+                    <!--                <th th:text="#{product.id}">id</th>-->
+                    <th th:text="#{product.bank}">bank</th>
+                    <th th:text="#{product.value}">value</th>
+                    <th th:text="#{product.openDate}">open_date</th>
+                    <th th:text="#{product.interest}">interest</th>
+                    <th th:text="#{product.monthsValid}">months_valid</th>
+                    <th th:text="#{product.actions}">actions</th>
 
-            </tr>
-            <tr th:each="investment: ${investments}">
-                <!--                <td th:text="${investment.created}"></td>-->
-                <!--                <td th:text="${investment.id}"></td>-->
-                <td th:text="${investment.bank}" class="align-middle"></td>
-                <td th:text="${investment.value}" class="align-middle"></td>
-                <td th:text="${investment.openDate}" class="align-middle"></td>
-                <td th:text="${investment.interest}" class="align-middle percentage"></td>
-                <td th:text="${investment.monthsValid}" class="align-middle"></td>
-                <td class="text-center align-middle">
-                    <form action="/product/delete" method="post">
-                        <input type="hidden" name="id" th:value="${investment.id}">
-                        <input type="submit" class="btn btn-danger" th:value="#{form.button.delete}">
-                    </form>
-                    <form action="/product/details" method="post">
-                        <input type="hidden" name="id" th:value="${investment.id}">
-                        <input class="btn btn-info" type="submit" th:value="#{form.button.details}">
-                    </form>
-                </td>
-            </tr>
+                </tr>
+                <tr th:each="investment: ${investments}">
+                    <!--                <td th:text="${investment.created}"></td>-->
+                    <!--                <td th:text="${investment.id}"></td>-->
+                    <td th:text="${investment.bank}" class="align-middle"></td>
+                    <td th:text="${investment.value}" class="align-middle"></td>
+                    <td th:text="${investment.openDate}" class="align-middle"></td>
+                    <td th:text="${investment.interest}" class="align-middle percentage"></td>
+                    <td th:text="${investment.monthsValid}" class="align-middle"></td>
+                    <td class="text-center align-middle">
+                        <form action="/product/delete" method="post">
+                            <input type="hidden" name="id" th:value="${investment.id}">
+                            <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
+                        </form>
+                        <form action="/product/details" method="post">
+                            <input type="hidden" name="id" th:value="${investment.id}">
+                            <input class="btn btn-info btn-sm" type="submit" th:value="#{form.button.details}">
+                        </form>
+                    </td>
+                </tr>
 
-        </table>
+            </table>
+        </div>
     </div>
-    <h4 class="text-center" th:text="#{product.savingsAccounts}" style="margin-bottom: 1rem">Savings accounts</h4>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <!--                <th th:text="#{product.created}">created</th>-->
-                <!--                <th th:text="#{product.id}">id</th>-->
-                <th th:text="#{product.bank}">bank</th>
-                <th th:text="#{product.value}">value</th>
-                <th th:text="#{product.openDate}">open_date</th>
-                <th th:text="#{product.validityDate}">validity_date</th>
-                <th th:text="#{product.interest}">interest</th>
-                <th th:text="#{product.valueLimit}">value_limit</th>
-                <th th:text="#{product.actions}">actions</th>
-            </tr>
+    <div th:if="${savingsAccounts!= null and !savingsAccounts.isEmpty()}" th:remove="tag">
+        <h4 class="text-center" th:text="#{product.savingsAccounts}" style="margin-bottom: 1rem">Savings accounts</h4>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tr>
+                    <!--                <th th:text="#{product.created}">created</th>-->
+                    <!--                <th th:text="#{product.id}">id</th>-->
+                    <th th:text="#{product.bank}">bank</th>
+                    <th th:text="#{product.value}">value</th>
+                    <th th:text="#{product.openDate}">open_date</th>
+                    <th th:text="#{product.validityDate}">validity_date</th>
+                    <th th:text="#{product.interest}">interest</th>
+                    <th th:text="#{product.valueLimit}">value_limit</th>
+                    <th th:text="#{product.actions}">actions</th>
+                </tr>
 
 
-            <tr th:each="account: ${savingsAccounts}">
-                <!--                <td th:text="${account.created}"></td>-->
-                <!--                <td th:text="${account.id}"></td>-->
-                <td th:text="${account.bank}" class="align-middle"></td>
-                <td th:text="${account.value}" class="align-middle"></td>
-                <td th:text="${account.openDate}" class="align-middle"></td>
-                <td th:text="${account.validityDate}" class="align-middle"></td>
-                <td th:text="${account.interest}" class="align-middle percentage"></td>
-                <td th:if="${account.valueLimit>1000000000}" class="align-middle">—</td>
-                <td th:unless="${account.valueLimit>1000000000}" class="align-middle"
-                    th:text="${#numbers.formatDecimal(account.valueLimit,1,0)}"></td>
-                <td class="text-center align-middle">
-                    <form action="/product/delete" method="post">
-                        <input type="hidden" name="id" th:value="${account.id}">
-                        <input type="submit" class="btn btn-danger" th:value="#{form.button.delete}">
-                    </form>
-                    <form action="/product/details" method="post">
-                        <input type="hidden" name="id" th:value="${account.id}">
-                        <input class="btn btn-info" type="submit" th:value="#{form.button.details}">
-                    </form>
-                </td>
-            </tr>
-        </table>
+                <tr th:each="account: ${savingsAccounts}">
+                    <!--                <td th:text="${account.created}"></td>-->
+                    <!--                <td th:text="${account.id}"></td>-->
+                    <td th:text="${account.bank}" class="align-middle"></td>
+                    <td th:text="${account.value}" class="align-middle"></td>
+                    <td th:text="${account.openDate}" class="align-middle"></td>
+                    <td th:text="${account.validityDate}" class="align-middle"></td>
+                    <td th:text="${account.interest}" class="align-middle percentage"></td>
+                    <td th:if="${account.valueLimit>1000000000}" class="align-middle">—</td>
+                    <td th:unless="${account.valueLimit>1000000000}" class="align-middle"
+                        th:text="${#numbers.formatDecimal(account.valueLimit,1,0)}"></td>
+                    <td class="text-center align-middle">
+                        <form action="/product/delete" method="post">
+                            <input type="hidden" name="id" th:value="${account.id}">
+                            <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
+                        </form>
+                        <form action="/product/details" method="post">
+                            <input type="hidden" name="id" th:value="${account.id}">
+                            <input class="btn btn-info btn-sm" type="submit" th:value="#{form.button.details}">
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 <div th:replace="fragments/headerFooter:: footer"/>

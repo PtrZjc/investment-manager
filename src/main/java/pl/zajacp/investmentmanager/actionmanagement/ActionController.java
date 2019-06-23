@@ -49,9 +49,14 @@ public class ActionController {
             result.rejectValue("amount", "error.notSufficientFunds");
         }
 
+        if (!actionService.isDateWithinProduct(actionDto, product)) {
+            result.rejectValue("actionDate", "error.actionDate");
+        }
+
         if (result.hasErrors()) {
             return "actionForm";
         }
+
 
         actionService.genBalanceChangeActions(actionDto, product);
         actionService.recalculateCapitalizations(product);

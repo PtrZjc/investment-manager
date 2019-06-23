@@ -53,7 +53,7 @@ public class ActionService {
 
         BigDecimal lastValue = product.getValue();
         List<LocalDate> capitalizationDates = financeCalcService.getCapitalizationDates(product);
-        LocalDate startCalcDate =product.getOpenDate();
+        LocalDate startCalcDate = product.getOpenDate();
         LocalDate endDate = product.getValidityDate();
         int endDateIndex = getEndDateIndex(capitalizationDates, endDate);
         /*
@@ -141,7 +141,7 @@ public class ActionService {
 
         if (!actionDto.getIsSingle()) {
             LocalDate latestDate = product.getActions().stream()
-                    .filter(x->x.getActionType()==ActionType.PRODUCT_CLOSE)
+                    .filter(x -> x.getActionType() == ActionType.PRODUCT_CLOSE)
                     .map(Action::getActionDate)
                     .findFirst()
                     .orElseThrow(NullPointerException::new);
@@ -157,8 +157,7 @@ public class ActionService {
     }
 
 
-
-    public void recalculateCapitalizations(SavingsAccount product){
+    public void recalculateCapitalizations(SavingsAccount product) {
         sortActionsByDate(product.getActions());
         List<Action> actions = financeCalcService.recalculateCapitalizations(product, true);
         actionRepository.saveAll(actions);
@@ -185,10 +184,11 @@ public class ActionService {
                 .filter(previousMonthCap)
                 .min(Comparator.comparing(Action::getActionDate))
                 .map(Action::getAfterActionValue)
-                .orElseThrow(NullPointerException::new);
+                .orElse(product.getActions().get(0).getAfterActionValue());
 
-        Predicate<Action> widthdrawFilter = a-> a.getActionType()==ActionType.BALANCE_CHANGE
-                && a.getBalanceChange().compareTo(BigDecimal.ZERO)<0;
+        Predicate<Action> widthdrawFilter = a ->
+                a.getActionType() == ActionType.BALANCE_CHANGE
+                        && a.getBalanceChange().compareTo(BigDecimal.ZERO) < 0;
 
         BigDecimal widthdraws = product.getActions().stream()
                 .filter(widthdrawFilter)
@@ -199,6 +199,24 @@ public class ActionService {
 
         return actionDto.getAmount().compareTo(capValue) < 0;
     }
+
+    public boolean isDateWithinProduct(ActionDto actionDto, SavingsAccount product) {
+
+        boolean isValid = product.getOpenDate().isBefore(actionDto.getActionDate());
+
+        LocalDate lastCapitalizationDate = product.getActions().stream()
+                .filter(a-> a.getActionType()==ActionType.CAPITALIZATION)
+                .max(Comparator.comparing(Action::getActionDate))
+                .map(Action::getActionDate)
+                .orElseThrow(NullPointerException::new);
+
+        if(lastCapitalizationDate.isBefore(actionDto.getActionDate())){
+            isValid=false;
+        }
+
+        return isValid;
+    }
+
 
     public void sortActionsByDate(List<Action> actions) {
         actions.sort(Comparator

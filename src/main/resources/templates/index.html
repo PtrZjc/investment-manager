@@ -25,7 +25,13 @@
             <div style="margin-top: 1rem"></div>
 
             <div th:unless="${products}" th:remove="tag">
-                <span th:text="#{summary.message.noProducts}"></span>
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div th:text="#{summary.message.noProducts}" class="alert alert-primary"></div>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
             </div>
 
             <div th:if="${products}" th:remove="tag">

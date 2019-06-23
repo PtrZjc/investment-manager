@@ -69,7 +69,7 @@
                             label += ': ';
                         }
                         label += parseFloat(tooltipItem.value).toFixed(2);
-                        label += " " + [[#{product.label.currency}]];
+                        label += " " + [[#{local.currency}]];
                         return label;
                     }
                 }
@@ -99,7 +99,7 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: [[#{product.label.value}]] + " (" + [[#{product.label.currency}]] + ")"
+                                labelString: [[#{product.label.value}]] + " (" + [[#{local.currency}]] + ")"
                             },
                             stacked: true,
                             ticks: {
@@ -136,7 +136,7 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: [[#{product.gain}]] + " (" + [[#{product.label.currency}]] + ")"
+                                labelString: [[#{product.gain}]] + " (" + [[#{local.currency}]] + ")"
                             },
                             stacked: true,
                             ticks: {

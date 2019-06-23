@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="#{product.investment}">Title</title>
+    <title th:text="#{product.add.savingsAccount}"></title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
     <div th:replace="fragments/minorJs:: percentCorrectionForm"/>
 
@@ -30,12 +30,12 @@
                            th:min="${#dates.format(#dates.create(#dates.year(#dates.createNow())
                             ,#dates.month(#dates.createNow())+1,1),'yyyy-MM')}" required/>
 
-                    <p th:each="error: ${#fields.errors('validityDate')}" th:text="${error}"></p>
+                    <p th:each="error: ${#fields.errors('validityDate')}" class="alert alert-danger" th:text="${error}"></p>
                 </div>
                 <div class="form-group">
                     <label class="bmd-label-floating" th:text="#{product.valueLimit}">valueLimit</label>
                     <input type="number" min="1" step="0.01" th:field="*{valueLimit}" class="form-control required"/>
-                    <p th:each="error: ${#fields.errors('valueLimit')}" th:text="${error}"></p>
+                    <p th:each="error: ${#fields.errors('valueLimit')}" class="alert alert-danger" th:text="${error}"></p>
                 </div>
 
                 <div class="form-group">
@@ -43,13 +43,13 @@
                            th:text="#{product.interestAboveLimit}">interestAboveLimit</label>
                     <input type="number" min="0" max="100" step="0.1" th:field="*{interestAboveLimit}"
                            class="percentage form-control" required/>
-                    <p th:each="error: ${#fields.errors('interestAboveLimit')}" th:text="${error}"></p>
+                    <p th:each="error: ${#fields.errors('interestAboveLimit')}" class="alert alert-danger" th:text="${error}"></p>
                 </div>
 
                 <div th:replace="productFormInvestment:: notesInputRow"/>
+                <p th:each="error : ${#fields.globalErrors()}" class="alert alert-danger" th:text="${error}">Validation error</p>
                 <div th:replace="productFormInvestment:: submitBtn"/>
 
-                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Validation error</p>
             </form>
         </div>
 

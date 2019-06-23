@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Home</title>
+    <title th:text="product.title"></title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
     <script>
         $(document).ready(function() {
