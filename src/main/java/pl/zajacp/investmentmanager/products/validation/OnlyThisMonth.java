@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = OnlyThisMonthValidator.class)
 @Documented
 public @interface OnlyThisMonth {
-    String message() default "{ThisMonthAndLater.message}";
+    String message() default "{OnlyThisMonth.message}";
 
     Class<?>[] groups() default {};
 

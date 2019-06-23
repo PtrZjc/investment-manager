@@ -37,8 +37,8 @@ public class FinanceProduct {
     private BigDecimal value;
 
     @NotNull
-    @DecimalMin("0.01")
-    @DecimalMax("100")
+    @DecimalMin("0.001")
+    @DecimalMax("1")
     @Column(precision = 5, scale = 4)
     private BigDecimal interest;
 

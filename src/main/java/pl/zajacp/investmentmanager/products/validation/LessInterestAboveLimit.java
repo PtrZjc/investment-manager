@@ -12,10 +12,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({TYPE,ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = InterestAboveLimitPresentValidator.class)
+@Constraint(validatedBy = LessInterestAboveLimitValidator.class)
 @Documented
-public @interface InterestAboveLimitPresent {
-    String message() default "validity date have to be 2 months more than open date";
+public @interface LessInterestAboveLimit {
+    String message() default "{LessInterestAboveLimitValidator.message}";
     Class<?>[] groups() default {}; 
     Class<? extends Payload>[] payload() default {};
 }

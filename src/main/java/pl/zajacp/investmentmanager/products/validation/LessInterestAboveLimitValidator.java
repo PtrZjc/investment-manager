@@ -5,20 +5,16 @@ import pl.zajacp.investmentmanager.products.SavingsAccount;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class InterestAboveLimitPresentValidator
-        implements ConstraintValidator<InterestAboveLimitPresent, SavingsAccount> {
+public class LessInterestAboveLimitValidator
+        implements ConstraintValidator<LessInterestAboveLimit, SavingsAccount> {
 
     @Override
-    public void initialize(InterestAboveLimitPresent constraintAnnotation) {
+    public void initialize(LessInterestAboveLimit constraintAnnotation) {
     }
 
     @Override
     public boolean isValid(SavingsAccount savingsAccount, ConstraintValidatorContext constraintValidatorContext) {
 
-        if (savingsAccount.getValueLimit() == null) {
-            return true;
-        }
-        return savingsAccount.getInterestAboveLimit() != null;
-
+        return savingsAccount.getInterest().compareTo(savingsAccount.getInterestAboveLimit())>0;
     }
 }
