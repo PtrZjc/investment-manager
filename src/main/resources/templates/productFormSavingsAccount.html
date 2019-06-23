@@ -3,7 +3,7 @@
 <head>
     <title th:text="#{product.investment}">Title</title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
-    <div th:replace="fragments/js:: percentCorrectionForm"/>
+    <div th:replace="fragments/minorJs:: percentCorrectionForm"/>
 
 </head>
 <body>
@@ -48,6 +48,8 @@
 
                 <div th:replace="productFormInvestment:: notesInputRow"/>
                 <div th:replace="productFormInvestment:: submitBtn"/>
+
+                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Validation error</p>
             </form>
         </div>
 

@@ -5,159 +5,23 @@
     <div th:replace="fragments/headerFooter::header-scripts"/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
 
-    <div th:replace="fragments/js:: percentCorrectionText"/>
-<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
+    <div th:replace="fragments/minorJs:: percentCorrectionText"/>
+<!--        <div th:replace="fragments/headerFooter::debugStyle"/>-->
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
+    <div th:replace="fragments/detailedSavingsAccountChart::chart"/>
 
-        document.addEventListener("DOMContentLoaded", function () {
-                console.log([[${json}]]);
-                moment.locale('pl');
-                var ctx = document.getElementById('valueChart').getContext('2d');
-                ctx.canvas.width = 1000;
-                ctx.canvas.height = 650;
-
-                var valueData = JSON.parse([[${valueData}]]);
-                var gainData = JSON.parse([[${gainData}]]);
-
-                if (gainData[0].t > valueData[0].t) {
-                    gainData.unshift(Object.assign({}, gainData[0]));
-                    gainData[0].t = valueData[0].t;
-                    gainData[0].y = 0;
-                }
-
-                console.log(valueData);
-                console.log(gainData);
-
-                var cfg = {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: [[#{product.value}]],
-                            yAxisID: 'A',
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgb(54, 162, 235)',
-                            data: valueData,
-                            type: 'line',
-                            pointRadius: 3,
-                            fill: false,
-                            steppedLine: true,
-                            borderWidth: 2
-                        }, {
-                            label: [[#{product.gain}]],
-                            yAxisID: 'B',
-                            backgroundColor: 'rgba(41, 157, 41, 0.5)',
-                            borderColor: 'rgb(41, 157, 41)',
-                            data: gainData,
-                            type: 'line',
-                            steppedLine: true,
-                            pointRadius: 3,
-                            fill: false,
-                            lineTension: 0,
-                            borderWidth: 2
-                        }
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                distribution: 'linear',
-                                ticks: {
-                                    autoSkip: true,
-                                    displayFormats: 'LL'
-                                },
-                                time: {
-                                    tooltipFormat: 'LL',
-                                    unit: 'month'
-                                }
-                            }],
-                            yAxes: [{
-                                id: 'A',
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: [[#{product.value}]] + " (" + [[#{product.currency}]] + ")"
-                                },
-                                ticks: {
-                                    // min: 0
-                                },
-                            }, {
-                                id: 'B',
-                                position: 'right',
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: [[#{product.gain}]] + " (" + [[#{product.currency}]] + ")"
-                                },
-                                gridLines: {
-                                    display: false
-                                },
-                                ticks: {
-                                    min: 0
-                                },
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'nearest',
-                            callbacks: {
-                                label: function (tooltipItem, myData) {
-                                    var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += parseFloat(tooltipItem.value).toFixed(2);
-                                    label += " " + [[#{product.currency}]];
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                };
-
-                var chart = new Chart(ctx, cfg);
-
-            }
-        )
-
-        /*]]>*/
-    </script>
 </head>
-<!--<div th:replace="fragments/headerFooter:: debugStyle"/>-->
 <body>
 
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
     <div class="row" style="margin-top: 1rem">
-        <div class="col-sm-8">
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div class="col-sm-4">
-                    <form action="/product/all" class="form-inline" method="get">
-                        <input class="btn btn-primary" type="submit" th:value="#{form.button.goback}" value="Go back">
-                    </form>
-                </div>
-                <div class="col-sm-4">
-                    <form action="/product/operation/add" class="form-inline" method="get">
-                        <input type="submit" class="btn btn-info" th:value="#{action.button}" value="Add new operation">
-                    </form>
-                </div>
-            </div>
-            <div class="row">
-                <canvas id="valueChart"></canvas>
-            </div>
-        </div>
-        <div class="col-sm-4">
-
+        <div class="col-sm-4 align-self-center">
             <table class="table table-hover">
                 <tr>
                     <th th:text="#{product.created}">created</th>
                     <td th:text="${product.created}"></td>
-                </tr>
-                <tr>
-                    <th th:text="#{product.id}">id</th>
-                    <td th:text="${product.id}"></td>
                 </tr>
                 <tr>
                     <th th:text="#{product.bank}">bank</th>
@@ -195,18 +59,38 @@
                     <th th:text="#{product.notes}">notes</th>
                     <td th:text="${product.notes}"></td>
                 </tr>
-
-
             </table>
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <form action="/product/all" method="get">
+                        <input class="btn btn-primary" type="submit" th:value="#{form.button.goBack}" value="Go back">
+                    </form>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <form action="/product/operation/add" method="get">
+                        <input type="submit" class="btn btn-info" th:value="#{form.button.addAction}">
+                    </form>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <form action="/product/delete" method="post">
+                        <input type="hidden" name="id" th:value="${product.id}">
+                        <input type="submit" class="btn btn-danger" th:value="#{form.button.product.delete}">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="valueChart"></canvas>
+            </div>
         </div>
     </div>
 
     <div class="row">
-        <h6 class="text-center" th:text="#{action.associatedOperations}">Associated operations:</h6>
+        <h6 class="text-center" th:text="#{action.associatedOperations}" style="margin-top: 1rem; margin-bottom: 0.5rem">Associated operations:</h6>
 
         <table class="table table-hover">
             <tr>
-                <th th:text="#{action.id}">id</th>
                 <th th:text="#{action.actionType}">actionType</th>
                 <th th:text="#{action.actionDate}">actionDate</th>
                 <th th:text="#{action.balanceChange}">balanceChange</th>
@@ -215,9 +99,18 @@
                 <th th:text="#{action.isDone}">isDone</th>
                 <th th:text="#{action.actions}">actions</th>
             </tr>
+
             <tr th:each="action: ${product.actions}">
-                <td th:text="${action.id}"></td>
-                <td th:text="${action.actionType}"></td>
+                <th:block th:switch="${action.actionType}">
+                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_OPEN}"
+                        th:text="#{product.productOpen}"></td>
+                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).PRODUCT_CLOSE}"
+                        th:text="#{product.productClose}"></td>
+                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}"
+                        th:text="#{action.balanceChange}"></td>
+                    <td th:case="${T(pl.zajacp.investmentmanager.actionmanagement.ActionType).CAPITALIZATION}"
+                        th:text="#{product.capitalization}"></td>
+                </th:block>
                 <td th:text="${action.actionDate}"></td>
                 <td th:text="${action.balanceChange}"></td>
                 <td th:text="${action.afterActionValue}"></td>

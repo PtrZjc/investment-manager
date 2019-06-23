@@ -1,0 +1,120 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="chart" th:remove="tag">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        document.addEventListener("DOMContentLoaded", function () {
+                console.log([[${json}]]);
+                moment.locale('pl');
+                var ctx = document.getElementById('valueChart').getContext('2d');
+                ctx.canvas.width = 1000;
+                ctx.canvas.height = 650;
+
+                var valueData = JSON.parse([[${valueData}]]);
+                var gainData = JSON.parse([[${gainData}]]);
+
+                if (gainData[0].t > valueData[0].t) {
+                    gainData.unshift(Object.assign({}, gainData[0]));
+                    gainData[0].t = valueData[0].t;
+                    gainData[0].y = 0;
+                }
+
+                console.log(valueData);
+                console.log(gainData);
+
+                var cfg = {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: [[#{product.value}]],
+                            yAxisID: 'A',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgb(54, 162, 235)',
+                            data: valueData,
+                            type: 'line',
+                            pointRadius: 3,
+                            fill: false,
+                            steppedLine: true,
+                            borderWidth: 2
+                        }, {
+                            label: [[#{product.gain}]],
+                            yAxisID: 'B',
+                            backgroundColor: 'rgba(41, 157, 41, 0.5)',
+                            borderColor: 'rgb(41, 157, 41)',
+                            data: gainData,
+                            type: 'line',
+                            steppedLine: true,
+                            pointRadius: 3,
+                            fill: false,
+                            lineTension: 0,
+                            borderWidth: 2
+                        }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                distribution: 'linear',
+                                ticks: {
+                                    autoSkip: true,
+                                    displayFormats: 'LL'
+                                },
+                                time: {
+                                    tooltipFormat: 'LL',
+                                    unit: 'month'
+                                }
+                            }],
+                            yAxes: [{
+                                id: 'A',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: [[#{product.value}]] + " (" + [[#{local.currency}]] + ")"
+                                },
+                                ticks: {
+                                    // min: 0
+                                },
+                            }, {
+                                id: 'B',
+                                position: 'right',
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: [[#{product.gain}]] + " (" + [[#{local.currency}]] + ")"
+                                },
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: {
+                                    min: 0
+                                },
+                            }]
+                        },
+                        tooltips: {
+                            intersect: false,
+                            mode: 'nearest',
+                            callbacks: {
+                                label: function (tooltipItem, myData) {
+                                    var label = myData.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].action || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += parseFloat(tooltipItem.value).toFixed(2);
+                                    label += " " + [[#{local.currency}]];
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                var chart = new Chart(ctx, cfg);
+
+            }
+        )
+
+        /*]]>*/
+    </script>
+</div>
+</html>
+

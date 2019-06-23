@@ -22,7 +22,7 @@
             var percent = document.querySelectorAll('.percentage');
 
             percent.forEach(function (e) {
-                if (!isNaN(e) && e.value !== null) {
+                if (!isNaN(e.value) && e.value !== null) {
                     e.value = Math.round(e.value * 1000) / 10
                 }
             });
@@ -45,7 +45,6 @@
         </script>
     </div>
 </div>
-
 
 </html>
 
