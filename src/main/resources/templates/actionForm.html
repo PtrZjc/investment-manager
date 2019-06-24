@@ -1,0 +1,110 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title th:text="#{action.title.investment}">Title</title>
+    <div th:replace="fragments/headerFooter::header-scripts"/>
+    <div th:replace="fragments/minorJs:: percentCorrectionText"/>
+<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            $("#isSingleTrue").prop("checked", true);
+            $("#isNegativeFalse").prop("checked", true);
+
+            $('input:radio').click(function () {
+                if ($('#isSingleFalse').is(':checked')) {
+                    $("#isNegativeFalse").prop("checked", true);
+                    $("#isNegativeTrue").hide();
+                } else if ($('#isSingleTrue').is(':checked')) {
+                    $("#isNegativeTrue").show();
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+
+<div th:replace="fragments/headerFooter:: navbar"/>
+
+<div class="container">
+
+    <div class="row" style="margin-top: 1rem">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <h4 th:text="#{action.welcome}" class="text-center" style="margin-bottom: 1rem">actionAddMessage</h4>
+
+            <form action="/product/operation/add" th:object="${actionDto}" method="POST" enctype="utf8" id="form">
+
+<!--                <p class="bmd-label-floating" th:text="#{action.actionQuantity}">actionQuantity</p>-->
+                <p class="bmd-label-floating"></p>
+
+                <div class="form-check-inline">
+                    <label class="form-check-label">
+                        <input type="radio" class="form-check-input" th:field="*{isSingle}" value="true"
+                               id="isSingleTrue" checked>
+                        <span th:text="#{action.quantity.single}">single</span>
+                    </label>
+                </div>
+
+                <div class="form-check-inline">
+                    <label class="form-check-label">
+                        <input type="radio" class="form-check-input" th:field="*{isSingle}" id="isSingleFalse"
+                               value="false">
+                        <span th:text="#{action.quantity.multiple}">multiple</span>
+                    </label>
+                </div>
+
+<!--                <p class="bmd-label-floating" th:text="#{action.paymentOrWidthdrawal}">paymentOrWidthdrawal</p>-->
+                <p class="bmd-label-floating"></p>
+
+                <div class="form-check-inline">
+                    <label class="form-check-label">
+                        <input type="radio" class="form-check-input" th:field="*{isNegative}" id="isNegativeFalse"
+                               value="false" checked>
+                        <span th:text="#{action.balance.payment}">payment</span>
+                    </label>
+                </div>
+                <div class="form-check-inline" id="isNegativeTrue">
+                    <label class="form-check-label">
+                        <input type="radio" class="form-check-input" th:field="*{isNegative}"
+                               value="true">
+                        <span th:text="#{action.balance.widthdrawal}">widthdrawal</span>
+                    </label>
+                </div>
+
+                <div style="margin-top: 1rem"></div>
+                <div class="form-group" >
+                    <input type="number" min="0.01" step="0.01" th:field="*{amount}" class="form-control" th:placeholder="#{action.amount}">
+                    <p th:each="error: ${#fields.errors('amount')}" class="alert alert-danger" th:text="${error}"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="bmd-label-floating" th:text="#{action.actionDate}">openDate</label>
+                    <input type="date" th:field="*{actionDate}" th:min=
+                            "${#dates.format(#dates.create(#dates.year(#dates.createNow())
+                            ,#dates.month(#dates.createNow()),1),'yyyy-MM-dd')}"
+                           class="form-control"/>
+                    <p th:each="error: ${#fields.errors('actionDate')}" class="alert alert-danger" th:text="${error}"></p>
+                </div>
+
+                <div class="form-group">
+                    <textarea th:field="*{notes}" rows="3" form="form" maxlength="1000"
+                              class="form-control" th:placeholder="#{product.notes}"></textarea>
+                    <p th:each="error: ${#fields.errors('notes')}" class="alert alert-danger" th:text="${error}"></p>
+                </div>
+
+                <button type="submit" th:text="#{label.form.submit}" class="btn btn-primary">submit</button>
+
+                <p th:each="error : ${#fields.globalErrors()}" class="alert alert-danger" th:text="${error}">Validation error</p>
+            </form>
+        </div>
+
+        <div class="col-sm-3"></div>
+    </div>
+    <div th:replace="fragments/headerFooter:: footer"/>
+</div>
+</body>
+</html>
+
+
+
