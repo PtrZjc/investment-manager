@@ -6,7 +6,7 @@
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
 
     <div th:replace="fragments/minorJs:: percentCorrectionText"/>
-<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
+    <!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
 
     <div th:replace="fragments/detailedSavingsAccountChart::chart"/>
 
@@ -45,7 +45,8 @@
                 </tr>
                 <tr>
                     <th th:text="#{product.valueLimit}">value_limit</th>
-                    <td th:text="${product.valueLimit}"></td>
+                    <td th:unless="${product.valueLimit>1000000000}" class="align-middle" th:text="${#numbers.formatDecimal(product.valueLimit,1,0)}"></td>
+                    <td th:if="${product.valueLimit>1000000000}" class="align-middle">—</td>
                 </tr>
                 <tr>
                     <th th:text="#{product.interestAboveLimit}">interest_above_limit</th>
@@ -86,8 +87,8 @@
         </div>
     </div>
     <div class="row justify-content-center">
-            <h5 th:text="#{action.associatedOperations}" style="margin-top: 1rem; margin-bottom: 0.5rem">Associated
-                operations:</h5>
+        <h5 th:text="#{action.associatedOperations}" style="margin-top: 1rem; margin-bottom: 0.5rem">Associated
+            operations:</h5>
     </div>
     <div class="row">
 
@@ -124,7 +125,7 @@
                 <span th:if="${action.actionType==T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}">
                   <form action="/product/operation/delete" method="post">
                      <input type="hidden" name="id" th:value="${action.id}">
-                      <input type="submit" class="btn btn-danger btn-sm" value="Delete">
+                      <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
                     </form>
                 </span>
                     </td>

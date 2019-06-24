@@ -4,8 +4,8 @@
     <title>Home</title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
     <div th:replace="fragments/headerFooter::chart-js-lib"/>
-
     <div th:replace="fragments/summaryCharts::charts"/>
+<!--        <div th:replace="fragments/headerFooter::debugStyle"/>-->
 
 </head>
 
@@ -26,11 +26,11 @@
 
             <div th:unless="${products}" th:remove="tag">
                 <div class="row">
-                    <div class="col-3"></div>
-                    <div class="col-6">
+                    <div class="col-1"></div>
+                    <div class="col-10">
                         <div th:text="#{summary.message.noProducts}" class="alert alert-primary"></div>
                     </div>
-                    <div class="col-3"></div>
+                    <div class="col-1"></div>
                 </div>
             </div>
 
@@ -85,7 +85,6 @@
             <div class="col-sm-2"></div>
         </div>
     </div>
-
     <div th:if="${products}" th:remove="tag">
         <div class="row">
             <div class="col-sm">
@@ -109,7 +108,7 @@
         <div class="row">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-                <h6 th:text="#{summary.chart.gain}" class="text-center">gain chart</h6>
+                <h6 th:text="#{summary.chart.gain}" class="text-center" style="margin-top: 1rem">gain chart</h6>
             </div>
             <div class="col-sm-2"></div>
         </div>
