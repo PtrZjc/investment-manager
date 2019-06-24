@@ -5,6 +5,8 @@
     <div th:replace="fragments/headerFooter::header-scripts "/>
     <div th:replace="fragments/minorJs:: percentCorrectionText"/>
     <div th:replace="fragments/minorJs:: infoModal"/>
+<!--    <div th:replace="fragments/headerFooter::debugStyle"/>-->
+
 </head>
 
 <body>
@@ -12,15 +14,15 @@
 <div th:replace="fragments/headerFooter:: navbar"/>
 
 <div class="container">
-<!--    <div th:if="${(investments!= null and investments.isEmpty()) or (savingsAccounts!= null and savingsAccounts.isEmpty())}" th:remove="tag">-->
-<!--        <div class="row">-->
-<!--            <div class="col-3"></div>-->
-<!--            <div class="col-6">-->
-<!--                <div th:text="#{showAll.message.noProducts}" class="alert alert-primary"></div>-->
-<!--            </div>-->
-<!--            <div class="col-3"></div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div th:if="${(investments== null or investments.isEmpty()) and (savingsAccounts== null or savingsAccounts.isEmpty())}" th:remove="tag">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div th:text="#{showAll.message.noProducts}" class="alert alert-primary"></div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
     <div th:if="${investments!= null and !investments.isEmpty()}" th:remove="tag">
         <h4 class="text-center" th:text="#{product.investments}" style="margin-bottom: 1rem">Short term investments</h4>
         <div class="table-responsive">
