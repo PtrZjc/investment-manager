@@ -8,21 +8,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+@Getter
+@Setter
 public class DataPoint{
 
-    @Getter
-    @Setter
     long t;
-
-    @Getter
-    @Setter
     BigDecimal y;
-
-    @Getter
-    @Setter
     String action;
 
-    DataPoint(){};
+    DataPoint(){}
 
     DataPoint(LocalDate date, ActionType actionType) {
         /*
