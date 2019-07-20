@@ -1,12 +1,10 @@
 package pl.zajacp.investmentmanager.products;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
-import pl.zajacp.investmentmanager.user.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -21,14 +19,10 @@ public class ProductController {
 
     private final ProductService productService;
     private final ActionService actionService;
-    private final UserService userService;
 
-
-    @Autowired
-    public ProductController(ProductService productService, ActionService actionService, UserService userService) {
+    public ProductController(ProductService productService, ActionService actionService) {
         this.productService = productService;
         this.actionService = actionService;
-        this.userService = userService;
     }
 
     @GetMapping("/")

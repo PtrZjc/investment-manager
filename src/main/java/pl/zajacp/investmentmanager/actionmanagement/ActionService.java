@@ -53,7 +53,6 @@ public class ActionService {
 
         BigDecimal lastValue = product.getValue();
         List<LocalDate> capitalizationDates = financeCalcService.getCapitalizationDates(product);
-        LocalDate startCalcDate = product.getOpenDate();
         LocalDate endDate = product.getValidityDate();
         int endDateIndex = getEndDateIndex(capitalizationDates, endDate);
         /*
@@ -159,7 +158,7 @@ public class ActionService {
 
     public void recalculateCapitalizations(SavingsAccount product) {
         sortActionsByDate(product.getActions());
-        List<Action> actions = financeCalcService.recalculateCapitalizations(product, true);
+        List<Action> actions = financeCalcService.recalculateCapitalizations(product, false);
         actionRepository.saveAll(actions);
     }
 

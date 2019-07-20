@@ -2,7 +2,6 @@ package pl.zajacp.investmentmanager.products;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.zajacp.investmentmanager.products.FinanceProduct;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

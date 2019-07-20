@@ -2,6 +2,8 @@ package pl.zajacp.investmentmanager.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
@@ -48,7 +50,7 @@ public class ChartService {
 
     public List<SummaryChartDTO> initializeSummaryChartData(List<List<Action>> chartActions,
                                                             List<Map<LocalDate, BigDecimal>> productGains) {
-                List<SummaryChartDTO> chartData = new ArrayList<>();
+        List<SummaryChartDTO> chartData = new ArrayList<>();
 
         for (int i = 0; i < chartActions.size(); i++) {
             LocalDate startDate = chartActions.get(i).get(0).getActionDate().minusMonths(1);
@@ -102,6 +104,8 @@ public class ChartService {
                     break;
                 case PRODUCT_OPEN:
                     point.setAction(setLocaleLabel("product.productOpen"));
+                    break;
+                default:
                     break;
             }
             point.setY(currentValue);
@@ -158,12 +162,11 @@ public class ChartService {
             if (currentPoint.getT() == dataPointTime &&
                     (currentPointIndex < plot.size() - 1 || isInvestment)) {
                 currentValue = currentPoint.getY();
-                if (plotType == PlotType.GAIN && !isInvestment) {
-                    currentPoint = plot.get(++currentPointIndex);
-                } else if (plotType == PlotType.VALUE) {
-                    currentPoint = plot.get(++currentPointIndex);
-                }
+
+                if (!isInvestment) currentPoint = plot.get(++currentPointIndex);
+
             }
+
             DataPoint point = new DataPoint();
             point.setT(dataPointTime);
             point.setY(currentValue);

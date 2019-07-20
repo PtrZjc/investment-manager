@@ -43,7 +43,7 @@ public class ProductService {
 
         Hibernate.initialize(product.getActions());
 
-        if (product.getActions().size() == 0) {
+        if (product.getActions().isEmpty()) {
             if (product instanceof Investment) {
                 actionService.initializeInvestmentActions((Investment) product);
             } else if (product instanceof SavingsAccount) {
@@ -65,8 +65,6 @@ public class ProductService {
                 .collect(Collectors.groupingBy(FinanceProduct::getClass));
     }
 
-
-    //TODO get rid of model
     public String getValuePlotData(SavingsAccount product) {
         List<Action> actions = product.getActions();
         List<DataPoint> valuePlot = chartService.initializeValueData(actions);

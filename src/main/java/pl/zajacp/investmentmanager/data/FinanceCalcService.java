@@ -23,17 +23,20 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Transactional
 public class FinanceCalcService {
 
-    private final BigDecimal BELKA_TAX = BigDecimal.valueOf(0.81);
-
-    public FinanceCalcService() {
+    private enum MonthType {
+        FIRST,
+        VALID,
+        AFTER_PROMOTION
     }
+
+    private final BigDecimal BELKA_TAX = BigDecimal.valueOf(0.81);
 
     public BigDecimal getInvestmentValueWithReturn(Investment product) {
         long daysValid = DAYS.between(product.getOpenDate(),
                 product.getOpenDate().plusMonths(product.getMonthsValid()));
 
         return product.getValue().add(product.getValue().multiply(product.getInterest())
-                .multiply(new BigDecimal(1.0 * daysValid / Year.of(product.getOpenDate().getYear()).length()))
+                .multiply(BigDecimal.valueOf(1.0 * daysValid / Year.of(product.getOpenDate().getYear()).length()))
                 .multiply(BELKA_TAX).setScale(2, RoundingMode.DOWN));
     }
 
@@ -61,7 +64,7 @@ public class FinanceCalcService {
 
     public BigDecimal getPartialMonthCapitalization(BigDecimal value, SavingsAccount product, LocalDate date, BigDecimal interestRate) {
         int daysInFirstMonth = YearMonth.from(date).lengthOfMonth();
-        BigDecimal applicableMonthFraction = new BigDecimal(1.0 - (1.0 * date.getDayOfMonth() / daysInFirstMonth));
+        BigDecimal applicableMonthFraction = BigDecimal.valueOf(1.0 - (1.0 * date.getDayOfMonth() / daysInFirstMonth));
         return getCapitalizedProfit(value, product, date, interestRate).multiply(applicableMonthFraction);
     }
 
@@ -74,7 +77,7 @@ public class FinanceCalcService {
         return getPartialMonthCapitalization(value, product, openDate, product.getInterest());
     }
 
-    public BigDecimal getSelectedCapitalization(BigDecimal value, SavingsAccount product, LocalDate date, MonthType monthType) {
+    private BigDecimal getSelectedCapitalization(BigDecimal value, SavingsAccount product, LocalDate date, MonthType monthType) {
         BigDecimal capitalization = null;
         switch (monthType) {
             case FIRST:
@@ -96,8 +99,8 @@ public class FinanceCalcService {
          * within same month it comes.
          * */
 
-        BigDecimal yearFraction = new BigDecimal
-                (1.0 * YearMonth.from(date).lengthOfMonth() / YearMonth.from(date).lengthOfYear());
+        BigDecimal yearFraction = BigDecimal.valueOf(
+                (1.0 * YearMonth.from(date).lengthOfMonth() / YearMonth.from(date).lengthOfYear()));
 
         //equation: value*(1+(interest*yearFraction))
         BigDecimal valueWithoutLimit = value.multiply(BigDecimal.ONE.add(interestRate.multiply(yearFraction)));
@@ -137,7 +140,8 @@ public class FinanceCalcService {
         BigDecimal currentValue = product.getValue();
         YearMonth currentYearMonth = YearMonth.from(currentDate);
 
-        int monthCapitalizationIndex, firstMonthActionIndex = 0;
+        int monthCapitalizationIndex;
+        int firstMonthActionIndex = 0;
         int endDateIndex = getEndDateIndex(actions);
 
         for (int i = 0; i < actions.size(); i++) {
@@ -165,7 +169,6 @@ public class FinanceCalcService {
 
                 fixMonthlyCapitalization(currentValue, currentMonthActions, monthType);
 
-                System.out.println(firstMonthActionIndex + " / " + monthCapitalizationIndex);
                 currentValue = actions.get(i).getAfterActionValue();
                 firstMonthActionIndex = monthCapitalizationIndex + 1;
             }

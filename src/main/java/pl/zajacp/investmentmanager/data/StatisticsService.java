@@ -47,7 +47,7 @@ public class StatisticsService {
         }
         //past capitalizations
         Predicate<Action> pastMonthCapitalization = a ->
-                a.getActionDate().isEqual(YearMonth.now().minusMonths(minusMonths + 1).atEndOfMonth()) &&
+                a.getActionDate().isEqual(YearMonth.now().minusMonths(minusMonths + 1L).atEndOfMonth()) &&
                         a.getActionType() == ActionType.CAPITALIZATION;
         value = value.add(
                 user.getProducts().stream()
@@ -94,8 +94,8 @@ public class StatisticsService {
         }
 
         Predicate<Map.Entry<LocalDate, BigDecimal>> withinMonth = e ->
-                e.getKey().isBefore(YearMonth.now().minusMonths(minusMonthsFromNow + 1).atDay(1)) &&
-                        e.getKey().isAfter(YearMonth.now().minusMonths(minusMonthsFromNow - 1).atEndOfMonth());
+                e.getKey().isBefore(YearMonth.now().minusMonths(minusMonthsFromNow + 1L).atDay(1)) &&
+                        e.getKey().isAfter(YearMonth.now().minusMonths(minusMonthsFromNow - 1L).atEndOfMonth());
 
         return gains.stream()
                 .flatMap(g -> g.entrySet().stream())

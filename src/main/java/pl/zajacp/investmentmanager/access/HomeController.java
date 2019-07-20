@@ -1,7 +1,5 @@
 package pl.zajacp.investmentmanager.access;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +35,7 @@ public class HomeController {
         User activeUser = userService.getLoggedUser();
         List<FinanceProduct> products = activeUser.getProducts();
 
-        if (products.size() > 0) {
+        if (!products.isEmpty()) {
             model.addAttribute("products", true);
 
             List<List<Action>> chartActions = chartService.getInitialChartActions(products);
@@ -72,24 +70,6 @@ public class HomeController {
 
     @GetMapping("/accessDenied")
     public String error403() {
-        User user = null;
         return "403";
     }
-
-    @GetMapping("/logged")
-    public String loggedInfo() {
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-        } else {
-            String username = principal.toString();
-        }
-
-        System.out.println(principal);
-
-        return "index";
-    }
-
 }

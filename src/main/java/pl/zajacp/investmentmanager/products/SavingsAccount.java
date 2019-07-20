@@ -36,11 +36,12 @@ public class SavingsAccount extends FinanceProduct {
     private BigDecimal interestAboveLimit;
 
     @PrePersist
+    @Override
     public void prePersist() {
         super.prePersist();
         if(valueLimit==null){
             valueLimit=BigDecimal.valueOf(Integer.MAX_VALUE);
-        };
+        }
     }
 
     @Override
