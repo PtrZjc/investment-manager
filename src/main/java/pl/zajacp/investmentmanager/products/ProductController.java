@@ -144,7 +144,13 @@ public class ProductController {
             return "productDetailsInvestment";
         } else if (product instanceof SavingsAccount) {
 
-            productService.getAdditionalSavingsAccountViewData((SavingsAccount) product, model);
+            String gainPlotData = productService.getValuePlotData((SavingsAccount) product);
+            String valuePlotData = productService.getGainPlotData((SavingsAccount) product);
+
+            model.addAttribute("gainData", gainPlotData);
+            model.addAttribute("valueData", valuePlotData);
+            model.addAttribute("product", product);
+
             return "productDetailsSavingsAccount";
         }
         return "/";

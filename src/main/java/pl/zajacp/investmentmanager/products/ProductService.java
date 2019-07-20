@@ -4,12 +4,11 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionService;
-import pl.zajacp.investmentmanager.data.FinanceCalcService;
 import pl.zajacp.investmentmanager.data.ChartService;
 import pl.zajacp.investmentmanager.data.DataPoint;
+import pl.zajacp.investmentmanager.data.FinanceCalcService;
 import pl.zajacp.investmentmanager.user.UserService;
 
 import java.math.BigDecimal;
@@ -66,17 +65,19 @@ public class ProductService {
                 .collect(Collectors.groupingBy(FinanceProduct::getClass));
     }
 
-    public void getAdditionalSavingsAccountViewData(SavingsAccount product, Model model) {
-        List<Action> actions = product.getActions();
 
+    //TODO get rid of model
+    public String getValuePlotData(SavingsAccount product) {
+        List<Action> actions = product.getActions();
+        List<DataPoint> valuePlot = chartService.initializeValueData(actions);
+        return chartService.jsonMapper(valuePlot);
+    }
+
+    public String getGainPlotData(SavingsAccount product){
+        List<Action> actions = product.getActions();
         LocalDate startDate = actions.get(0).getActionDate().minusMonths(1);
         Map<LocalDate, BigDecimal> gain = financeCalcService.getGain(actions);
         List<DataPoint> gainPlot = chartService.initializeGainData(gain,startDate);
-        String jsonGainPlot = chartService.jsonMapper(gainPlot);
-        model.addAttribute("gainData", jsonGainPlot);
-
-        List<DataPoint> valuePlot = chartService.initializeValueData(actions);
-        String jsonValuePlot = chartService.jsonMapper(valuePlot);
-        model.addAttribute("valueData", jsonValuePlot);
+        return chartService.jsonMapper(gainPlot);
     }
 }

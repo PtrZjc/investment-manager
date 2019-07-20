@@ -52,16 +52,18 @@ public class ActionController {
         if (!actionService.isDateWithinProduct(actionDto, product)) {
             result.rejectValue("actionDate", "error.actionDate");
         }
-
         if (result.hasErrors()) {
             return "actionForm";
         }
 
-
         actionService.genBalanceChangeActions(actionDto, product);
         actionService.recalculateCapitalizations(product);
-        productService.getAdditionalSavingsAccountViewData(product, model);
 
+        String gainPlotData = productService.getValuePlotData(product);
+        String valuePlotData = productService.getGainPlotData(product);
+
+        model.addAttribute("gainData", gainPlotData);
+        model.addAttribute("valueData", valuePlotData);
         model.addAttribute("product", product);
 
         return "productDetailsSavingsAccount";
