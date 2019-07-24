@@ -33,7 +33,7 @@
         <div class="col-sm-6">
             <h4 th:text="#{action.welcome}" class="text-center" style="margin-bottom: 1rem">actionAddMessage</h4>
 
-            <form action="/product/operation/add" th:object="${actionDto}" method="POST" enctype="utf8" id="form">
+            <form th:action="@{/product/operation/add}" th:object="${actionDto}" method="POST" enctype="utf8" id="form">
 
 <!--                <p class="bmd-label-floating" th:text="#{action.actionQuantity}">actionQuantity</p>-->
                 <p class="bmd-label-floating"></p>

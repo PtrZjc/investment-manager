@@ -65,17 +65,17 @@
         <div class="col-sm-8">
             <div class="row">
                 <div class="col-sm-4 text-center">
-                    <form action="/product/all" method="get">
+                    <form th:action="@{/product/all}" method="get">
                         <input class="btn btn-primary" type="submit" th:value="#{form.button.goBack}" value="Go back">
                     </form>
                 </div>
                 <div class="col-sm-4 text-center">
-                    <form action="/product/operation/add" method="get">
+                    <form th:action="@{/product/operation/add}" method="get">
                         <input type="submit" class="btn btn-info" th:value="#{form.button.addAction}">
                     </form>
                 </div>
                 <div class="col-sm-4 text-center">
-                    <form action="/product/delete" method="post">
+                    <form th:action="@{/product/delete}" method="post">
                         <input type="hidden" name="id" th:value="${product.id}">
                         <input type="submit" class="btn btn-danger" th:value="#{form.button.product.delete}">
                     </form>
@@ -123,7 +123,7 @@
                     <!--                <td th:text="${action.isDone}"></td>-->
                     <td>
                 <span th:if="${action.actionType==T(pl.zajacp.investmentmanager.actionmanagement.ActionType).BALANCE_CHANGE}">
-                  <form action="/product/operation/delete" method="post">
+                  <form th:action="@{/product/operation/delete}" method="post">
                      <input type="hidden" name="id" th:value="${action.id}">
                       <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
                     </form>

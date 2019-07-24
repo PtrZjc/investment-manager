@@ -1,6 +1,5 @@
 package pl.zajacp.investmentmanager.data;
 
-import org.junit.Test;
 import pl.zajacp.investmentmanager.actionmanagement.Action;
 import pl.zajacp.investmentmanager.actionmanagement.ActionType;
 import pl.zajacp.investmentmanager.products.FinanceProduct;
@@ -20,7 +19,6 @@ public class StatisticsCalcTest {
 
     private static StatisticsService statisticsService = new StatisticsService();
 
-    @Test
     public void getProductGainOfLastMonths() {
 
         //given

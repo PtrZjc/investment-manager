@@ -47,11 +47,11 @@
                     <td th:text="${investment.interest}" class="align-middle percentage"></td>
                     <td th:text="${investment.monthsValid}" class="align-middle"></td>
                     <td class="text-center align-middle">
-                        <form action="/product/delete" method="post">
+                        <form th:action="@{/product/delete}" method="post">
                             <input type="hidden" name="id" th:value="${investment.id}">
                             <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
                         </form>
-                        <form action="/product/details" method="post">
+                        <form th:action="@{/product/details}" method="post">
                             <input type="hidden" name="id" th:value="${investment.id}">
                             <input class="btn btn-info btn-sm" type="submit" th:value="#{form.button.details}">
                         </form>
@@ -90,11 +90,11 @@
                     <td th:unless="${account.valueLimit>1000000000}" class="align-middle"
                         th:text="${#numbers.formatDecimal(account.valueLimit,1,0)}"></td>
                     <td class="text-center align-middle">
-                        <form action="/product/delete" method="post">
+                        <form th:action="@{/product/delete}" method="post">
                             <input type="hidden" name="id" th:value="${account.id}">
                             <input type="submit" class="btn btn-danger btn-sm" th:value="#{form.button.delete}">
                         </form>
-                        <form action="/product/details" method="post">
+                        <form th:action="@{/product/details}" method="post">
                             <input type="hidden" name="id" th:value="${account.id}">
                             <input class="btn btn-info btn-sm" type="submit" th:value="#{form.button.details}">
                         </form>

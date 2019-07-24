@@ -17,12 +17,12 @@
         <div class="col-sm-6">
             <div class="row">
                 <div class="col text-center">
-                    <form action="/product/all" method="get">
+                    <form th:action="@{/product/all}" method="get">
                         <input class="btn btn-primary" type="submit" th:value="#{form.button.goBack}">
                     </form>
                 </div>
                 <div class="col text-center">
-                    <form action="/product/delete" method="post">
+                    <form th:action="@{/product/delete}" method="post">
                         <input type="hidden" name="id" th:value="${product.id}">
                         <input type="submit" class="btn btn-danger" th:value="#{form.button.delete}">
                     </form>
