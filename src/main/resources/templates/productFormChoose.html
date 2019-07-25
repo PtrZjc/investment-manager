@@ -3,18 +3,7 @@
 <head>
     <title th:text="product.title"></title>
     <div th:replace="fragments/headerFooter::header-scripts "/>
-    <script>
-        $(document).ready(function() {
-            $("#product-investment").on('click', function() {
-                window.location.href = "add/investment"
-            });
-            $("#product-savings-account").on('click', function() {
-                window.location.href = "add/savings-account"
-            });
-        })
-    </script>
 </head>
-
 <body>
 
 <div th:replace="fragments/headerFooter:: navbar"/>
@@ -26,18 +15,24 @@
     <div class="row" style="margin-top: 1rem">
         <div class="col-md-3"></div>
         <div class="col-md-3">
-            <div class="card bg-info" id="product-investment" style="cursor:pointer">
-                <div class="card-body text-center">
-                    <p class="card-text text-white font-weight-bold" th:text="#{product.investment}">Investment</p>
+            <a th:href="@{/product/add/investment}">
+                <div class="card bg-info" id="product-investment" style="cursor:pointer">
+                    <div class="card-body text-center">
+                        <p class="card-text text-white font-weight-bold" th:text="#{product.investment}">Investment</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
         <div class="col-md-3">
-            <div class="card bg-info" id="product-savings-account" style="cursor:pointer">
-                <div class="card-body text-center">
-                    <p class="card-text text-white font-weight-bold" th:text="#{product.savingsAccount}">Savings account</p>
+            <a th:href="@{/product/add/savings-account}">
+                <div class="card bg-info" id="product-savings-account" style="cursor:pointer">
+                    <div class="card-body text-center">
+                        <p class="card-text text-white font-weight-bold" th:text="#{product.savingsAccount}">Savings
+                            account</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3"></div>
     </div>
