@@ -138,8 +138,8 @@ public class ProductController {
             return "productDetailsInvestment";
         } else if (product instanceof SavingsAccount) {
 
-            String gainPlotData = productService.getValuePlotData((SavingsAccount) product);
-            String valuePlotData = productService.getGainPlotData((SavingsAccount) product);
+            String valuePlotData = productService.getValuePlotData((SavingsAccount) product);
+            String gainPlotData = productService.getGainPlotData((SavingsAccount) product);
 
             model.addAttribute("gainData", gainPlotData);
             model.addAttribute("valueData", valuePlotData);

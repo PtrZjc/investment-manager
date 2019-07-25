@@ -59,8 +59,8 @@ public class ActionController {
         actionService.genBalanceChangeActions(actionDto, product);
         actionService.recalculateCapitalizations(product);
 
-        String gainPlotData = productService.getValuePlotData(product);
-        String valuePlotData = productService.getGainPlotData(product);
+        String valuePlotData = productService.getValuePlotData(product);
+        String gainPlotData = productService.getGainPlotData(product);
 
         model.addAttribute("gainData", gainPlotData);
         model.addAttribute("valueData", valuePlotData);
