@@ -222,4 +222,11 @@ public class ActionService {
                 .comparing(Action::getActionDate)
                 .thenComparing(a -> a.getActionType().toString()));
     }
+
+    public void closeOldActions(SavingsAccount product) {
+        product.getActions().stream()
+                .filter(a -> !a.getIsDone() &&
+                        a.getActionDate().isBefore(LocalDate.now()))
+                .forEach(a->a.setIsDone(true));
+    }
 }

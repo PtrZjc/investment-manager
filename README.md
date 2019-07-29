@@ -1,6 +1,3 @@
-
-
-
 # [Private Investment Manager](http://ec2-52-15-65-131.us-east-2.compute.amazonaws.com:8080/invman/) 
 A management tool for tracking one's promotional bank products with simulation and visualization capabilities.
 ## Introduction  
