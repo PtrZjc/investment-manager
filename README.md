@@ -4,7 +4,8 @@ A management tool for tracking one's promotional bank products with simulation a
 The banks often offer short term investments or savings accounts under very attractive conditions to attract customers. However, the attractive gain rate usually applies only to limited value and is relatively short. This leads to situation where one has multiple promotional financial products, each with different value and various expiration dates. This can easily bring chaos into investors wallet.  
 #### But not anymore!  
 Private investment manager will help you in organizing and keeping track of all your investments and promotional savings accounts. The need for this application arose from real demand and it was developed as a final project during my Java Bootcamp which I graduated on June '19.  
-## Technologies used The application was developed in MVC pattern using the following technologies:     
+## Technologies used
+The application was developed in MVC pattern using the following technologies:     
 - Java 8  
 - Spring Framework    
   - Spring Boot    
