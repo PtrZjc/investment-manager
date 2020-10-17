@@ -1,11 +1,13 @@
-# [Private Investment Manager](http://ec2-52-15-65-131.us-east-2.compute.amazonaws.com:8080/invman/) 
+# Private Investment Manager
 A management tool for tracking one's promotional bank products with simulation and visualization capabilities.
 ## Introduction  
-The banks often offer short term investments or savings accounts under very attractive conditions to attract customers. However, the attractive gain rate usually applies only to limited value and is relatively short. This leads to situation where one has multiple promotional financial products, each with different value and various expiration dates. This can easily bring chaos into investors wallet.  
-#### But not anymore!  
-Private investment manager will help you in organizing and keeping track of all your investments and promotional savings accounts. The need for this application arose from real demand and it was developed as a final project during my Java Bootcamp which I graduated on June '19.  
-## Technologies used
-The application was developed in MVC pattern using the following technologies:     
+The banks often offer short term investments or savings accounts under very attractive conditions to attract customers. However, the attractive gain rate usually applies only to limited value and is relatively short. This leads to situation where one has multiple promotional financial products, each with different value and various expiration dates. This can easily bring chaos into investors wallet.
+
+The intention of developing the Private investment manager was to help with the organizaton and track keeping of user investments and promotional savings accounts. The need for this application arose from real demand and it was developed as my first real application as the final project during my Java Bootcamp which I graduated on June '19.  
+## Technologies
+The application was developed in MVC pattern using the following technologies: 
+
+-- Core backend:
 - Java 8  
 - Spring Framework    
   - Spring Boot    
@@ -14,12 +16,13 @@ The application was developed in MVC pattern using the following technologies:
 - Hibernate    
 - JUnit + Mockito   
 - MySQL    
+
+-- View layer:
 - Thymeleaf  
 - Bootstrap    
 - Javascript + jQuery    
 - chart.js    
 - moment.js  
-- i18n internationalization  
 ## Scope of functionalities  
 - Financial simulation of savings accounts for the next year including monthly capitalization. Simulation includes both value and net profit, which are visualized on the interactive chart.   
 - Custom payments and withdraws (also periodic) to savings account. All balance changes are properly included in the capitalization calculations.  
@@ -32,13 +35,4 @@ The application was developed in MVC pattern using the following technologies:
 Summary page:  
 ![summary-screen](img/summary.png)  
 Savings account details page:  
-![details-screen](img/details.png)  
-## Project status  
-The application in current state serves as fully functional financial simulator, however, the core functionality demanded by the customer, the tracker, is still to be implemented.   
-## Features to be implemented  
-#### The tracker  
-- The tracker will make daily update for each product value and store it in the database, instead of dynamical calculations each time on demand.   
-- A the end of month, the tracker will confirm capitalization of all savings accounts and no more changes to the past month financial operations can be made.  
-- Each product will be marked as non active when the time reaches its validity date and it won't be taken into account anymore for summarizing statistics.  
-#### Email notifications  
-- A toggleable reminders delivered to user email before the end of validity date for his products.
+![details-screen](img/details.png)
